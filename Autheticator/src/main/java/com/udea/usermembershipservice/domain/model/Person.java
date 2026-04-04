@@ -42,7 +42,7 @@ public class Person {
         if (email == null || email.trim().isEmpty() || !email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             throw new InvalidEmailException();
         }
-        if (password == null || password.trim().isEmpty()|| password.length() < 6 || !password.matches(".*\\d.*")) {
+        if (password == null || password.trim().isEmpty()|| password.length() < 8 || !password.matches(".*\\d.*")) {
             throw new InvalidPasswordException();
         }
         if (createdAt == null) {

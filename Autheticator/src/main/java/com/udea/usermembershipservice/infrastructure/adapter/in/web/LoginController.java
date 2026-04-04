@@ -35,11 +35,7 @@ public class LoginController {
     })
     @PostMapping("login")
     public ResponseEntity<LoginResultDto> login(@RequestBody LoginDto loginDto) {
-        try {
-            return ResponseEntity.ok(loginUsercase.login(loginDto));
-        } catch (Exception e) {
-            throw new RuntimeException("Error logging in", e);
-        }
+        return ResponseEntity.ok(loginUsercase.login(loginDto));
     }
     
 }

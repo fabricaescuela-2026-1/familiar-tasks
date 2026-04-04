@@ -41,12 +41,8 @@ public class RegisterPersonController {
     })
     @PostMapping("register")
     public ResponseEntity<Void> registerPerson(@RequestBody CreatePersonDto createPersonDto) {
-        try {
-            createUserUseCase.createdUser(createPersonDto);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            throw new RuntimeException("Error registering person", e);
-        }
+        createUserUseCase.createdUser(createPersonDto);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Listar usuarios", description = "Obtiene todos los usuarios registrados en el sistema.")
@@ -55,11 +51,7 @@ public class RegisterPersonController {
     })
     @GetMapping("getUsers")
     public ResponseEntity<List<PersonDto>> getAllUsers() {
-        try {
-            return ResponseEntity.ok(createUserUseCase.geatAllUsers());
-        } catch (Exception e) {
-            throw new RuntimeException("Error getting all users", e);
-        }
+        return ResponseEntity.ok(createUserUseCase.geatAllUsers());
     }
 
     @Operation(summary = "Buscar usuario por correo", description = "Consulta la informacion de un usuario usando su correo electronico.")
@@ -69,11 +61,7 @@ public class RegisterPersonController {
     })
     @GetMapping("GetUserByEmail")
     public ResponseEntity<PersonDto> getUserByEmail(@RequestParam String email) {
-        try {
-            return ResponseEntity.ok(createUserUseCase.getUserByEmail(email));
-        } catch (Exception e) {
-            throw new RuntimeException("Error getting user by email", e);
-        }
+        return ResponseEntity.ok(createUserUseCase.getUserByEmail(email));
     }
 
 
@@ -84,11 +72,7 @@ public class RegisterPersonController {
     })
     @PostMapping("deleteUser")   
     public ResponseEntity<Void> deleteUser(@RequestBody LoginDto loginDto) {
-        try {
-            createUserUseCase.deleteUser(loginDto);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            throw new RuntimeException("Error deleting user", e);
-        }
+        createUserUseCase.deleteUser(loginDto);
+        return ResponseEntity.ok().build();
     }    
 }
