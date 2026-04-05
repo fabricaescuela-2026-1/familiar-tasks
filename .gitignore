@@ -1,0 +1,7 @@
+# IntelliJ IDEA - Configuración del espacio de trabajo global
+.idea/
+*.iml
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
