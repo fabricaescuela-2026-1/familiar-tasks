@@ -1,5 +1,5 @@
 ### Create a new task 
-POST http://localhost:8080/task
+POST http://localhost:8081/task
 Content-Type: application/json
 
 {
@@ -8,11 +8,9 @@ Content-Type: application/json
   "priorityName": "LOW",
   "statusName": "PENDING",
   "deadline": "2026-06-30T23:59:00",
-  "guestId": "8b09fc91-3e08-4a98-9ec1-2e3945732428",
-  "homeId": "5115387b-f5fc-444d-99a9-397e630f0380"
+  "guestId": "126949ed-8168-4078-a046-1ac4f3cea220",
+  "homeId": "3e0562d9-f3f9-4376-a4d0-5446991f2054"
 }
 
-
-
 ### Get all tasks 
-GET http://localhost:8080/task
+GET http://localhost:8081/task

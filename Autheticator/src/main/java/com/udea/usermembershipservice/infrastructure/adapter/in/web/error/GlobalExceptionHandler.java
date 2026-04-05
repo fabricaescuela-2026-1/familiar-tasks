@@ -23,27 +23,27 @@ public class GlobalExceptionHandler {
         InvalidEmailException.class,
         InvalidPasswordException.class
     })
-    public ResponseEntity<ApiErrorResponse> handleBadRequest(RuntimeException ex) {
+    public ResponseEntity<ApiErrorResponseDto> handleBadRequest(RuntimeException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(LoginException.class)
-    public ResponseEntity<ApiErrorResponse> handleUnauthorized(LoginException ex) {
+    public ResponseEntity<ApiErrorResponseDto> handleUnauthorized(LoginException ex) {
         return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
     @ExceptionHandler(SearchException.class)
-    public ResponseEntity<ApiErrorResponse> handleSearch(SearchException ex) {
+    public ResponseEntity<ApiErrorResponseDto> handleSearch(SearchException ex) {
         return buildResponse(resolveSearchStatus(ex), resolveMessage(ex));
     }
 
     @ExceptionHandler(PersistenceException.class)
-    public ResponseEntity<ApiErrorResponse> handlePersistence(PersistenceException ex) {
+    public ResponseEntity<ApiErrorResponseDto> handlePersistence(PersistenceException ex) {
         return buildResponse(resolvePersistenceStatus(ex), resolveMessage(ex));
     }
 
     @ExceptionHandler(CompletionException.class)
-    public ResponseEntity<ApiErrorResponse> handleCompletion(CompletionException ex) {
+    public ResponseEntity<ApiErrorResponseDto> handleCompletion(CompletionException ex) {
         Throwable cause = ex.getCause();
         if (cause instanceof RuntimeException runtimeException) {
             throw runtimeException;
@@ -52,12 +52,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleGeneric(Exception ex) {
+    public ResponseEntity<ApiErrorResponseDto> handleGeneric(Exception ex) {
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error");
     }
 
-    private ResponseEntity<ApiErrorResponse> buildResponse(HttpStatus status, String message) {
-        ApiErrorResponse errorResponse = new ApiErrorResponse(
+    private ResponseEntity<ApiErrorResponseDto> buildResponse(HttpStatus status, String message) {
+        ApiErrorResponseDto errorResponse = new ApiErrorResponseDto(
             LocalDateTime.now(),
             status.value(),
             status.getReasonPhrase(),
