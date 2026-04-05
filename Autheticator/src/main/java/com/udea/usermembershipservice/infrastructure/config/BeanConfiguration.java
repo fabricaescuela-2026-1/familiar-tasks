@@ -36,13 +36,6 @@ import com.udea.usermembershipservice.infrastructure.adapter.out.security.Passwo
 @Configuration
 public class BeanConfiguration {
 
-
-    private final SpringDataHomeJpaRepository springDataHomeJpaRepository;
-
-    BeanConfiguration(SpringDataHomeJpaRepository springDataHomeJpaRepository) {
-        this.springDataHomeJpaRepository = springDataHomeJpaRepository;
-    }
-
     @Bean
     public PersonPersistenceMapper personPersistenceMapper() {
         return new PersonPersistenceMapper();
@@ -119,9 +112,10 @@ public class BeanConfiguration {
 
     @Bean
     public ICreateRoleUseCase createRoleUseCase(
-            IRoleRepositoryPort roleRepositoryPort
+            IRoleRepositoryPort roleRepositoryPort,
+            IPersonRepositoryPort personRepositoryPort
     ) {
-        return new CreatedRoleUseCase(roleRepositoryPort);
+        return new CreatedRoleUseCase(roleRepositoryPort, personRepositoryPort);
     }
 
     @Bean

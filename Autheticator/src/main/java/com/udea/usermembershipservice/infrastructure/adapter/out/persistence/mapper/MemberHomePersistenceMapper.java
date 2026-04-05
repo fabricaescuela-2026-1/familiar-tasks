@@ -26,6 +26,7 @@ public class MemberHomePersistenceMapper {
             personJpaEntity.getLastName(),
             homeJpaEntity.getName(),
             personJpaEntity.getEmail(),
+            memberHomeJpaEntity.getRoleId(),
             personJpaEntity.isActive()
         );
     }

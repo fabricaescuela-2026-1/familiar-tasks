@@ -34,8 +34,8 @@ public class RoleController {
         @ApiResponse(responseCode = "400", description = "Datos invalidos para registrar el rol")
     })
     @PostMapping("registerRole")
-    public ResponseEntity<Void> registerRole(@RequestBody CreateRoleDto createRoleDto) {
-        createRoleUseCase.createdRole(createRoleDto);
+    public ResponseEntity<Void> registerRole(@RequestBody CreateRoleDto createRoleDto, @RequestParam String gmail) {
+        createRoleUseCase.createdRole(createRoleDto, gmail);
         return ResponseEntity.ok().build();
     }
 

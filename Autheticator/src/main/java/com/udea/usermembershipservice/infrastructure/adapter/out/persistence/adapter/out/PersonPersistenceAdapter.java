@@ -40,7 +40,7 @@ public class PersonPersistenceAdapter implements IPersonRepositoryPort {
     public Optional<Person> getUserByEmail(String email) {
         Optional<Person> person = repository.findByEmail(email).map(mapper::toDomain);
         if (person.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
         return person;
     }
