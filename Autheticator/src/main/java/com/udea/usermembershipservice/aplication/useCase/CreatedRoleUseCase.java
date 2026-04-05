@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.udea.usermembershipservice.aplication.port.in.ICreateRoleUseCase;
+import com.udea.usermembershipservice.aplication.port.out.IPersonRepositoryPort;
 import com.udea.usermembershipservice.aplication.port.out.IRoleRepositoryPort;
 import com.udea.usermembershipservice.aplication.useCase.dto.role.CreateRoleDto;
 import com.udea.usermembershipservice.aplication.useCase.dto.role.RoleDto;
@@ -14,16 +15,22 @@ import com.udea.usermembershipservice.domain.model.Role;
 public class CreatedRoleUseCase implements ICreateRoleUseCase {
 
     private final IRoleRepositoryPort roleRepositoryPort;
+    private final IPersonRepositoryPort personRepositoryPort;  
 
-    public CreatedRoleUseCase(IRoleRepositoryPort roleRepositoryPort) {
+    public CreatedRoleUseCase(IRoleRepositoryPort roleRepositoryPort, IPersonRepositoryPort personRepositoryPort) {
         this.roleRepositoryPort = roleRepositoryPort;
+        this.personRepositoryPort = personRepositoryPort;
     }
 
     @Override
-    public void createdRole(CreateRoleDto createRoleDto) {
+    public void createdRole(CreateRoleDto createRoleDto, String gmail) {
         try {
             if (roleRepositoryPort.getRoleByName(createRoleDto.name()).isPresent()) {
                 throw new RuntimeException("Role with this name already exists");
+            }
+
+            if(personRepositoryPort.getUserByEmail(gmail).isEmpty()) {
+                throw new RuntimeException("User not registered");
             }
 
             Role role = Role.create(UUID.randomUUID(), createRoleDto.name());

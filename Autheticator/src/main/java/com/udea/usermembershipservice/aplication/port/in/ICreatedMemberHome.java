@@ -14,5 +14,5 @@ public interface ICreatedMemberHome {
     public void deleteMemberHome(String nameHome, String gmail);
     public CompletableFuture<MemberHomeDto> getMemberHome(UUID personId, UUID homeId);
     public List<MemberDto> getAllMemberHome(String nameHome);
-    public void updateRoleMemberHome(String nameHome, String gmail, String newRol);
+    public void updateRoleMemberHome(String nameHome, String gmail, String newRol, String gmailAdmin);
 }

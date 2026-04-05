@@ -7,7 +7,7 @@ import com.udea.usermembershipservice.aplication.useCase.dto.role.RoleDto;
 
 public interface ICreateRoleUseCase {
 
-    void createdRole(CreateRoleDto createRoleDto);
+    void createdRole(CreateRoleDto createRoleDto, String gmail);
 
     List<RoleDto> geatAllRoles();
 

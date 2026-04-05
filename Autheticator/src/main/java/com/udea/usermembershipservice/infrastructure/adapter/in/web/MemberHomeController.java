@@ -74,8 +74,8 @@ public class MemberHomeController {
         @ApiResponse(responseCode = "404", description = "No se encontró el hogar, la persona o el rol indicado")
     })
     @PostMapping("updateRole")
-    public ResponseEntity<String> updateRoleMemberHome(@RequestParam String nameHome, @RequestParam String gmail, @RequestParam String newRol) {
-        createdMemberHome.updateRoleMemberHome(nameHome, gmail, newRol);
+    public ResponseEntity<String> updateRoleMemberHome(@RequestParam String nameHome, @RequestParam String gmail, @RequestParam String newRol, @RequestParam String gmailAdmin) {
+        createdMemberHome.updateRoleMemberHome(nameHome, gmail, newRol, gmailAdmin);
         return ResponseEntity.ok("Rol actualizado correctamente");
     }   
     

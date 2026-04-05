@@ -81,11 +81,19 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
     }
 
     @Override
-    public void updateRoleMemberHome(String nameHome, String gmail, String newRol) {
+    public void updateRoleMemberHome(String nameHome, String gmail, String newRol, String gmailAdmin) {
         try {
             var home = homeRepositoryPort.getHomeByName(nameHome).orElseThrow(() -> new RuntimeException("Home not found"));
             var person = personRepositoryPort.getUserByEmail(gmail).orElseThrow(() -> new RuntimeException("Person not found"));
             var role = roleRepositoryPort.getRoleByName(newRol).orElseThrow(() -> new RuntimeException("Role not found"));
+            var admin = personRepositoryPort.getUserByEmail(gmailAdmin).orElseThrow(() -> new RuntimeException("Admin not found"));
+            var adminRole = memberHomeRepositoryPort.getMemberHome(admin.getIdPerson(), home.getIdHome()).orElseThrow(() -> new RuntimeException("Admin is not a member of the home"));
+
+            var roleIdAdmin = roleRepositoryPort.getRoleByName("Administrador").orElseThrow(() -> new RuntimeException("Admin role not found"));
+
+           if(!adminRole.roleId().equals(roleIdAdmin.getIdRole())) {
+                throw new RuntimeException("User is not an admin of the home");
+            }
 
             memberHomeRepositoryPort.updateRoleMemberHome(home.getIdHome(), person.getIdPerson(), role.getIdRole());
         } catch (Exception e) {
