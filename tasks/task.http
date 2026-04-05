@@ -3,15 +3,16 @@ POST http://localhost:8080/task
 Content-Type: application/json
 
 {
-  "name": "lipiar los cogines",
-  "description": "limpiar con un trapo y jabon los cogines de la sala",
+  "name": "lipiar los trastos",
+  "description": "limpiar con agua y jabon los platos",
   "priorityName": "LOW",
   "statusName": "PENDING",
   "deadline": "2026-06-30T23:59:00",
   "guestId": "8b09fc91-3e08-4a98-9ec1-2e3945732428",
   "homeId": "5115387b-f5fc-444d-99a9-397e630f0380"
-
 }
+
+
 
 ### Get all tasks 
 GET http://localhost:8080/task

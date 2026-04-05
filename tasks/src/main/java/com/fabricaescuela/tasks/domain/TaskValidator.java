@@ -29,4 +29,9 @@ public class TaskValidator {
     }
 
   }
+  public static void validateUserIds(Task task) {
+    if (task.getGuestId() == null) {
+      throw new IllegalArgumentException("GuestId is required");
+    }
+  }
 }
