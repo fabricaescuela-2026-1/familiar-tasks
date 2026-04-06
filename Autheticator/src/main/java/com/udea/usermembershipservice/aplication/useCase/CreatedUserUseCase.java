@@ -33,7 +33,7 @@ public class CreatedUserUseCase implements ICreateUserUseCase{
     @Override
     public void createdUser(CreatePersonDto createUserDto) {
         try {
-            if(userRepositoryPort.getUserByEmail(createUserDto.email()) == null) {
+            if(userRepositoryPort.getUserByEmail(createUserDto.email()).isEmpty()) {
                 
             String passwordEncoder = passwordEncoderport.encode(createUserDto.password());
             Person person = Person.create(createUserDto.name(), createUserDto.lastName(), createUserDto.email(), createUserDto.password(), createdAt, true);
