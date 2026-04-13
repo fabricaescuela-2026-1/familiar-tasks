@@ -17,7 +17,7 @@ public class UserValidationAdapter implements com.fabricaescuela.tasks.domain.po
     private final RestTemplate restTemplate;
 
     @Value("${user.validation.service.url}")
-    private final String userValidationServiceUrl;
+    private String userValidationServiceUrl;
 
     @Override
     public boolean validateUserInHome(UUID guestId, UUID homeId) {

@@ -25,16 +25,12 @@ public class TaskService implements TaskUseCasePort {
   public Task create(Task task) {
     TaskValidator.validate(task);
     boolean isValid = userValidation.validateUserInHome(
-            task.getGuestId(),
-            task.getHomeId()
-    );
+        task.getGuestId(),
+        task.getHomeId());
 
     if (!isValid) {
       throw new UserNotValidException(
-              task.getGuestId(),
-              task.getHomeId(),
-              "User not found in the specified home"
-      );
+          "User not found in the specified home");
     }
     return repository.save(task);
   }
