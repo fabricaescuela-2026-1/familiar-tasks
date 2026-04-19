@@ -14,4 +14,7 @@ public interface TokenJpaRepository extends JpaRepository<TokenEntity, UUID> {
 
   @Query("SELECT t FROM TokenEntity t WHERE t.user.id = :userId")
   List<TokenEntity> findAllByUserId(UUID userId);
+
+  @Query("UPDATE TokenEntity t SET t.expiratedAt = CURRENT_TIMESTAMP WHERE t.user.email = :email")
+  void revokeAllByUserEmail(String email);
 }
