@@ -15,12 +15,12 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tokens", schema = "auth")
-public class Token {
+public class TokenEntity {
   @Id
   @Column(name = "token_id")
   private UUID token_id;
 
-  @Column(name = "token_hash", nullable = false)
+  @Column(name = "token_hash", nullable = false, unique = true)
   private String tokenHash;
 
   @Column(name = "expiration_date", nullable = false)
