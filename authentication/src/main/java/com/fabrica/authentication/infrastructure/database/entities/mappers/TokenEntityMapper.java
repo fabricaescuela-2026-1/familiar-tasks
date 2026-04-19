@@ -14,7 +14,7 @@ public class TokenEntityMapper {
 
   private final UserEntityMapper userEntityMapper;
 
-  public TokenEntity tokenEntity(Token token) {
+  public TokenEntity toEntity(Token token) {
     return TokenEntity.builder()
         .tokenId(token.getTokenId())
         .tokenHash(token.getTokenHash())
@@ -22,6 +22,17 @@ public class TokenEntityMapper {
         .expiratedAt(token.getExpiratedAt())
         .tokenType(TokenType.valueOf(token.getTokenType()))
         .user(userEntityMapper.toEntity(token.getUser()))
+        .build();
+  }
+
+  public Token toDomain(TokenEntity tokenEntity) {
+    return Token.builder()
+        .tokenId(tokenEntity.getTokenId())
+        .tokenHash(tokenEntity.getTokenHash())
+        .expirationDate(tokenEntity.getExpirationDate())
+        .expiratedAt(tokenEntity.getExpiratedAt())
+        .tokenType(tokenEntity.getTokenType().name())
+        .user(userEntityMapper.toDomain(tokenEntity.getUser()))
         .build();
   }
 }
