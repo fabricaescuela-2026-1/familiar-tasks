@@ -1,5 +1,6 @@
 package com.fabrica.authentication.infrastructure.database.entities;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -13,12 +14,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "users", schema = "auth")
 @Getter
 @Setter
+@AllArgsConstructor
 @Builder
-@Table(name = "users", schema = "auth")
+@NoArgsConstructor
 public class UserEntity {
 
   @Column(name = "user_id")
@@ -39,4 +40,7 @@ public class UserEntity {
 
   @Column(length = 255, nullable = false, unique = true)
   private String email;
+
+  @Column(name = "created_at", nullable = false)
+  private LocalDateTime createdAt;
 }

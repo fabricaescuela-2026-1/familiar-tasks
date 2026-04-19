@@ -12,13 +12,23 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "tokens", schema = "auth")
+@Getter
+@Setter
+@AllArgsConstructor
+@Builder
+@NoArgsConstructor
 public class TokenEntity {
   @Id
   @Column(name = "token_id")
-  private UUID token_id;
+  private UUID tokenId;
 
   @Column(name = "token_hash", nullable = false, unique = true)
   private String tokenHash;
