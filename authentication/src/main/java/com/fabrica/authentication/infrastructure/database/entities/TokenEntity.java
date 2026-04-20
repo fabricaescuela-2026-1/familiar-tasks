@@ -36,7 +36,7 @@ public class TokenEntity {
   @Column(name = "expiration_date", nullable = false)
   private LocalDateTime expirationDate;
 
-  @Column(name = "expirated_at", nullable = false)
+  @Column(name = "expirated_at")
   private LocalDateTime expiratedAt;
 
   @OneToOne(fetch = FetchType.EAGER)
