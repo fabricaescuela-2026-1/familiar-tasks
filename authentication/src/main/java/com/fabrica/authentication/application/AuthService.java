@@ -65,10 +65,6 @@ public class AuthService implements AuthUseCase {
       throw new UserNotFoundException("Invalid credentials");
     }
 
-    // add authentication to spring context ---
-    SecurityContextHolder.getContext().setAuthentication(
-        new UsernamePasswordAuthenticationToken(request.email(), null));
-
     Token accessToken = jwtService.generateAccesToken(user);
     Token refreshToken = jwtService.generateRefreshToken(user);
 
