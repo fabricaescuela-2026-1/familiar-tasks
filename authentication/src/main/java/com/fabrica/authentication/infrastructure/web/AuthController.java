@@ -1,26 +1,37 @@
 package com.fabrica.authentication.infrastructure.web;
 
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fabrica.authentication.application.dto.AuthResponse;
+import com.fabrica.authentication.application.dto.LoginRequest;
+import com.fabrica.authentication.application.dto.RegisterRequest;
+import com.fabrica.authentication.application.ports.in.AuthUseCase;
+
+import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
+  private final AuthUseCase authUseCase;
 
   @PostMapping("/login")
-  public String login() {
-    return null;
+  public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+    return ResponseEntity.ok(authUseCase.login(request));
   }
 
   @PostMapping("/register")
-  public String register() {
-    return null;
+  public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+    return ResponseEntity.ok(authUseCase.register(request));
   }
 
   @PostMapping("/refresh")
-  public String refresh() {
-    return null;
+  public ResponseEntity<AuthResponse> refresh(@RequestBody String refreshToken) {
+    return ResponseEntity.ok(authUseCase.refreshToken(refreshToken));
   }
-
 }
