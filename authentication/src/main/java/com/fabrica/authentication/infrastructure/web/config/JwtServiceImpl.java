@@ -9,12 +9,10 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.fabrica.authentication.domain.exceptions.UserNotFoundException;
 import com.fabrica.authentication.domain.model.Token;
 import com.fabrica.authentication.domain.model.User;
 import com.fabrica.authentication.domain.ports.out.JwtServicePort;
 import com.fabrica.authentication.domain.ports.out.TokenRepositoryPort;
-import com.fabrica.authentication.domain.ports.out.UserRepositoryPort;
 import com.fabrica.authentication.infrastructure.database.entities.TokenType;
 
 import io.jsonwebtoken.JwtBuilder;
