@@ -2,6 +2,8 @@ package com.fabrica.authentication.application;
 
 import java.time.LocalDateTime;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -59,8 +61,17 @@ public class AuthService implements AuthUseCase {
     var user = userRepo.findByEmail(request.email())
         .orElseThrow(() -> new UserNotFoundException("User email " + request.email() + " not found"));
 
+    if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+      throw new UserNotFoundException("Invalid credentials");
+    }
+
+    // add authentication to spring context ---
+    SecurityContextHolder.getContext().setAuthentication(
+        new UsernamePasswordAuthenticationToken(request.email(), null));
+
     Token accessToken = jwtService.generateAccesToken(user);
     Token refreshToken = jwtService.generateRefreshToken(user);
+
     tokenRepo.save(accessToken);
     tokenRepo.save(refreshToken);
     return new AuthResponse(accessToken.getTokenHash(), refreshToken.getTokenHash());
