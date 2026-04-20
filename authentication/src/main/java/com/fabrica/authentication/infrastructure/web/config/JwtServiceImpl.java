@@ -25,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtServicePort {
-  private final UserRepositoryPort userRepo;
   private final TokenRepositoryPort tokenRepo;
 
   @Value("${jwt.secret}")
