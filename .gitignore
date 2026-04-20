@@ -5,3 +5,5 @@
 # Archivos temporales del sistema
 .DS_Store
 Thumbs.db
+.vscode/settings.json
+.vscode/launch.json
