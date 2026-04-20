@@ -1,8 +1,8 @@
-DROP TABLE auth.tokens;
+DROP TABLE IF EXISTS auth.tokens;
 
-DROP TABLE auth.users;
+DROP TABLE IF EXISTS auth.users;
 
-DROP TYPE auth.token_type;
+DROP TYPE IF EXISTS auth.token_type;
 
 CREATE SCHEMA IF NOT EXISTS auth;
 
