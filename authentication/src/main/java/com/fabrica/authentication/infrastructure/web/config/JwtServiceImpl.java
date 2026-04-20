@@ -38,12 +38,11 @@ public class JwtServiceImpl implements JwtServicePort {
   private long refreshExpiration;
 
   @Override
-  public Token generateAccesToken(String email) {
+  public Token generateAccesToken(User user) {
     var expriationDate = new Date(System.currentTimeMillis() + accessExpiration);
-    User user = userRepo.findByEmail(email)
-        .orElseThrow(() -> new UserNotFoundException("User email " + email + " not found"));
+
     JwtBuilder builder = Jwts.builder()
-        .setSubject(email)
+        .setSubject(user.getEmail())
         .setId(user.getUserId().toString())
         .signWith(getKey())
         .setExpiration(expriationDate);
@@ -58,13 +57,11 @@ public class JwtServiceImpl implements JwtServicePort {
   }
 
   @Override
-  public Token generateRefreshToken(String email) {
+  public Token generateRefreshToken(User user) {
     var expriationDate = new Date(System.currentTimeMillis() + refreshExpiration);
-    User user = userRepo.findByEmail(email)
-        .orElseThrow(() -> new UserNotFoundException("User email " + email + " not found"));
     JwtBuilder builder = Jwts.builder()
         .setId(user.getUserId().toString())
-        .setSubject(email)
+        .setSubject(user.getEmail())
         .signWith(getKey())
         .setExpiration(expriationDate);
     return Token.builder()
