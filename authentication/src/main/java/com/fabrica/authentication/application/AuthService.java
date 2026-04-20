@@ -1,9 +1,11 @@
 package com.fabrica.authentication.application;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fabrica.authentication.application.dto.AuthResponse;
 import com.fabrica.authentication.application.dto.LoginRequest;
@@ -19,9 +21,12 @@ import com.fabrica.authentication.domain.ports.out.TokenRepositoryPort;
 import com.fabrica.authentication.domain.ports.out.UserRepositoryPort;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 
 @RequiredArgsConstructor
 @Service
+@Log
+@Transactional
 public class AuthService implements AuthUseCase {
   private final JwtServicePort jwtService;
   private final TokenRepositoryPort tokenRepo;
@@ -37,6 +42,7 @@ public class AuthService implements AuthUseCase {
     }
     var user = User.builder()
         .name(req.name())
+        .userId(UUID.randomUUID())
         .lastname(req.lastname())
         .email(req.email())
         .passwordHash(passwordEncoder.encode(req.password()))
@@ -49,6 +55,8 @@ public class AuthService implements AuthUseCase {
     Token refreshToken = jwtService.generateRefreshToken(user);
     tokenRepo.save(accessToken);
     tokenRepo.save(refreshToken);
+
+    log.info("Registration complete");
     return new AuthResponse(accessToken.getTokenHash(), refreshToken.getTokenHash());
   }
 
@@ -74,7 +82,7 @@ public class AuthService implements AuthUseCase {
   @Override
   public AuthResponse refreshToken(String refreshToken) {
     var token = tokenRepo.findByHash(refreshToken)
-        .orElseThrow(() -> new InvalidRefreshTokenException());
+        .orElseThrow(InvalidRefreshTokenException::new);
 
     if (!jwtService.isTokenValid(token)) {
       throw new InvalidRefreshTokenException();
