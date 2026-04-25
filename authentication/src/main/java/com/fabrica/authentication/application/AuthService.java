@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fabrica.authentication.application.dto.AuthResponse;
 import com.fabrica.authentication.application.dto.LoginRequest;
 import com.fabrica.authentication.application.dto.RegisterRequest;
+import com.fabrica.authentication.application.dto.UserMessage;
 import com.fabrica.authentication.application.ports.in.AuthUseCase;
 import com.fabrica.authentication.domain.exceptions.EmailAlreadyExitsException;
 import com.fabrica.authentication.domain.exceptions.InvalidRefreshTokenException;
