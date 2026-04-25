@@ -12,6 +12,7 @@ import com.fabrica.authentication.application.dto.LoginRequest;
 import com.fabrica.authentication.application.dto.RegisterRequest;
 import com.fabrica.authentication.application.dto.UserMessage;
 import com.fabrica.authentication.application.ports.in.AuthUseCase;
+import com.fabrica.authentication.application.ports.out.UserQueuePort;
 import com.fabrica.authentication.domain.exceptions.EmailAlreadyExitsException;
 import com.fabrica.authentication.domain.exceptions.InvalidRefreshTokenException;
 import com.fabrica.authentication.domain.exceptions.UserNotFoundException;
@@ -33,6 +34,7 @@ public class AuthService implements AuthUseCase {
   private final TokenRepositoryPort tokenRepo;
   private final UserRepositoryPort userRepo;
   private final PasswordEncoder passwordEncoder;
+  private final UserQueuePort userQueuePort;
 
   @Override
   public AuthResponse register(RegisterRequest req) {
@@ -58,6 +60,7 @@ public class AuthService implements AuthUseCase {
     tokenRepo.save(refreshToken);
 
     log.info("Registration complete");
+    userQueuePort.sendUserMessage(user);
     return new AuthResponse(accessToken.getTokenHash(), refreshToken.getTokenHash());
   }
 

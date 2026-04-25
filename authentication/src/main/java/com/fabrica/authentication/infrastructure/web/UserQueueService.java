@@ -1,5 +1,7 @@
 package com.fabrica.authentication.infrastructure.web;
 
+import org.springframework.stereotype.Service;
+
 import com.azure.storage.queue.QueueClient;
 import com.fabrica.authentication.application.dto.UserMessage;
 import com.fabrica.authentication.application.ports.out.UserQueuePort;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
+@Service
 public class UserQueueService implements UserQueuePort {
   private final QueueClient userQueueClient;
   private final ObjectMapper objectMapper;
