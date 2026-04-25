@@ -3,12 +3,15 @@ package com.fabrica.authentication.application.dto;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import lombok.Builder;
+
+@Builder
 public record UserMessage(
-    UUID userId,
-    String name,
-    String lastname,
-    String passwordHash,
-    String email,
-    LocalDateTime createdAt) {
+        UUID userId,
+        String name,
+        String lastname,
+        String passwordHash,
+        String email,
+        LocalDateTime createdAt) {
 
 }
