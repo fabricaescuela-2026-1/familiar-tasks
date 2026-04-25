@@ -18,9 +18,15 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
     return httpSecurity
         .csrf(config -> config.disable())
-        .authorizeHttpRequests(auth -> auth.requestMatchers("/auth/**")
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/swagger-ui.html",
+                "/auth/**")
             .permitAll()
             .anyRequest().authenticated())
+
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .build();
   }
