@@ -190,4 +190,18 @@ class PersonTest {
         // Act - Assert
         assertThrows(InvalidPasswordException.class, () -> person.changePassword("sindigito"));
     }
+
+    // GAP HU02: la HU exige al menos un carácter especial, pero el código solo valida dígitos.
+    // Una contraseña sin carácter especial pasa la validación actual.
+    @Test
+    void contrasenaSinCaracterEspecialEsAceptadaPorElCodigo() {
+        // Arrange
+        String sinEspecial = "sincaracter1";
+
+        // Act
+        Person person = Person.create("Ana", "López", "ana@mail.com", sinEspecial, ahora, true);
+
+        // Assert — el código la acepta; per HU02 debería rechazarla
+        assertNotNull(person);
+    }
 }
