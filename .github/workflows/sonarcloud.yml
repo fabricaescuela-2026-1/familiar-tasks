@@ -43,15 +43,15 @@ jobs:
       # To enable coverage: add a postgres service container and remove -DskipTests.
       - name: Build authentication
         working-directory: authentication
-        run: ./mvnw verify -DskipTests --no-transfer-progress
+        run: ./mvnw verify --no-transfer-progress
 
       - name: Build Autheticator
         working-directory: Autheticator
-        run: ./mvnw verify -DskipTests --no-transfer-progress
+        run: ./mvnw verify --no-transfer-progress
 
       - name: Build tasks
         working-directory: tasks
-        run: ./mvnw verify -DskipTests --no-transfer-progress
+        run: ./mvnw verify --no-transfer-progress
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
