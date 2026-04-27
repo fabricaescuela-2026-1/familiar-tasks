@@ -22,7 +22,7 @@ class PersonTest {
         String email = "Juan.Perez@Ejemplo.com";
 
         // Act
-        Person person = Person.create("Juan", "Pérez", email, "segura123", ahora, true);
+        Person person = Person.create("Juan", "Pérez", email, "Segura@123", ahora, true);
 
         // Assert
         assertNotNull(person.getIdPerson());
@@ -36,20 +36,20 @@ class PersonTest {
         String emailConMayusculas = "USUARIO@DOMINIO.COM";
 
         // Act
-        Person person = Person.create("Ana", "López", emailConMayusculas, "clave1234", ahora, true);
+        Person person = Person.create("Ana", "López", emailConMayusculas, "Segura@123", ahora, true);
 
         // Assert
         assertEquals("usuario@dominio.com", person.getEmail());
     }
 
-    // Valor límite: exactamente 8 caracteres con dígito es el mínimo válido en create
+    // HU02 Scenario 1 — valor límite: más de 8 chars, mayúsculas y caracteres especiales
     @Test
-    void contrasenaConOchoCaracteresYDigitoEsValida() {
+    void contrasenaConMayusculasYCaracterEspecialEsAceptada() {
         // Arrange
-        String contrasena8 = "clave123";
+        String contrasenaSegura = "Segura@123";
 
         // Act
-        Person person = Person.create("Ana", "López", "ana@mail.com", contrasena8, ahora, true);
+        Person person = Person.create("Ana", "López", "ana@mail.com", contrasenaSegura, ahora, true);
 
         // Assert
         assertNotNull(person);
@@ -58,7 +58,7 @@ class PersonTest {
     @Test
     void cambiarEmailNormalizaAMinusculas() {
         // Arrange
-        Person person = Person.create("Ana", "López", "ana@mail.com", "clave1234", ahora, true);
+        Person person = Person.create("Ana", "López", "ana@mail.com", "Segura@123", ahora, true);
 
         // Act
         person.changeEmail("NUEVO@CORREO.COM");
@@ -73,7 +73,7 @@ class PersonTest {
     void nombreNuloLanzaExcepcion() {
         // Arrange - Act - Assert
         assertThrows(InvalidDataException.class, () ->
-            Person.create(null, "López", "ana@mail.com", "clave1234", ahora, true)
+            Person.create(null, "López", "ana@mail.com", "Segura@123", ahora, true)
         );
     }
 
@@ -84,7 +84,7 @@ class PersonTest {
 
         // Act - Assert
         assertThrows(InvalidDataException.class, () ->
-            Person.create(nombreVacio, "López", "ana@mail.com", "clave1234", ahora, true)
+            Person.create(nombreVacio, "López", "ana@mail.com", "Segura@123", ahora, true)
         );
     }
 
@@ -92,7 +92,7 @@ class PersonTest {
     void apellidoNuloLanzaExcepcion() {
         // Arrange - Act - Assert
         assertThrows(InvalidDataException.class, () ->
-            Person.create("Ana", null, "ana@mail.com", "clave1234", ahora, true)
+            Person.create("Ana", null, "ana@mail.com", "Segura@123", ahora, true)
         );
     }
 
@@ -100,7 +100,7 @@ class PersonTest {
     void emailNuloLanzaExcepcion() {
         // Arrange - Act - Assert
         assertThrows(InvalidEmailException.class, () ->
-            Person.create("Ana", "López", null, "clave1234", ahora, true)
+            Person.create("Ana", "López", null, "Segura@123", ahora, true)
         );
     }
 
@@ -111,30 +111,7 @@ class PersonTest {
 
         // Act - Assert
         assertThrows(InvalidEmailException.class, () ->
-            Person.create("Ana", "López", emailMalFormado, "clave1234", ahora, true)
-        );
-    }
-
-    // Valor límite: 7 caracteres es inválido (mínimo es 8 en create)
-    @Test
-    void contrasenaConSieteCaracteresEsInvalida() {
-        // Arrange
-        String contrasena7 = "clave12";
-
-        // Act - Assert
-        assertThrows(InvalidPasswordException.class, () ->
-            Person.create("Ana", "López", "ana@mail.com", contrasena7, ahora, true)
-        );
-    }
-
-    @Test
-    void contrasenaSinDigitoLanzaExcepcion() {
-        // Arrange
-        String sinDigito = "contrasena";
-
-        // Act - Assert
-        assertThrows(InvalidPasswordException.class, () ->
-            Person.create("Ana", "López", "ana@mail.com", sinDigito, ahora, true)
+            Person.create("Ana", "López", emailMalFormado, "Segura@123", ahora, true)
         );
     }
 
@@ -142,7 +119,7 @@ class PersonTest {
     void fechaCreacionNulaLanzaExcepcion() {
         // Arrange - Act - Assert
         assertThrows(InvalidDataException.class, () ->
-            Person.create("Ana", "López", "ana@mail.com", "clave1234", null, true)
+            Person.create("Ana", "López", "ana@mail.com", "Segura@123", null, true)
         );
     }
 
@@ -150,14 +127,39 @@ class PersonTest {
     void activoNuloLanzaExcepcion() {
         // Arrange - Act - Assert
         assertThrows(InvalidDataException.class, () ->
-            Person.create("Ana", "López", "ana@mail.com", "clave1234", ahora, null)
+            Person.create("Ana", "López", "ana@mail.com", "Segura@123", ahora, null)
+        );
+    }
+
+    // HU02 Scenario 2 — valor límite: 7 chars es inválido, mínimo es 8
+    @Test
+    void contrasenaConSieteCaracteresEsInvalida() {
+        // Arrange
+        String contrasena7 = "Abc@123";
+
+        // Act - Assert
+        assertThrows(InvalidPasswordException.class, () ->
+            Person.create("Ana", "López", "ana@mail.com", contrasena7, ahora, true)
+        );
+    }
+
+    // HU02 Scenario 3 — sin caracteres especiales debe ser rechazada
+    // GAP: el código valida dígito en lugar de carácter especial
+    @Test
+    void contrasenaSinCaracterEspecialEsRechazada() {
+        // Arrange
+        String sinEspecial = "sinEspecial8";
+
+        // Act - Assert
+        assertThrows(InvalidPasswordException.class, () ->
+            Person.create("Ana", "López", "ana@mail.com", sinEspecial, ahora, true)
         );
     }
 
     @Test
     void cambiarEmailInvalidoLanzaExcepcion() {
         // Arrange
-        Person person = Person.create("Ana", "López", "ana@mail.com", "clave1234", ahora, true);
+        Person person = Person.create("Ana", "López", "ana@mail.com", "Segura@123", ahora, true);
 
         // Act - Assert
         assertThrows(InvalidEmailException.class, () -> person.changeEmail("noesuncorreo"));
@@ -166,42 +168,33 @@ class PersonTest {
     @Test
     void cambiarNombreVacioLanzaExcepcion() {
         // Arrange
-        Person person = Person.create("Ana", "López", "ana@mail.com", "clave1234", ahora, true);
+        Person person = Person.create("Ana", "López", "ana@mail.com", "Segura@123", ahora, true);
 
         // Act - Assert
         assertThrows(InvalidDataException.class, () -> person.changeName(""));
     }
 
-    // Valor límite: changePassword requiere mínimo 6 caracteres (diferente a create que requiere 8)
+    // HU02 Scenario 2 — valor límite en changePassword: 7 chars es inválido según HU
+    // GAP: changePassword acepta desde 6 chars; la HU exige mínimo 8
     @Test
-    void cambiarContrasenaConCincoCaracteresEsInvalida() {
+    void cambiarContrasenaCon7CaracteresEsRechazada() {
         // Arrange
-        Person person = Person.create("Ana", "López", "ana@mail.com", "clave1234", ahora, true);
+        Person person = Person.create("Ana", "López", "ana@mail.com", "Segura@123", ahora, true);
+        String contrasena7 = "Abc@123";
 
         // Act - Assert
-        assertThrows(InvalidPasswordException.class, () -> person.changePassword("cl1ab"));
+        assertThrows(InvalidPasswordException.class, () -> person.changePassword(contrasena7));
     }
 
+    // HU02 Scenario 3 — sin caracteres especiales debe ser rechazada en changePassword
+    // GAP: el código valida dígito en lugar de carácter especial
     @Test
-    void cambiarContrasenaSinDigitoLanzaExcepcion() {
+    void cambiarContrasenaSinCaracterEspecialEsRechazada() {
         // Arrange
-        Person person = Person.create("Ana", "López", "ana@mail.com", "clave1234", ahora, true);
+        Person person = Person.create("Ana", "López", "ana@mail.com", "Segura@123", ahora, true);
+        String sinEspecial = "sinEspecial8";
 
         // Act - Assert
-        assertThrows(InvalidPasswordException.class, () -> person.changePassword("sindigito"));
-    }
-
-    // GAP HU02: la HU exige al menos un carácter especial, pero el código solo valida dígitos.
-    // Una contraseña sin carácter especial pasa la validación actual.
-    @Test
-    void contrasenaSinCaracterEspecialEsAceptadaPorElCodigo() {
-        // Arrange
-        String sinEspecial = "sincaracter1";
-
-        // Act
-        Person person = Person.create("Ana", "López", "ana@mail.com", sinEspecial, ahora, true);
-
-        // Assert — el código la acepta; per HU02 debería rechazarla
-        assertNotNull(person);
+        assertThrows(InvalidPasswordException.class, () -> person.changePassword(sinEspecial));
     }
 }

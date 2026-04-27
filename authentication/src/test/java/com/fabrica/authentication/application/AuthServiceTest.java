@@ -151,4 +151,27 @@ class AuthServiceTest {
         assertThrows(InvalidRefreshTokenException.class,
                 () -> authService.refreshToken("expirado"));
     }
+
+    // HU01 Scenario 3
+    @Test
+    void registroConContrasenaDebilEsRechazado() {
+        // Arrange
+        var request = new RegisterRequest("Carlos", "Ruiz", "carlos@mail.com", "abc");
+        when(userRepo.findByEmail("carlos@mail.com")).thenReturn(Optional.empty());
+
+        // Act - Assert
+        assertThrows(IllegalArgumentException.class, () -> authService.register(request));
+        verify(userRepo, never()).save(any());
+    }
+
+    // HU01 Scenario 4
+    @Test
+    void registroConNombreVacioEsRechazado() {
+        // Arrange
+        var request = new RegisterRequest("", "Ruiz", "carlos@mail.com", "Segura@123");
+
+        // Act - Assert
+        assertThrows(IllegalArgumentException.class, () -> authService.register(request));
+        verify(userRepo, never()).save(any());
+    }
 }

@@ -153,4 +153,26 @@ class CreateMemberHomeUseCaseTest {
             useCase.updateRoleMemberHome("Los García", "noexiste@mail.com", "Miembro", "ana@mail.com")
         );
     }
+
+    // HU11 Scenario 3 — el único administrador no puede quitarse su propio rol
+    @Test
+    void unicoAdminNoPuedeQuitarseElRol() {
+        // Arrange
+        MemberHomeDto membresiaAdmin = new MemberHomeDto(
+            homeId.toString(), adminId.toString(),
+            "Ana", "López", "Los García", "ana@mail.com",
+            adminRoleId, true
+        );
+
+        when(homeRepositoryPort.getHomeByName("Los García")).thenReturn(Optional.of(home));
+        when(personRepositoryPort.getUserByEmail("ana@mail.com")).thenReturn(Optional.of(admin));
+        when(roleRepositoryPort.getRoleByName("Miembro")).thenReturn(Optional.of(newRole));
+        when(memberHomeRepositoryPort.getMemberHome(adminId, homeId)).thenReturn(Optional.of(membresiaAdmin));
+        when(roleRepositoryPort.getRoleByName("Administrador")).thenReturn(Optional.of(adminRole));
+
+        // Act - Assert
+        assertThrows(PersistenceException.class, () ->
+            useCase.updateRoleMemberHome("Los García", "ana@mail.com", "Miembro", "ana@mail.com")
+        );
+    }
 }
