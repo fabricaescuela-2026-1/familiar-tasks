@@ -26,7 +26,7 @@ public class UserQueueService implements UserQueuePort {
         .userId(user.getUserId())
         .name(user.getName())
         .lastname(user.getLastname())
-        .email(user.getLastname())
+        .email(user.getEmail())
         .passwordHash(user.getPasswordHash())
         .createdAt(user.getCreatedAt())
         .build();
