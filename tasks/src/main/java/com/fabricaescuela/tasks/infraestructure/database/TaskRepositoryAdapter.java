@@ -42,6 +42,36 @@ public class TaskRepositoryAdapter implements TaskRepositoryPort {
   }
 
   @Override
+  public Task update(UUID taskId, Task task) {
+    var existingTask = taskRepository.findById(taskId)
+        .orElseThrow(() -> new IllegalArgumentException("Task not found: " + taskId));
+
+    var priorityEntity = priorityRepository.findByName(task.getPriority())
+        .orElseThrow(() -> new PriorityNotFoundException(task.getPriority()));
+    var statusEntity = statusRepository.findByName(task.getStatus())
+        .orElseThrow(() -> new StatusNotFoundException(task.getStatus()));
+
+    existingTask.setName(task.getName());
+    existingTask.setDescription(task.getDescription());
+    existingTask.setDeadline(task.getDeadline());
+    existingTask.setHomeId(task.getHomeId());
+    existingTask.setGuestId(task.getGuestId());
+    existingTask.setPriority(priorityEntity);
+    existingTask.setStatus(statusEntity);
+
+    var updatedTask = taskRepository.save(existingTask);
+    return TaskEntityMapper.toDomain(updatedTask);
+  }
+
+  @Override
+  public void delete(UUID taskId) {
+    if (!taskRepository.existsById(taskId)) {
+      throw new IllegalArgumentException("Task not found: " + taskId);
+    }
+    taskRepository.deleteById(taskId);
+  }
+
+  @Override
   public List<Task> findAll() {
     var tasks = taskRepository.findAll();
     return tasks.stream().map(TaskEntityMapper::toDomain).toList();

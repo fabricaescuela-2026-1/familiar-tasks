@@ -24,7 +24,7 @@ import lombok.Setter;
 @Builder
 public class TaskEntity {
   @Id
-  @Column(name = "task_id", nullable = false, unique = true, columnDefinition = "task_id UUID PRIMARY KEY DEFAULT gen_random_uuid()")
+  @Column(name = "task_id", nullable = false, unique = true)
   private UUID taskId;
 
   @Column(nullable = false, length = 100)
@@ -47,7 +47,7 @@ public class TaskEntity {
   @Column(name = "guest_id")
   private UUID guestId;
 
-  @Column(name = "created_at", columnDefinition = "created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
+  @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
   private LocalDateTime createdAt;
 
   @Column(nullable = false)
