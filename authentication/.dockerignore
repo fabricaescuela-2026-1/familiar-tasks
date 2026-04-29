@@ -1,0 +1,36 @@
+# Control de versiones
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.iml
+
+# Build
+target/
+build/
+*.class
+*.jar
+*.war
+*.ear
+.gradle/
+
+# Maven
+.m2/
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log
+
+# Documentación (opcional, si ocupas espacio)
+*.md
+
+# Otros
+node_modules/
+npm-debug.log

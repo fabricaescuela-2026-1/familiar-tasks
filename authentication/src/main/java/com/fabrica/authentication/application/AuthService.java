@@ -10,9 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fabrica.authentication.application.dto.AuthResponse;
 import com.fabrica.authentication.application.dto.LoginRequest;
 import com.fabrica.authentication.application.dto.RegisterRequest;
+import com.fabrica.authentication.application.dto.TokenResponse;
 import com.fabrica.authentication.application.ports.in.AuthUseCase;
+import com.fabrica.authentication.application.ports.out.UserQueuePort;
 import com.fabrica.authentication.domain.exceptions.EmailAlreadyExitsException;
 import com.fabrica.authentication.domain.exceptions.InvalidRefreshTokenException;
+import com.fabrica.authentication.domain.exceptions.InvalidTokenException;
 import com.fabrica.authentication.domain.exceptions.UserNotFoundException;
 import com.fabrica.authentication.domain.model.Token;
 import com.fabrica.authentication.domain.model.User;
@@ -32,6 +35,7 @@ public class AuthService implements AuthUseCase {
   private final TokenRepositoryPort tokenRepo;
   private final UserRepositoryPort userRepo;
   private final PasswordEncoder passwordEncoder;
+  private final UserQueuePort userQueuePort;
 
   @Override
   public AuthResponse register(RegisterRequest req) {
@@ -57,6 +61,7 @@ public class AuthService implements AuthUseCase {
     tokenRepo.save(refreshToken);
 
     log.info("Registration complete");
+    userQueuePort.sendUserMessage(user);
     return new AuthResponse(accessToken.getTokenHash(), refreshToken.getTokenHash());
   }
 
@@ -92,6 +97,21 @@ public class AuthService implements AuthUseCase {
     Token newAccessToken = jwtService.generateAccesToken(token.getUser());
     tokenRepo.save(newAccessToken);
     return new AuthResponse(newAccessToken.getTokenHash(), token.getTokenHash());
+  }
+
+  @Override
+  public TokenResponse getToken(String tokenHash) {
+    Token token = tokenRepo.findByHash(tokenHash)
+        .orElseThrow(InvalidTokenException::new);
+
+    return TokenResponse.builder()
+        .tokenId(token.getTokenId())
+        .tokenHash(token.getTokenHash())
+        .expirationDate(token.getExpirationDate())
+        .userId(token.getUser().getUserId())
+        .tokenType(token.getTokenType())
+        .expiratedAt(token.getExpiratedAt())
+        .build();
   }
 
 }

@@ -5,12 +5,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fabrica.authentication.application.dto.AuthResponse;
 import com.fabrica.authentication.application.dto.LoginRequest;
 import com.fabrica.authentication.application.dto.RegisterRequest;
+import com.fabrica.authentication.application.dto.TokenResponse;
 import com.fabrica.authentication.application.ports.in.AuthUseCase;
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,5 +37,10 @@ public class AuthController {
   @PostMapping("/refresh")
   public ResponseEntity<AuthResponse> refresh(@RequestBody String refreshToken) {
     return new ResponseEntity<>(authUseCase.refreshToken(refreshToken), HttpStatus.OK);
+  }
+
+  @GetMapping("/token/{tokenHash}")
+  public ResponseEntity<TokenResponse> getToken(@PathVariable("tokenHash") String tokenHash) {
+    return ResponseEntity.ok(authUseCase.getToken(tokenHash));
   }
 }
