@@ -25,13 +25,6 @@ public class AuthClient {
     @Value("${auth.service.url}")
     private String authServiceUrl;
 
-    /**
-     * Refresca el token de acceso usando el refresh token
-     * 
-     * @param refreshToken Token de refresco obtenido durante la autenticación
-     * @return AuthRefreshResponse con el nuevo accessToken y refreshToken
-     * @throws RuntimeException si el refresco falla
-     */
     public AuthRefreshResponse refreshAccessToken(String refreshToken) {
         try {
             String refreshUrl = authServiceUrl + "/auth/refresh";
