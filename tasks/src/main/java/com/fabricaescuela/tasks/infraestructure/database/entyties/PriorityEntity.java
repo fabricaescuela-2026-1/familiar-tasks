@@ -21,7 +21,7 @@ import lombok.Setter;
 @Builder
 public class PriorityEntity {
   @Id
-  @Column(name = "priority_id", nullable = false, columnDefinition = " priority_id UUID PRIMARY KEY DEFAULT gen_random_uuid()")
+  @Column(name = "priority_id", nullable = false)
   private UUID priorityId;
   @Column(name = "name", nullable = false)
   private String name;

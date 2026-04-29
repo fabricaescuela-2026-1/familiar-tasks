@@ -1,6 +1,7 @@
 package com.fabricaescuela.tasks.application;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.fabricaescuela.tasks.domain.exceptions.UserNotValidException;
 import com.fabricaescuela.tasks.domain.ports.out.UserValidationPort;
@@ -24,6 +25,7 @@ public class TaskService implements TaskUseCasePort {
   @Override
   public Task create(Task task) {
     TaskValidator.validate(task);
+    TaskValidator.validateUserIds(task);
     boolean isValid = userValidation.validateUserInHome(
         task.getGuestId(),
         task.getHomeId());
@@ -33,6 +35,26 @@ public class TaskService implements TaskUseCasePort {
           "User not found in the specified home");
     }
     return repository.save(task);
+  }
+
+  @Override
+  public Task update(UUID taskId, Task task) {
+    TaskValidator.validate(task);
+    TaskValidator.validateUserIds(task);
+    boolean isValid = userValidation.validateUserInHome(
+        task.getGuestId(),
+        task.getHomeId());
+
+    if (!isValid) {
+      throw new UserNotValidException(
+          "User not found in the specified home");
+    }
+    return repository.update(taskId, task);
+  }
+
+  @Override
+  public void delete(UUID taskId) {
+    repository.delete(taskId);
   }
 
   @Override

@@ -21,7 +21,7 @@ import lombok.Setter;
 @Builder
 public class StatusEntity {
   @Id
-  @Column(name = "status_id", nullable = false, columnDefinition = " status_id UUID PRIMARY KEY DEFAULT gen_random_uuid()")
+  @Column(name = "status_id", nullable = false)
   private UUID statusId;
 
   @Column(name = "name", nullable = false, length = 50)
