@@ -39,7 +39,7 @@ public class MemberHomePersistenceAdapter implements IMemberHomeRepositoryPort {
     public void saveMemberHome(UUID homeId, UUID personId, UUID rol) {
         MemberHomeJpaEntity savedMemberHome = repository.save(mapper.toEntity(homeId, personId, rol));
         if (savedMemberHome == null) {
-            throw new RuntimeException("Error saving member home");
+            throw new IllegalStateException("Error saving member home");
         }
     }
 

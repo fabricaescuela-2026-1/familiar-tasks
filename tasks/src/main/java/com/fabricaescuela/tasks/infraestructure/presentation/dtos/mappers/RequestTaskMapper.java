@@ -4,6 +4,9 @@ import com.fabricaescuela.tasks.domain.model.Task;
 import com.fabricaescuela.tasks.infraestructure.presentation.dtos.RequestTask;
 
 public class RequestTaskMapper {
+
+  private RequestTaskMapper() {}
+
   public static Task toDomain(RequestTask request) {
     return Task.builder()
         .name(request.getName())

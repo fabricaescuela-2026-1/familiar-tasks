@@ -23,7 +23,7 @@ public class RolePersistenceAdapter implements IRoleRepositoryPort {
     public void saveRole(Role role) {
         var savedRole = repository.save(mapper.toEntity(role));
         if (savedRole == null) {
-            throw new RuntimeException("Error saving role");
+            throw new IllegalStateException("Error saving role");
         }
     }
 

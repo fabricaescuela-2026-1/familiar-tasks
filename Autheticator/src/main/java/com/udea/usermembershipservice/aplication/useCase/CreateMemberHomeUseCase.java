@@ -96,7 +96,7 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
             var roleIdAdmin = roleRepositoryPort.getRoleByName("Administrador").orElseThrow(() -> new RuntimeException("Admin role not found"));
 
             if (!adminRole.roleId().equals(roleIdAdmin.getIdRole())) {
-                throw new RuntimeException("User is not an admin of the home");
+                throw new IllegalArgumentException("User is not an admin of the home");
             }
 
             if (person.getIdPerson().equals(admin.getIdPerson())) {
@@ -104,7 +104,7 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
                         .filter(m -> m.roleId().equals(roleIdAdmin.getIdRole()))
                         .count();
                 if (adminCount <= 1) {
-                    throw new RuntimeException("Cannot remove the only administrator of the home");
+                    throw new IllegalArgumentException("Cannot remove the only administrator of the home");
                 }
             }
 

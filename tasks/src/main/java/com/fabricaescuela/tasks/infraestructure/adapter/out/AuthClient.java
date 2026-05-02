@@ -44,14 +44,16 @@ public class AuthClient {
                 log.info("Token refrescado exitosamente");
                 return response.getBody();
             } else {
-                throw new RuntimeException("Falló al refrescar el token: respuesta vacía");
+                throw new IllegalStateException("Falló al refrescar el token: respuesta vacía");
             }
         } catch (RestClientException e) {
             log.severe("Error al conectar con el servicio de autenticación: " + e.getMessage());
-            throw new RuntimeException("No se pudo refrescar el token: servicio de autenticación no disponible", e);
+            throw new IllegalStateException("No se pudo refrescar el token: servicio de autenticación no disponible", e);
+        } catch (IllegalStateException e) {
+            throw e;
         } catch (Exception e) {
             log.severe("Error inesperado al refrescar el token: " + e.getMessage());
-            throw new RuntimeException("Error al refrescar el token", e);
+            throw new IllegalStateException("Error al refrescar el token", e);
         }
     }
 }

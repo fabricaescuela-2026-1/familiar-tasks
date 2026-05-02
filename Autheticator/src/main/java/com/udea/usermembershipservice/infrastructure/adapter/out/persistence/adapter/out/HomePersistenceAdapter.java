@@ -23,7 +23,7 @@ public class HomePersistenceAdapter implements IHomeRepositoryPort {
     public void saveHome(Home home) {
         var savedHome = repository.save(mapper.toEntity(home));
         if (savedHome == null) {
-            throw new RuntimeException("Error saving home");
+            throw new IllegalStateException("Error saving home");
         }
     }
 

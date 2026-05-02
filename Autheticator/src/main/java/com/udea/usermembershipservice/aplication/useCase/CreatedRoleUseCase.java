@@ -26,11 +26,11 @@ public class CreatedRoleUseCase implements ICreateRoleUseCase {
     public void createdRole(CreateRoleDto createRoleDto, String gmail) {
         try {
             if (roleRepositoryPort.getRoleByName(createRoleDto.name()).isPresent()) {
-                throw new RuntimeException("Role with this name already exists");
+                throw new IllegalArgumentException("Role with this name already exists");
             }
 
             if(personRepositoryPort.getUserByEmail(gmail).isEmpty()) {
-                throw new RuntimeException("User not registered");
+                throw new IllegalArgumentException("User not registered");
             }
 
             Role role = Role.create(UUID.randomUUID(), createRoleDto.name());

@@ -36,11 +36,10 @@ public class CreatedUserUseCase implements ICreateUserUseCase{
             if(userRepositoryPort.getUserByEmail(createUserDto.email()).isEmpty()) {
                 
             String passwordEncoder = passwordEncoderport.encode(createUserDto.password());
-            Person person = Person.create(createUserDto.name(), createUserDto.lastName(), createUserDto.email(), createUserDto.password(), createdAt, true);
             Person savedPerson = Person.create(createUserDto.name(), createUserDto.lastName(), createUserDto.email(), passwordEncoder, createdAt, true);
             userRepositoryPort.saveUser(savedPerson);
             }else {
-                throw new RuntimeException("Person with this email already exists");
+                throw new IllegalArgumentException("Person with this email already exists");
             }
         } catch (Exception e) {
             throw new PersistenceException("Error saving person", e);
