@@ -16,6 +16,10 @@ import com.udea.usermembershipservice.aplication.useCase.exception.SearchExcepti
 
 public class CreateMemberHomeUseCase implements ICreatedMemberHome{
 
+    private static final String HOME_NOT_FOUND = "Home not found";
+    private static final String PERSON_NOT_FOUND = "Person not found";
+    private static final String ROLE_NOT_FOUND = "Role not found";
+
     IHomeRepositoryPort homeRepositoryPort;
     IPersonRepositoryPort personRepositoryPort;
     IRoleRepositoryPort roleRepositoryPort;
@@ -32,9 +36,9 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
     @Override
     public void createdMemberHome(String gmail, String rol, String nameHogar) {
         try {
-            var home = homeRepositoryPort.getHomeByName(nameHogar).orElseThrow(() -> new RuntimeException("Home not found"));
-        var person = personRepositoryPort.getUserByEmail(gmail).orElseThrow(() -> new RuntimeException("Person not found"));
-        var role = roleRepositoryPort.getRoleByName(rol).orElseThrow(() -> new RuntimeException("Role not found"));
+            var home = homeRepositoryPort.getHomeByName(nameHogar).orElseThrow(() -> new RuntimeException(HOME_NOT_FOUND));
+        var person = personRepositoryPort.getUserByEmail(gmail).orElseThrow(() -> new RuntimeException(PERSON_NOT_FOUND));
+        var role = roleRepositoryPort.getRoleByName(rol).orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND));
 
         memberHomeRepositoryPort.saveMemberHome(home.getIdHome(), person.getIdPerson(), role.getIdRole());
         } catch (Exception e) {
@@ -46,8 +50,8 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
     @Override
     public void deleteMemberHome(String nameHome, String gmail) {       
         try {
-            var home = homeRepositoryPort.getHomeByName(nameHome).orElseThrow(() -> new RuntimeException("Home not found"));
-        var person = personRepositoryPort.getUserByEmail(gmail).orElseThrow(() -> new RuntimeException("Person not found"));
+            var home = homeRepositoryPort.getHomeByName(nameHome).orElseThrow(() -> new RuntimeException(HOME_NOT_FOUND));
+        var person = personRepositoryPort.getUserByEmail(gmail).orElseThrow(() -> new RuntimeException(PERSON_NOT_FOUND));
 
         memberHomeRepositoryPort.deleteMemberHome(home.getIdHome(), person.getIdPerson());
         } catch (Exception e) {
@@ -70,7 +74,7 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
     @Override
     public List<MemberDto> getAllMemberHome(String nameHome) {
         try {
-            var home = homeRepositoryPort.getHomeByName(nameHome).orElseThrow(() -> new RuntimeException("Home not found"));
+            var home = homeRepositoryPort.getHomeByName(nameHome).orElseThrow(() -> new RuntimeException(HOME_NOT_FOUND));
             var members = memberHomeRepositoryPort.getAllMemberHome(home.getIdHome());
         
         return members;
@@ -83,16 +87,25 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
     @Override
     public void updateRoleMemberHome(String nameHome, String gmail, String newRol, String gmailAdmin) {
         try {
-            var home = homeRepositoryPort.getHomeByName(nameHome).orElseThrow(() -> new RuntimeException("Home not found"));
-            var person = personRepositoryPort.getUserByEmail(gmail).orElseThrow(() -> new RuntimeException("Person not found"));
-            var role = roleRepositoryPort.getRoleByName(newRol).orElseThrow(() -> new RuntimeException("Role not found"));
+            var home = homeRepositoryPort.getHomeByName(nameHome).orElseThrow(() -> new RuntimeException(HOME_NOT_FOUND));
+            var person = personRepositoryPort.getUserByEmail(gmail).orElseThrow(() -> new RuntimeException(PERSON_NOT_FOUND));
+            var role = roleRepositoryPort.getRoleByName(newRol).orElseThrow(() -> new RuntimeException(ROLE_NOT_FOUND));
             var admin = personRepositoryPort.getUserByEmail(gmailAdmin).orElseThrow(() -> new RuntimeException("Admin not found"));
             var adminRole = memberHomeRepositoryPort.getMemberHome(admin.getIdPerson(), home.getIdHome()).orElseThrow(() -> new RuntimeException("Admin is not a member of the home"));
 
             var roleIdAdmin = roleRepositoryPort.getRoleByName("Administrador").orElseThrow(() -> new RuntimeException("Admin role not found"));
 
-           if(!adminRole.roleId().equals(roleIdAdmin.getIdRole())) {
+            if (!adminRole.roleId().equals(roleIdAdmin.getIdRole())) {
                 throw new RuntimeException("User is not an admin of the home");
+            }
+
+            if (person.getIdPerson().equals(admin.getIdPerson())) {
+                long adminCount = memberHomeRepositoryPort.getAllMemberHome(home.getIdHome()).stream()
+                        .filter(m -> m.roleId().equals(roleIdAdmin.getIdRole()))
+                        .count();
+                if (adminCount <= 1) {
+                    throw new RuntimeException("Cannot remove the only administrator of the home");
+                }
             }
 
             memberHomeRepositoryPort.updateRoleMemberHome(home.getIdHome(), person.getIdPerson(), role.getIdRole());

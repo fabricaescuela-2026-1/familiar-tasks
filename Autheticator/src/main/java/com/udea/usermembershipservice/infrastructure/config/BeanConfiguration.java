@@ -121,9 +121,12 @@ public class BeanConfiguration {
     @Bean
     public ICreateHomeUseCase createHomeUseCase(
             IHomeRepositoryPort homeRepositoryPort,
-            ILoginUserCase loginUserCase
+            ILoginUserCase loginUserCase,
+            IPersonRepositoryPort personRepositoryPort,
+            IRoleRepositoryPort roleRepositoryPort,
+            IMemberHomeRepositoryPort memberHomeRepositoryPort
     ) {
-        return new CreatedHomeUseCase(homeRepositoryPort, loginUserCase);
+        return new CreatedHomeUseCase(homeRepositoryPort, loginUserCase, personRepositoryPort, roleRepositoryPort, memberHomeRepositoryPort);
     }
 
     @Bean

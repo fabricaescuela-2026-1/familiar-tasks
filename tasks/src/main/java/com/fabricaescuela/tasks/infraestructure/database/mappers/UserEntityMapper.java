@@ -5,6 +5,8 @@ import com.fabricaescuela.tasks.infraestructure.database.entyties.UserEntity;
 
 public class UserEntityMapper {
 
+    private UserEntityMapper() {}
+
     public static User toDomain(UserEntity entity) {
         return User.builder()
                 .userId(entity.getUserId())

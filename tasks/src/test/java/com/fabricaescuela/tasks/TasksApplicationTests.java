@@ -10,6 +10,7 @@ class TasksApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// requiere PostgreSQL — cubierto en pruebas de integración
 	}
 
 }

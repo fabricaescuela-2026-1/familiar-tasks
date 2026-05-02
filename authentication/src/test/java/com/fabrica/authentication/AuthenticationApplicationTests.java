@@ -10,6 +10,7 @@ class AuthenticationApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// requiere PostgreSQL — cubierto en pruebas de integración
 	}
 
 }

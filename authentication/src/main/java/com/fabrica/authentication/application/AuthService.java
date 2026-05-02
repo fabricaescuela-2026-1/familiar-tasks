@@ -39,7 +39,12 @@ public class AuthService implements AuthUseCase {
 
   @Override
   public AuthResponse register(RegisterRequest req) {
-    // TODO: validate request
+    if (req.name() == null || req.name().isBlank()) {
+      throw new IllegalArgumentException("Name is required");
+    }
+    if (req.password() == null || req.password().length() < 8) {
+      throw new IllegalArgumentException("Password must be at least 8 characters");
+    }
 
     if (userRepo.findByEmail(req.email()).isPresent()) {
       throw new EmailAlreadyExitsException(req.email());
