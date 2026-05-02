@@ -8,6 +8,9 @@ import java.util.UUID;
 import com.udea.usermembershipservice.aplication.port.in.ICreateHomeUseCase;
 import com.udea.usermembershipservice.aplication.port.in.ILoginUserCase;
 import com.udea.usermembershipservice.aplication.port.out.IHomeRepositoryPort;
+import com.udea.usermembershipservice.aplication.port.out.IMemberHomeRepositoryPort;
+import com.udea.usermembershipservice.aplication.port.out.IPersonRepositoryPort;
+import com.udea.usermembershipservice.aplication.port.out.IRoleRepositoryPort;
 import com.udea.usermembershipservice.aplication.useCase.dto.home.CreateHomeDto;
 import com.udea.usermembershipservice.aplication.useCase.dto.home.HomeDto;
 import com.udea.usermembershipservice.aplication.useCase.dto.login.LoginDto;
@@ -19,10 +22,18 @@ public class CreatedHomeUseCase implements ICreateHomeUseCase {
 
     private final IHomeRepositoryPort homeRepositoryPort;
     private final ILoginUserCase loginUserCase;
+    private final IPersonRepositoryPort personRepositoryPort;
+    private final IRoleRepositoryPort roleRepositoryPort;
+    private final IMemberHomeRepositoryPort memberHomeRepositoryPort;
 
-    public CreatedHomeUseCase(IHomeRepositoryPort homeRepositoryPort, ILoginUserCase loginUserCase) {
+    public CreatedHomeUseCase(IHomeRepositoryPort homeRepositoryPort, ILoginUserCase loginUserCase,
+            IPersonRepositoryPort personRepositoryPort, IRoleRepositoryPort roleRepositoryPort,
+            IMemberHomeRepositoryPort memberHomeRepositoryPort) {
         this.homeRepositoryPort = homeRepositoryPort;
         this.loginUserCase = loginUserCase;
+        this.personRepositoryPort = personRepositoryPort;
+        this.roleRepositoryPort = roleRepositoryPort;
+        this.memberHomeRepositoryPort = memberHomeRepositoryPort;
     }
 
     @Override
@@ -42,6 +53,12 @@ public class CreatedHomeUseCase implements ICreateHomeUseCase {
             );
 
             homeRepositoryPort.saveHome(home);
+
+            var creator = personRepositoryPort.getUserByEmail(createHomeDto.gmail())
+                    .orElseThrow(() -> new RuntimeException("Creator not found"));
+            var adminRole = roleRepositoryPort.getRoleByName("Administrador")
+                    .orElseThrow(() -> new RuntimeException("Admin role not found"));
+            memberHomeRepositoryPort.saveMemberHome(home.getIdHome(), creator.getIdPerson(), adminRole.getIdRole());
             }else{
                 throw new RuntimeException("Invalid login credentials");
             }

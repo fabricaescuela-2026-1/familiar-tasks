@@ -144,7 +144,6 @@ class PersonTest {
     }
 
     // HU02 Scenario 3 — sin caracteres especiales debe ser rechazada
-    // GAP: el código valida dígito en lugar de carácter especial
     @Test
     void contrasenaSinCaracterEspecialEsRechazada() {
         // Arrange
@@ -175,7 +174,6 @@ class PersonTest {
     }
 
     // HU02 Scenario 2 — valor límite en changePassword: 7 chars es inválido según HU
-    // GAP: changePassword acepta desde 6 chars; la HU exige mínimo 8
     @Test
     void cambiarContrasenaCon7CaracteresEsRechazada() {
         // Arrange
@@ -187,7 +185,6 @@ class PersonTest {
     }
 
     // HU02 Scenario 3 — sin caracteres especiales debe ser rechazada en changePassword
-    // GAP: el código valida dígito en lugar de carácter especial
     @Test
     void cambiarContrasenaSinCaracterEspecialEsRechazada() {
         // Arrange

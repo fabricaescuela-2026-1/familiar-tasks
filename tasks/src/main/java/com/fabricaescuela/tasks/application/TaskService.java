@@ -24,6 +24,9 @@ public class TaskService implements TaskUseCasePort {
 
   @Override
   public Task create(Task task) {
+    if (task.getStatus() == null) {
+      task.setStatus("PENDIENTE");
+    }
     TaskValidator.validate(task);
     TaskValidator.validateUserIds(task);
     boolean isValid = userValidation.validateUserInHome(

@@ -8,6 +8,7 @@ import com.fabrica.authentication.domain.exceptions.InvalidRefreshTokenException
 import com.fabrica.authentication.domain.exceptions.UserNotFoundException;
 import com.fabrica.authentication.domain.model.Token;
 import com.fabrica.authentication.domain.model.User;
+import com.fabrica.authentication.application.ports.out.UserQueuePort;
 import com.fabrica.authentication.domain.ports.out.JwtServicePort;
 import com.fabrica.authentication.domain.ports.out.TokenRepositoryPort;
 import com.fabrica.authentication.domain.ports.out.UserRepositoryPort;
@@ -32,6 +33,7 @@ class AuthServiceTest {
     @Mock private TokenRepositoryPort tokenRepo;
     @Mock private UserRepositoryPort userRepo;
     @Mock private PasswordEncoder passwordEncoder;
+    @Mock private UserQueuePort userQueuePort;
 
     @InjectMocks
     private AuthService authService;
@@ -157,7 +159,6 @@ class AuthServiceTest {
     void registroConContrasenaDebilEsRechazado() {
         // Arrange
         var request = new RegisterRequest("Carlos", "Ruiz", "carlos@mail.com", "abc");
-        when(userRepo.findByEmail("carlos@mail.com")).thenReturn(Optional.empty());
 
         // Act - Assert
         assertThrows(IllegalArgumentException.class, () -> authService.register(request));
