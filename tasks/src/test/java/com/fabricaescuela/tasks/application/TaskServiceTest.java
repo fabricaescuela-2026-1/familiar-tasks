@@ -91,4 +91,27 @@ class TaskServiceTest {
         assertThrows(UserNotValidException.class, () -> taskService.create(tarea));
         verify(repository, never()).save(any());
     }
+
+    // HU13 Scenario 1 — la tarea creada sin estado explícito recibe PENDIENTE por defecto
+    @Test
+    void tareaCreadaSinEstadoUsaPendientePorDefecto() {
+        // Arrange
+        Task tarea = Task.builder()
+                .name("Barrer patio")
+                .description("Barrer hojas del patio trasero")
+                .priority("MEDIA")
+                .deadline(LocalDateTime.now().plusDays(2))
+                .homeId(UUID.randomUUID())
+                .guestId(UUID.randomUUID())
+                .build();
+
+        when(userValidation.validateUserInHome(any(), any())).thenReturn(true);
+        when(repository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        // Act
+        Task resultado = assertDoesNotThrow(() -> taskService.create(tarea));
+
+        // Assert
+        assertEquals("PENDIENTE", resultado.getStatus());
+    }
 }
