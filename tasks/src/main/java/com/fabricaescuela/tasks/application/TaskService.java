@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.fabricaescuela.tasks.domain.exceptions.UserNotValidException;
+import com.fabricaescuela.tasks.domain.ports.out.TaskAuditLogPort;
 import com.fabricaescuela.tasks.domain.ports.out.UserValidationPort;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +17,12 @@ import com.fabricaescuela.tasks.domain.ports.out.TaskRepositoryPort;
 public class TaskService implements TaskUseCasePort {
   private final TaskRepositoryPort repository;
   private final UserValidationPort userValidation;
+  private final TaskAuditLogPort auditLog;
 
-  public TaskService(TaskRepositoryPort repository, UserValidationPort userValidation) {
+  public TaskService(TaskRepositoryPort repository, UserValidationPort userValidation, TaskAuditLogPort auditLog) {
     this.repository = repository;
     this.userValidation = userValidation;
+    this.auditLog = auditLog;
   }
 
   @Override
@@ -37,7 +40,9 @@ public class TaskService implements TaskUseCasePort {
       throw new UserNotValidException(
           "User not found in the specified home");
     }
-    return repository.save(task);
+    Task saved = repository.save(task);
+    auditLog.publishTaskCreated(saved.getGuestId(), saved.getTaskId());
+    return saved;
   }
 
   @Override
