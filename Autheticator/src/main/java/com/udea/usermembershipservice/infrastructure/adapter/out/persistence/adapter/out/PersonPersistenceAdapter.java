@@ -1,6 +1,5 @@
 package com.udea.usermembershipservice.infrastructure.adapter.out.persistence.adapter.out;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,11 +27,6 @@ public class PersonPersistenceAdapter implements IPersonRepositoryPort {
     }
 
     @Override
-    public List<Person> getAllUsers() {
-        return repository.findAll().stream().map(mapper::toDomain).toList();
-    }
-
-    @Override
     public Optional<Person> getUserByEmail(String email) {
         return repository.findByEmail(email).map(mapper::toDomain);
     }
@@ -41,12 +35,4 @@ public class PersonPersistenceAdapter implements IPersonRepositoryPort {
     public Optional<Person> getUserById(UUID idPerson) {
         return repository.findById(idPerson).map(mapper::toDomain);
     }
-
-    @Override
-    public void deleteUser(String email) {
-        var person = repository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        repository.deleteById(person.getId());
-    }
-
 }

@@ -8,28 +8,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.udea.usermembershipservice.aplication.useCase.exception.LoginException;
 import com.udea.usermembershipservice.aplication.useCase.exception.PersistenceException;
 import com.udea.usermembershipservice.aplication.useCase.exception.SearchException;
 import com.udea.usermembershipservice.domain.exception.InvalidDataException;
-import com.udea.usermembershipservice.domain.exception.InvalidEmailException;
-import com.udea.usermembershipservice.domain.exception.InvalidPasswordException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({
-        InvalidDataException.class,
-        InvalidEmailException.class,
-        InvalidPasswordException.class
-    })
+    @ExceptionHandler(InvalidDataException.class)
     public ResponseEntity<ApiErrorResponseDto> handleBadRequest(RuntimeException ex) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
-
-    @ExceptionHandler(LoginException.class)
-    public ResponseEntity<ApiErrorResponseDto> handleUnauthorized(LoginException ex) {
-        return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
     @ExceptionHandler(SearchException.class)
