@@ -178,6 +178,50 @@ class AuthServiceTest {
         verify(userRepo, never()).save(any());
     }
 
+    // HU01 Scenario 4 — email es campo obligatorio
+    @Test
+    void registroConEmailNuloEsRechazado() {
+        // Arrange
+        var request = new RegisterRequest("Carlos", "Ruiz", null, "Segura@123");
+
+        // Act - Assert
+        assertThrows(IllegalArgumentException.class, () -> authService.register(request));
+        verify(userRepo, never()).save(any());
+    }
+
+    // HU01 Scenario 4 — apellido es campo obligatorio
+    @Test
+    void registroConApellidoVacioEsRechazado() {
+        // Arrange
+        var request = new RegisterRequest("Carlos", "", "carlos@mail.com", "Segura@123");
+
+        // Act - Assert
+        assertThrows(IllegalArgumentException.class, () -> authService.register(request));
+        verify(userRepo, never()).save(any());
+    }
+
+    // HU01/HU02 Scenario 3 — contraseña sin caracteres especiales debe ser rechazada
+    @Test
+    void registroConContrasenaSinCaracterEspecialEsRechazado() {
+        // Arrange
+        var request = new RegisterRequest("Carlos", "Ruiz", "carlos@mail.com", "sinEspecial8");
+
+        // Act - Assert
+        assertThrows(IllegalArgumentException.class, () -> authService.register(request));
+        verify(userRepo, never()).save(any());
+    }
+
+    // HU02 Scenario 1 — contraseña sin mayúscula debe ser rechazada
+    @Test
+    void registroConContrasenaSinMayusculaEsRechazado() {
+        // Arrange
+        var request = new RegisterRequest("Carlos", "Ruiz", "carlos@mail.com", "segura@123");
+
+        // Act - Assert
+        assertThrows(IllegalArgumentException.class, () -> authService.register(request));
+        verify(userRepo, never()).save(any());
+    }
+
     // HU01 — obtener token activo por hash
     @Test
     void obtenerTokenPorHashExistenteRetornaTokenResponse() {

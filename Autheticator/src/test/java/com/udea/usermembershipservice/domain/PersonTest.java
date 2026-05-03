@@ -155,6 +155,27 @@ class PersonTest {
         );
     }
 
+    // HU02 Scenario 1 — la HU exige mayúsculas; contraseña sin mayúscula debe ser rechazada
+    @Test
+    void contrasenaSinMayusculaEsRechazada() {
+        // Arrange
+        String sinMayuscula = "segura@123";
+
+        // Act - Assert
+        assertThrows(InvalidPasswordException.class, () ->
+            Person.create("Ana", "López", "ana@mail.com", sinMayuscula, ahora, true)
+        );
+    }
+
+    // HU01 Scenario 4 — apellido vacío no debe ser aceptado
+    @Test
+    void apellidoVacioLanzaExcepcion() {
+        // Arrange - Act - Assert
+        assertThrows(InvalidDataException.class, () ->
+            Person.create("Ana", "   ", "ana@mail.com", "Segura@123", ahora, true)
+        );
+    }
+
     @Test
     void cambiarEmailInvalidoLanzaExcepcion() {
         // Arrange
