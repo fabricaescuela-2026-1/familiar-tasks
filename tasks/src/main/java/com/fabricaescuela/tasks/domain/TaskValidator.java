@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import com.fabricaescuela.tasks.domain.model.Task;
 
 public class TaskValidator {
+
+  private TaskValidator() {}
+
   public static void validate(Task task) {
     if (task.getName() == null || task.getName().isBlank()) {
       throw new IllegalArgumentException("Name is required");

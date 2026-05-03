@@ -37,44 +37,20 @@ public class JwtTokenValidator extends OncePerRequestFilter{
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)throws ServletException, IOException {
-
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
             String jwtToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-            if(jwtToken != null && jwtToken.startsWith("Bearer ")){
+            if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
                 jwtToken = jwtToken.substring(7);
-
                 Claims claims = null;
-                
-                // Intentar validar el token
+
                 try {
                     claims = jwtUtils.validateToken(jwtToken);
                 } catch (ExpiredJwtException e) {
-                    // Token expirado - intentar refrescar
                     log.info("Token expirado, intentando refrescar...");
-                    String refreshToken = request.getHeader("X-Refresh-Token");
-                    
-                    if (refreshToken != null && !refreshToken.isEmpty()) {
-                        try {
-                            AuthRefreshResponse newTokens = authClient.refreshAccessToken(refreshToken);
-                            log.info("Token refrescado exitosamente");
-                            
-                            // Obtener claims del nuevo token
-                            claims = jwtUtils.validateToken(newTokens.getAccessToken());
-                            
-                            // Actualizar el header de respuesta con el nuevo token
-                            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newTokens.getAccessToken());
-                            response.setHeader("X-Refresh-Token", newTokens.getRefreshToken());
-                            
-                        } catch (Exception refreshError) {
-                            log.severe("Error al refrescar el token: " + refreshError.getMessage());
-                            // Continuar sin autenticación
-                            filterChain.doFilter(request, response);
-                            return;
-                        }
-                    } else {
-                        log.warning("Token expirado y no se proporciono refresh token");
+                    claims = tryRefreshToken(request.getHeader("X-Refresh-Token"), response);
+                    if (claims == null) {
                         filterChain.doFilter(request, response);
                         return;
                     }
@@ -84,7 +60,6 @@ public class JwtTokenValidator extends OncePerRequestFilter{
                     String username = jwtUtils.extractUsername(claims);
                     String roles = jwtUtils.getSpecificClaim(claims, "roles");
                     Collection<? extends GrantedAuthority> authorities = AuthorityUtils.commaSeparatedStringToAuthorityList(roles);
-
                     SecurityContext context = SecurityContextHolder.getContext();
                     Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
                     context.setAuthentication(authentication);
@@ -94,9 +69,26 @@ public class JwtTokenValidator extends OncePerRequestFilter{
         } catch (Exception e) {
             log.severe("Error validating JWT: " + e.getMessage());
         }
-        
-        filterChain.doFilter(request, response);
 
+        filterChain.doFilter(request, response);
+    }
+
+    private Claims tryRefreshToken(String refreshToken, HttpServletResponse response) {
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            log.warning("Token expirado y no se proporciono refresh token");
+            return null;
+        }
+        try {
+            AuthRefreshResponse newTokens = authClient.refreshAccessToken(refreshToken);
+            log.info("Token refrescado exitosamente");
+            Claims claims = jwtUtils.validateToken(newTokens.getAccessToken());
+            response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newTokens.getAccessToken());
+            response.setHeader("X-Refresh-Token", newTokens.getRefreshToken());
+            return claims;
+        } catch (Exception e) {
+            log.severe("Error al refrescar el token: " + e.getMessage());
+            return null;
+        }
     }
 
 }

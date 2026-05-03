@@ -5,6 +5,8 @@ import com.fabricaescuela.tasks.infraestructure.presentation.dtos.ResponseTask;
 
 public class ResponseTaskMapper {
 
+  private ResponseTaskMapper() {}
+
   public static ResponseTask toResponse(Task task) {
     return ResponseTask.builder()
         .taskId(task.getTaskId())

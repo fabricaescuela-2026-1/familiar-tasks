@@ -4,6 +4,9 @@ import com.fabricaescuela.tasks.domain.model.Task;
 import com.fabricaescuela.tasks.infraestructure.database.entyties.TaskEntity;
 
 public class TaskEntityMapper {
+
+  private TaskEntityMapper() {}
+
   public static Task toDomain(TaskEntity entity) {
     return Task.builder()
         .taskId(entity.getTaskId())

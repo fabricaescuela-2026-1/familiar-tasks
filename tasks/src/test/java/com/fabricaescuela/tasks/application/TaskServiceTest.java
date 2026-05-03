@@ -92,6 +92,46 @@ class TaskServiceTest {
         verify(repository, never()).save(any());
     }
 
+    @Test
+    void actualizacionExitosaCuandoUsuarioPerteneceAlHogar() {
+        // Arrange
+        UUID taskId = UUID.randomUUID();
+        Task tarea = tareaValida();
+        when(userValidation.validateUserInHome(tarea.getGuestId(), tarea.getHomeId())).thenReturn(true);
+        when(repository.update(taskId, tarea)).thenReturn(tarea);
+
+        // Act
+        Task resultado = taskService.update(taskId, tarea);
+
+        // Assert
+        assertEquals(tarea, resultado);
+        verify(repository).update(taskId, tarea);
+    }
+
+    @Test
+    void eliminacionExitosaLlamaAlRepositorio() {
+        // Arrange
+        UUID taskId = UUID.randomUUID();
+
+        // Act
+        taskService.delete(taskId);
+
+        // Assert
+        verify(repository).delete(taskId);
+    }
+
+    @Test
+    void actualizacionFallaSiUsuarioNoEstaEnElHogar() {
+        // Arrange
+        UUID taskId = UUID.randomUUID();
+        Task tarea = tareaValida();
+        when(userValidation.validateUserInHome(tarea.getGuestId(), tarea.getHomeId())).thenReturn(false);
+
+        // Act - Assert
+        assertThrows(UserNotValidException.class, () -> taskService.update(taskId, tarea));
+        verify(repository, never()).update(any(), any());
+    }
+
     // HU13 Scenario 1 — la tarea creada sin estado explícito recibe PENDIENTE por defecto
     @Test
     void tareaCreadaSinEstadoUsaPendientePorDefecto() {

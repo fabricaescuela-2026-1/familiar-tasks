@@ -40,7 +40,7 @@ public class CreatedHomeUseCase implements ICreateHomeUseCase {
     public void createdHome(CreateHomeDto createHomeDto) {
         try {
             if (homeRepositoryPort.getHomeByName(createHomeDto.name()).isPresent()) {
-                throw new RuntimeException("Home with this name already exists");
+                throw new IllegalArgumentException("Home with this name already exists");
             }
 
             LoginDto loginDto = new LoginDto(createHomeDto.gmail(), createHomeDto.password());
@@ -55,12 +55,12 @@ public class CreatedHomeUseCase implements ICreateHomeUseCase {
             homeRepositoryPort.saveHome(home);
 
             var creator = personRepositoryPort.getUserByEmail(createHomeDto.gmail())
-                    .orElseThrow(() -> new RuntimeException("Creator not found"));
+                    .orElseThrow(() -> new IllegalArgumentException("Creator not found"));
             var adminRole = roleRepositoryPort.getRoleByName("Administrador")
-                    .orElseThrow(() -> new RuntimeException("Admin role not found"));
+                    .orElseThrow(() -> new IllegalArgumentException("Admin role not found"));
             memberHomeRepositoryPort.saveMemberHome(home.getIdHome(), creator.getIdPerson(), adminRole.getIdRole());
             }else{
-                throw new RuntimeException("Invalid login credentials");
+                throw new IllegalArgumentException("Invalid login credentials");
             }
 
             

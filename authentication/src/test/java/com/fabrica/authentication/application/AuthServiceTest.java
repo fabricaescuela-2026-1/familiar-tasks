@@ -3,8 +3,10 @@ package com.fabrica.authentication.application;
 import com.fabrica.authentication.application.dto.AuthResponse;
 import com.fabrica.authentication.application.dto.LoginRequest;
 import com.fabrica.authentication.application.dto.RegisterRequest;
+import com.fabrica.authentication.application.dto.TokenResponse;
 import com.fabrica.authentication.domain.exceptions.EmailAlreadyExitsException;
 import com.fabrica.authentication.domain.exceptions.InvalidRefreshTokenException;
+import com.fabrica.authentication.domain.exceptions.InvalidTokenException;
 import com.fabrica.authentication.domain.exceptions.UserNotFoundException;
 import com.fabrica.authentication.domain.model.Token;
 import com.fabrica.authentication.domain.model.User;
@@ -174,5 +176,84 @@ class AuthServiceTest {
         // Act - Assert
         assertThrows(IllegalArgumentException.class, () -> authService.register(request));
         verify(userRepo, never()).save(any());
+    }
+
+    // HU01 Scenario 4 — email es campo obligatorio
+    @Test
+    void registroConEmailNuloEsRechazado() {
+        // Arrange
+        var request = new RegisterRequest("Carlos", "Ruiz", null, "Segura@123");
+
+        // Act - Assert
+        assertThrows(IllegalArgumentException.class, () -> authService.register(request));
+        verify(userRepo, never()).save(any());
+    }
+
+    // HU01 Scenario 4 — apellido es campo obligatorio
+    @Test
+    void registroConApellidoVacioEsRechazado() {
+        // Arrange
+        var request = new RegisterRequest("Carlos", "", "carlos@mail.com", "Segura@123");
+
+        // Act - Assert
+        assertThrows(IllegalArgumentException.class, () -> authService.register(request));
+        verify(userRepo, never()).save(any());
+    }
+
+    // HU01/HU02 Scenario 3 — contraseña sin caracteres especiales debe ser rechazada
+    @Test
+    void registroConContrasenaSinCaracterEspecialEsRechazado() {
+        // Arrange
+        var request = new RegisterRequest("Carlos", "Ruiz", "carlos@mail.com", "sinEspecial8");
+
+        // Act - Assert
+        assertThrows(IllegalArgumentException.class, () -> authService.register(request));
+        verify(userRepo, never()).save(any());
+    }
+
+    // HU02 Scenario 1 — contraseña sin mayúscula debe ser rechazada
+    @Test
+    void registroConContrasenaSinMayusculaEsRechazado() {
+        // Arrange
+        var request = new RegisterRequest("Carlos", "Ruiz", "carlos@mail.com", "segura@123");
+
+        // Act - Assert
+        assertThrows(IllegalArgumentException.class, () -> authService.register(request));
+        verify(userRepo, never()).save(any());
+    }
+
+    // HU01 — obtener token activo por hash
+    @Test
+    void obtenerTokenPorHashExistenteRetornaTokenResponse() {
+        // Arrange
+        UUID userId = UUID.randomUUID();
+        UUID tokenId = UUID.randomUUID();
+        var user = User.builder().userId(userId).build();
+        var token = Token.builder()
+            .tokenId(tokenId)
+            .tokenHash("valid-hash")
+            .tokenType("ACCESS")
+            .user(user)
+            .build();
+        when(tokenRepo.findByHash("valid-hash")).thenReturn(Optional.of(token));
+
+        // Act
+        TokenResponse response = authService.getToken("valid-hash");
+
+        // Assert
+        assertEquals(tokenId,      response.tokenId());
+        assertEquals("valid-hash", response.tokenHash());
+        assertEquals(userId,       response.userId());
+    }
+
+    @Test
+    void obtenerTokenPorHashInexistenteLanzaExcepcion() {
+        // Arrange
+        when(tokenRepo.findByHash("no-existe")).thenReturn(Optional.empty());
+
+        // Act - Assert
+        assertThrows(InvalidTokenException.class, () ->
+            authService.getToken("no-existe")
+        );
     }
 }

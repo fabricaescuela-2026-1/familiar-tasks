@@ -23,47 +23,30 @@ public class PersonPersistenceAdapter implements IPersonRepositoryPort {
     public void saveUser(Person person) {
         var save = repository.save(mapper.toEntity(person));
         if (save == null) {
-            throw new RuntimeException("Error saving person");
+            throw new IllegalStateException("Error saving person");
         }
     }
 
     @Override
     public List<Person> getAllUsers() {
-        List<Person> persons = repository.findAll().stream().map(mapper::toDomain).toList();
-        if (persons == null) {
-            throw new RuntimeException("Error getting all users");
-        }
-        return persons;
+        return repository.findAll().stream().map(mapper::toDomain).toList();
     }
 
     @Override
     public Optional<Person> getUserByEmail(String email) {
-        Optional<Person> person = repository.findByEmail(email).map(mapper::toDomain);
-        if (person.isEmpty()) {
-            return Optional.empty();
-        }
-        return person;
+        return repository.findByEmail(email).map(mapper::toDomain);
     }
 
     @Override
     public Optional<Person> getUserById(UUID idPerson) {
-        Optional<Person> person = repository.findById(idPerson).map(mapper::toDomain);
-        if (person.isEmpty()) {
-            throw new RuntimeException("Error getting user by id");
-        }
-        return person;
+        return repository.findById(idPerson).map(mapper::toDomain);
     }
-
-
 
     @Override
     public void deleteUser(String email) {
-        try {
-            var person = repository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
-            repository.deleteById(person.getId());
-        } catch (Exception e) {
-            throw new RuntimeException("Error deleting user", e);
-        }
+        var person = repository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        repository.deleteById(person.getId());
     }
 
 }
