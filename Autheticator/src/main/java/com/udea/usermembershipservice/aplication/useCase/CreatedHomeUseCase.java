@@ -6,14 +6,12 @@ import java.util.List;
 import java.util.UUID;
 
 import com.udea.usermembershipservice.aplication.port.in.ICreateHomeUseCase;
-import com.udea.usermembershipservice.aplication.port.in.ILoginUserCase;
 import com.udea.usermembershipservice.aplication.port.out.IHomeRepositoryPort;
 import com.udea.usermembershipservice.aplication.port.out.IMemberHomeRepositoryPort;
 import com.udea.usermembershipservice.aplication.port.out.IPersonRepositoryPort;
 import com.udea.usermembershipservice.aplication.port.out.IRoleRepositoryPort;
 import com.udea.usermembershipservice.aplication.useCase.dto.home.CreateHomeDto;
 import com.udea.usermembershipservice.aplication.useCase.dto.home.HomeDto;
-import com.udea.usermembershipservice.aplication.useCase.dto.login.LoginDto;
 import com.udea.usermembershipservice.aplication.useCase.exception.PersistenceException;
 import com.udea.usermembershipservice.aplication.useCase.exception.SearchException;
 import com.udea.usermembershipservice.domain.model.Home;
@@ -21,16 +19,14 @@ import com.udea.usermembershipservice.domain.model.Home;
 public class CreatedHomeUseCase implements ICreateHomeUseCase {
 
     private final IHomeRepositoryPort homeRepositoryPort;
-    private final ILoginUserCase loginUserCase;
     private final IPersonRepositoryPort personRepositoryPort;
     private final IRoleRepositoryPort roleRepositoryPort;
     private final IMemberHomeRepositoryPort memberHomeRepositoryPort;
 
-    public CreatedHomeUseCase(IHomeRepositoryPort homeRepositoryPort, ILoginUserCase loginUserCase,
+    public CreatedHomeUseCase(IHomeRepositoryPort homeRepositoryPort,
             IPersonRepositoryPort personRepositoryPort, IRoleRepositoryPort roleRepositoryPort,
             IMemberHomeRepositoryPort memberHomeRepositoryPort) {
         this.homeRepositoryPort = homeRepositoryPort;
-        this.loginUserCase = loginUserCase;
         this.personRepositoryPort = personRepositoryPort;
         this.roleRepositoryPort = roleRepositoryPort;
         this.memberHomeRepositoryPort = memberHomeRepositoryPort;
@@ -43,27 +39,19 @@ public class CreatedHomeUseCase implements ICreateHomeUseCase {
                 throw new IllegalArgumentException("Home with this name already exists");
             }
 
-            LoginDto loginDto = new LoginDto(createHomeDto.gmail(), createHomeDto.password());
-            
-            if(loginUserCase.login(loginDto).acces() == true){
-                Home home = Home.create(
+            var creator = personRepositoryPort.getUserByEmail(createHomeDto.gmail())
+                    .orElseThrow(() -> new IllegalArgumentException("Creator not found"));
+            var adminRole = roleRepositoryPort.getRoleByName("Administrador")
+                    .orElseThrow(() -> new IllegalArgumentException("Admin role not found"));
+
+            Home home = Home.create(
                 UUID.randomUUID(),
                 createHomeDto.name(),
                 LocalDateTime.now(ZoneId.of("America/Bogota"))
             );
 
             homeRepositoryPort.saveHome(home);
-
-            var creator = personRepositoryPort.getUserByEmail(createHomeDto.gmail())
-                    .orElseThrow(() -> new IllegalArgumentException("Creator not found"));
-            var adminRole = roleRepositoryPort.getRoleByName("Administrador")
-                    .orElseThrow(() -> new IllegalArgumentException("Admin role not found"));
             memberHomeRepositoryPort.saveMemberHome(home.getIdHome(), creator.getIdPerson(), adminRole.getIdRole());
-            }else{
-                throw new IllegalArgumentException("Invalid login credentials");
-            }
-
-            
         } catch (Exception e) {
             throw new PersistenceException("Error saving home", e);
         }
@@ -91,7 +79,6 @@ public class CreatedHomeUseCase implements ICreateHomeUseCase {
             throw new SearchException("Error getting home by name", e);
         }
     }
-
 
     @Override
     public void deleteHome(String name) {
