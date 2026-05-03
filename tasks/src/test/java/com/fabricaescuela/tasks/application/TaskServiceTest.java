@@ -2,6 +2,7 @@ package com.fabricaescuela.tasks.application;
 
 import com.fabricaescuela.tasks.domain.exceptions.UserNotValidException;
 import com.fabricaescuela.tasks.domain.model.Task;
+import com.fabricaescuela.tasks.domain.ports.out.TaskAuditLogPort;
 import com.fabricaescuela.tasks.domain.ports.out.TaskRepositoryPort;
 import com.fabricaescuela.tasks.domain.ports.out.UserValidationPort;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ class TaskServiceTest {
 
     @Mock private TaskRepositoryPort repository;
     @Mock private UserValidationPort userValidation;
+    @Mock private TaskAuditLogPort auditLog;
 
     @InjectMocks
     private TaskService taskService;
@@ -44,15 +46,27 @@ class TaskServiceTest {
     void creacionExitosaCuandoUsuarioPerteneceAlHogar() {
         // Arrange
         Task tarea = tareaValida();
+        UUID taskId = UUID.randomUUID();
+        Task tareaGuardada = Task.builder()
+                .taskId(taskId)
+                .name(tarea.getName())
+                .description(tarea.getDescription())
+                .status(tarea.getStatus())
+                .priority(tarea.getPriority())
+                .deadline(tarea.getDeadline())
+                .homeId(tarea.getHomeId())
+                .guestId(tarea.getGuestId())
+                .build();
         when(userValidation.validateUserInHome(tarea.getGuestId(), tarea.getHomeId())).thenReturn(true);
-        when(repository.save(tarea)).thenReturn(tarea);
+        when(repository.save(tarea)).thenReturn(tareaGuardada);
 
         // Act
         Task resultado = taskService.create(tarea);
 
         // Assert
-        assertEquals(tarea, resultado);
+        assertEquals(tareaGuardada, resultado);
         verify(repository).save(tarea);
+        verify(auditLog).publishTaskCreated(tarea.getGuestId(), taskId);
     }
 
     @Test
@@ -78,7 +92,7 @@ class TaskServiceTest {
 
         // Act - Assert
         assertThrows(IllegalArgumentException.class, () -> taskService.create(tareaInvalida));
-        verifyNoInteractions(repository, userValidation);
+        verifyNoInteractions(repository, userValidation, auditLog);
     }
 
     @Test
@@ -90,6 +104,7 @@ class TaskServiceTest {
         // Act - Assert
         assertThrows(UserNotValidException.class, () -> taskService.create(tarea));
         verify(repository, never()).save(any());
+        verify(auditLog, never()).publishTaskCreated(any(), any());
     }
 
     @Test
