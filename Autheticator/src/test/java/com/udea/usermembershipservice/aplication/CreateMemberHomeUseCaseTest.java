@@ -1,5 +1,6 @@
 package com.udea.usermembershipservice.aplication;
 
+import com.udea.usermembershipservice.aplication.port.out.IAuditLogQueuePort;
 import com.udea.usermembershipservice.aplication.port.out.IHomeRepositoryPort;
 import com.udea.usermembershipservice.aplication.port.out.IMemberHomeRepositoryPort;
 import com.udea.usermembershipservice.aplication.port.out.IPersonRepositoryPort;
@@ -34,6 +35,7 @@ class CreateMemberHomeUseCaseTest {
     @Mock private IPersonRepositoryPort personRepositoryPort;
     @Mock private IRoleRepositoryPort roleRepositoryPort;
     @Mock private IMemberHomeRepositoryPort memberHomeRepositoryPort;
+    @Mock private IAuditLogQueuePort auditLogQueuePort;
 
     @InjectMocks
     private CreateMemberHomeUseCase useCase;
@@ -92,6 +94,7 @@ class CreateMemberHomeUseCaseTest {
 
         // Assert
         verify(memberHomeRepositoryPort).updateRoleMemberHome(homeId, personId, newRoleId);
+        verify(auditLogQueuePort).publishRoleChanged(adminId, "carlos@mail.com");
     }
 
     // ── CASOS DE EXCEPCIÓN ──────────────────────────────────────────────────

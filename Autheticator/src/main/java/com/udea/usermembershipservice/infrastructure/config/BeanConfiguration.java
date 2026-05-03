@@ -1,16 +1,22 @@
 package com.udea.usermembershipservice.infrastructure.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+import com.azure.messaging.servicebus.ServiceBusClientBuilder;
+import com.azure.messaging.servicebus.ServiceBusSenderClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.udea.usermembershipservice.aplication.port.in.ICreateHomeUseCase;
 import com.udea.usermembershipservice.aplication.port.in.ICreateRoleUseCase;
 import com.udea.usermembershipservice.aplication.port.in.ICreatedMemberHome;
+import com.udea.usermembershipservice.aplication.port.out.IAuditLogQueuePort;
 import com.udea.usermembershipservice.aplication.port.out.IHomeRepositoryPort;
 import com.udea.usermembershipservice.aplication.port.out.IMemberHomeRepositoryPort;
 import com.udea.usermembershipservice.aplication.port.out.IPersonRepositoryPort;
 import com.udea.usermembershipservice.aplication.port.out.IRoleRepositoryPort;
+import com.udea.usermembershipservice.infrastructure.adapter.out.audit.ServiceBusAuditLogQueueAdapter;
 import com.udea.usermembershipservice.aplication.useCase.CreateMemberHomeUseCase;
 import com.udea.usermembershipservice.aplication.useCase.CreatedHomeUseCase;
 import com.udea.usermembershipservice.aplication.useCase.CreatedRoleUseCase;
@@ -113,18 +119,37 @@ public class BeanConfiguration {
             IHomeRepositoryPort homeRepositoryPort,
             IPersonRepositoryPort personRepositoryPort,
             IRoleRepositoryPort roleRepositoryPort,
-            IMemberHomeRepositoryPort memberHomeRepositoryPort
+            IMemberHomeRepositoryPort memberHomeRepositoryPort,
+            IAuditLogQueuePort auditLogQueuePort
     ) {
         return new CreateMemberHomeUseCase(
             homeRepositoryPort,
             personRepositoryPort,
             roleRepositoryPort,
-            memberHomeRepositoryPort
+            memberHomeRepositoryPort,
+            auditLogQueuePort
         );
     }
 
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean(destroyMethod = "close")
+    public ServiceBusSenderClient auditLogSenderClient(
+            @Value("${audit.log.servicebus.connection-string}") String connectionString,
+            @Value("${audit.log.servicebus.queue-name}") String queueName
+    ) {
+        return new ServiceBusClientBuilder()
+                .connectionString(connectionString)
+                .sender()
+                .queueName(queueName)
+                .buildClient();
+    }
+
+    @Bean
+    public IAuditLogQueuePort auditLogQueuePort(ServiceBusSenderClient auditLogSenderClient, ObjectMapper objectMapper) {
+        return new ServiceBusAuditLogQueueAdapter(auditLogSenderClient, objectMapper);
     }
 }
