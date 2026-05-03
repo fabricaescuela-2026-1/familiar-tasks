@@ -11,7 +11,7 @@ public class PersonPersistenceMapper {
             person.getName(),
             person.getLastName(),
             person.getEmail(),
-            person.getPassword(),
+            person.getPasswordHash(),
             person.getcreatedAt(),
             person.getActive()
         );
