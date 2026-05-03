@@ -7,7 +7,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.azure.messaging.servicebus.ServiceBusClientBuilder;
 import com.azure.messaging.servicebus.ServiceBusSenderClient;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.udea.usermembershipservice.aplication.port.in.ICreateHomeUseCase;
 import com.udea.usermembershipservice.aplication.port.in.ICreateRoleUseCase;
 import com.udea.usermembershipservice.aplication.port.in.ICreatedMemberHome;
@@ -149,7 +148,7 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public IAuditLogQueuePort auditLogQueuePort(ServiceBusSenderClient auditLogSenderClient, ObjectMapper objectMapper) {
-        return new ServiceBusAuditLogQueueAdapter(auditLogSenderClient, objectMapper);
+    public IAuditLogQueuePort auditLogQueuePort(ServiceBusSenderClient auditLogSenderClient) {
+        return new ServiceBusAuditLogQueueAdapter(auditLogSenderClient);
     }
 }

@@ -19,9 +19,9 @@ public class ServiceBusAuditLogQueueAdapter implements IAuditLogQueuePort {
     private final ServiceBusSenderClient senderClient;
     private final ObjectMapper objectMapper;
 
-    public ServiceBusAuditLogQueueAdapter(ServiceBusSenderClient senderClient, ObjectMapper objectMapper) {
+    public ServiceBusAuditLogQueueAdapter(ServiceBusSenderClient senderClient) {
         this.senderClient = senderClient;
-        this.objectMapper = objectMapper;
+        this.objectMapper = new ObjectMapper();
     }
 
     @Override
