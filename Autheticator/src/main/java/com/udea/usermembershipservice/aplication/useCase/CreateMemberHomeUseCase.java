@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import com.udea.usermembershipservice.aplication.port.in.ICreatedMemberHome;
+import com.udea.usermembershipservice.aplication.port.out.IAuditLogQueuePort;
 import com.udea.usermembershipservice.aplication.port.out.IHomeRepositoryPort;
 import com.udea.usermembershipservice.aplication.port.out.IMemberHomeRepositoryPort;
 import com.udea.usermembershipservice.aplication.port.out.IPersonRepositoryPort;
@@ -24,13 +25,15 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
     IPersonRepositoryPort personRepositoryPort;
     IRoleRepositoryPort roleRepositoryPort;
     IMemberHomeRepositoryPort memberHomeRepositoryPort;
-    
+    IAuditLogQueuePort auditLogQueuePort;
 
-    public CreateMemberHomeUseCase(IHomeRepositoryPort homeRepositoryPort, IPersonRepositoryPort personRepositoryPort, IRoleRepositoryPort roleRepositoryPort, IMemberHomeRepositoryPort memberHomeRepositoryPort) {
+
+    public CreateMemberHomeUseCase(IHomeRepositoryPort homeRepositoryPort, IPersonRepositoryPort personRepositoryPort, IRoleRepositoryPort roleRepositoryPort, IMemberHomeRepositoryPort memberHomeRepositoryPort, IAuditLogQueuePort auditLogQueuePort) {
         this.homeRepositoryPort = homeRepositoryPort;
         this.personRepositoryPort = personRepositoryPort;
         this.roleRepositoryPort = roleRepositoryPort;
         this.memberHomeRepositoryPort = memberHomeRepositoryPort;
+        this.auditLogQueuePort = auditLogQueuePort;
     }
 
     @Override
@@ -44,11 +47,11 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
         } catch (Exception e) {
             throw new PersistenceException("Error saving member home", e);
         }
-        
+
     }
 
     @Override
-    public void deleteMemberHome(String nameHome, String gmail) {       
+    public void deleteMemberHome(String nameHome, String gmail) {
         try {
             var home = homeRepositoryPort.getHomeByName(nameHome).orElseThrow(() -> new RuntimeException(HOME_NOT_FOUND));
         var person = personRepositoryPort.getUserByEmail(gmail).orElseThrow(() -> new RuntimeException(PERSON_NOT_FOUND));
@@ -76,16 +79,17 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
         try {
             var home = homeRepositoryPort.getHomeByName(nameHome).orElseThrow(() -> new RuntimeException(HOME_NOT_FOUND));
             var members = memberHomeRepositoryPort.getAllMemberHome(home.getIdHome());
-        
+
         return members;
         } catch (Exception e) {
-            throw new SearchException("Error getting all member home", e); 
+            throw new SearchException("Error getting all member home", e);
         }
-        
+
     }
 
     @Override
     public void updateRoleMemberHome(String nameHome, String gmail, String newRol, String gmailAdmin) {
+        UUID adminId;
         try {
             var home = homeRepositoryPort.getHomeByName(nameHome).orElseThrow(() -> new RuntimeException(HOME_NOT_FOUND));
             var person = personRepositoryPort.getUserByEmail(gmail).orElseThrow(() -> new RuntimeException(PERSON_NOT_FOUND));
@@ -109,10 +113,12 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
             }
 
             memberHomeRepositoryPort.updateRoleMemberHome(home.getIdHome(), person.getIdPerson(), role.getIdRole());
+            adminId = admin.getIdPerson();
         } catch (Exception e) {
             throw new PersistenceException("Error updating role member home", e);
         }
-    
+
+        auditLogQueuePort.publishRoleChanged(adminId, gmail);
     }
 
 }
