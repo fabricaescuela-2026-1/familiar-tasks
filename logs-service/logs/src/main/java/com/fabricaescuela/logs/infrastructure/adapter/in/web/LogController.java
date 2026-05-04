@@ -23,7 +23,9 @@ public class LogController {
     @PostMapping
     public ResponseEntity<LogResponse> createLog(@RequestBody LogRequest logRequest){
         var savedLog = createLogUseCase.execute(
+                logRequest.id(),
                 logRequest.idUser(),
+                logRequest.timestamp(),
                 logRequest.modifiedElement(),
                 logRequest.action()
         );

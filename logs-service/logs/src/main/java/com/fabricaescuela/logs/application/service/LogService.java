@@ -18,12 +18,12 @@ public class LogService implements CreateLogUseCase {
 
     @Override
     @Transactional
-    public Log execute(String idUser, String modifiedElement, String action)
+    public Log execute(String id, String idUser, LocalDateTime timeStamp ,String modifiedElement, String action)
     {
         Log log = new Log(
-                UUID.randomUUID().toString(),
+                id,
                 idUser,
-                LocalDateTime.now(),
+                timeStamp,
                 modifiedElement,
                 action
         );
