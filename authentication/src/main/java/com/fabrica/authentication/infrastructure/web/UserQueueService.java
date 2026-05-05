@@ -1,5 +1,6 @@
 package com.fabrica.authentication.infrastructure.web;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.azure.storage.queue.QueueClient;
@@ -10,15 +11,23 @@ import com.fabrica.authentication.domain.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class UserQueueService implements UserQueuePort {
-  private final QueueClient userQueueClient;
+  private final QueueClient homeMemberQueue;
   private final ObjectMapper objectMapper;
+  private final QueueClient tasksQueue;
+
+  public UserQueueService(
+      @Qualifier("queueHomeMember") QueueClient homeMemberQueue,
+      @Qualifier("queueTasks") QueueClient tasksQueue,
+      ObjectMapper objectMapper) {
+    this.homeMemberQueue = homeMemberQueue;
+    this.tasksQueue = tasksQueue;
+    this.objectMapper = objectMapper;
+  }
 
   @Override
   public void sendUserMessage(User user) {
@@ -32,7 +41,8 @@ public class UserQueueService implements UserQueuePort {
         .build();
     try {
       String message = objectMapper.writeValueAsString(userMessage);
-      userQueueClient.sendMessage(message);
+      homeMemberQueue.sendMessage(message);
+      tasksQueue.sendMessage(message);
       log.info("Mensaje enviado: {}", userMessage);
     } catch (JsonProcessingException e) {
       throw new UserMessageException(e.getMessage());
