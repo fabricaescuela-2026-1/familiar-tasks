@@ -1,5 +1,6 @@
 package com.fabrica.authentication.infrastructure.web.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,17 +12,33 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 @Configuration
 public class UsersQueueConfig {
+
+  // CONFIGURATION OF THE HOGAR MEMBER MICROSERVICE
   @Value("${azure.storage.users.connection-string}")
   private String connectionString;
 
   @Value("${azure.storage.users.queue-name}")
   private String queueName;
 
-  @Bean
+  @Bean(name = "queueHomeMember")
   public QueueClient queueClient() {
     return new QueueClientBuilder()
         .connectionString(connectionString)
         .queueName(queueName)
+        .buildClient();
+  }
+
+  // CONFIGURATION OF THE TAKS MICROSERVICE
+  @Value("${azure.storage.users-task.connection-string}")
+  private String taksUsersConnectionString;
+  @Value("${azure.storage.users-task.queue-name}")
+  private String taskUsersQueueName;
+
+  @Bean(name = "queueTasks")
+  public QueueClient queueUsersTaskClient() {
+    return new QueueClientBuilder()
+        .connectionString(taksUsersConnectionString)
+        .queueName(taskUsersQueueName)
         .buildClient();
   }
 
