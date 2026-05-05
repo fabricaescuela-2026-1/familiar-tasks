@@ -3,8 +3,8 @@ package com.fabricaescuela.tasks.application.dto;
 import java.util.UUID;
 
 public record TaskCreatedLog(
-    UUID logId,
-    UUID userId,
+    UUID id,
+    UUID idUser,
     String modifiedElement,
     String action
 ) {
