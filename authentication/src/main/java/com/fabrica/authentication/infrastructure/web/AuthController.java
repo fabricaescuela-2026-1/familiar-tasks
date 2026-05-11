@@ -8,6 +8,8 @@ import com.fabrica.authentication.application.dto.RegisterRequest;
 import com.fabrica.authentication.application.dto.TokenResponse;
 import com.fabrica.authentication.application.ports.in.AuthUseCase;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -18,27 +20,33 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+@Tag(name = "Authentication management", description = "authentication management with jwt tokens")
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
   private final AuthUseCase authUseCase;
 
+  @Operation(summary = "login a user", description = "get an acces token and a refresh token using username - password authentication", method = "POST")
   @PostMapping("/login")
   public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
     return new ResponseEntity<>(authUseCase.login(request), HttpStatus.OK);
   }
 
+  @Operation(summary = "register a new user on syste", description = "register a new user on system and get a acces token and a refresh token", method = "POST")
   @PostMapping("/register")
   public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
     return new ResponseEntity<>(authUseCase.register(request), HttpStatus.CREATED);
   }
 
+  @Operation(summary = "refresh a jwt token", description = "get a new acces token using a valid refresh token", method = "POST")
   @PostMapping("/refresh")
   public ResponseEntity<AuthResponse> refresh(@RequestBody String refreshToken) {
     return new ResponseEntity<>(authUseCase.refreshToken(refreshToken), HttpStatus.OK);
   }
 
+  @Operation(summary = "Get token  details", description = "Get token details seding the token hash", method = "GET")
   @GetMapping("/token/{tokenHash}")
   public ResponseEntity<TokenResponse> getToken(@PathVariable("tokenHash") String tokenHash) {
     return ResponseEntity.ok(authUseCase.getToken(tokenHash));
