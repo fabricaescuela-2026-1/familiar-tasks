@@ -30,4 +30,4 @@ jobs:
       - name: Desplegar en Render
         run: curl "$RENDER_DEPLOY_HOOK_MEMBER_HOME"
         env:
-          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_MEMBER_HOME }}
+          RENDER_DEPLOY_HOOK_MEMBER_HOME: ${{ secrets.RENDER_DEPLOY_HOOK_MEMBER_HOME }}
