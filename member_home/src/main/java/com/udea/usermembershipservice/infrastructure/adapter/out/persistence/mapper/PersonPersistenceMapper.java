@@ -12,7 +12,7 @@ public class PersonPersistenceMapper {
             person.getLastName(),
             person.getEmail(),
             person.getPasswordHash(),
-            person.getcreatedAt(),
+            person.getCreatedAt(),
             person.getActive()
         );
     }

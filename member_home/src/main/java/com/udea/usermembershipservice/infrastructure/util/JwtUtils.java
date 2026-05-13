@@ -1,5 +1,6 @@
 package com.udea.usermembershipservice.infrastructure.util;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Map;
 
@@ -45,6 +46,6 @@ public class JwtUtils {
     }
 
     private Key getKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes());
+        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 }

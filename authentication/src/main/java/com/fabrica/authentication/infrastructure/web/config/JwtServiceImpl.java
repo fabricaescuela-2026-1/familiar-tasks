@@ -1,5 +1,6 @@
 package com.fabrica.authentication.infrastructure.web.config;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.ZoneId;
 import java.util.Date;
@@ -102,6 +103,6 @@ public class JwtServiceImpl implements JwtServicePort {
   }
 
   private Key getKey() {
-    return Keys.hmacShaKeyFor(secret.getBytes());
+    return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
   }
 }

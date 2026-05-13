@@ -21,11 +21,11 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
     private static final String PERSON_NOT_FOUND = "Person not found";
     private static final String ROLE_NOT_FOUND = "Role not found";
 
-    IHomeRepositoryPort homeRepositoryPort;
-    IPersonRepositoryPort personRepositoryPort;
-    IRoleRepositoryPort roleRepositoryPort;
-    IMemberHomeRepositoryPort memberHomeRepositoryPort;
-    IAuditLogQueuePort auditLogQueuePort;
+    private final IHomeRepositoryPort homeRepositoryPort;
+    private final IPersonRepositoryPort personRepositoryPort;
+    private final IRoleRepositoryPort roleRepositoryPort;
+    private final IMemberHomeRepositoryPort memberHomeRepositoryPort;
+    private final IAuditLogQueuePort auditLogQueuePort;
 
 
     public CreateMemberHomeUseCase(IHomeRepositoryPort homeRepositoryPort, IPersonRepositoryPort personRepositoryPort, IRoleRepositoryPort roleRepositoryPort, IMemberHomeRepositoryPort memberHomeRepositoryPort, IAuditLogQueuePort auditLogQueuePort) {

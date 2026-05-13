@@ -67,7 +67,7 @@ public class Person {
         return passwordHash;
     }
 
-    public LocalDateTime getcreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 

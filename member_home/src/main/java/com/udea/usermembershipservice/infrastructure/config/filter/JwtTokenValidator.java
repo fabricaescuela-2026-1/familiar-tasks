@@ -66,8 +66,10 @@ public class JwtTokenValidator extends OncePerRequestFilter {
                     SecurityContextHolder.setContext(context);
                 }
             }
-        } catch (Exception e) {
+        } catch (io.jsonwebtoken.JwtException e) {
             log.severe("Error validating JWT: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.severe("Error processing JWT header: " + e.getMessage());
         }
 
         filterChain.doFilter(request, response);
