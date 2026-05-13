@@ -42,8 +42,12 @@ jobs:
         working-directory: authentication
         run: ./mvnw verify -Dmaven.test.failure.ignore=true --no-transfer-progress
 
-      - name: Build Autheticator
-        working-directory: Autheticator
+      - name: Build member_home
+        working-directory: member_home
+        run: ./mvnw verify -Dmaven.test.failure.ignore=true --no-transfer-progress
+
+      - name: Build logs
+        working-directory: logs
         run: ./mvnw verify -Dmaven.test.failure.ignore=true --no-transfer-progress
 
       - name: Build tasks
