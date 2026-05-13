@@ -27,25 +27,12 @@ public class AuthClient {
 
     public AuthRefreshResponse refreshAccessToken(String refreshToken) {
         try {
-            String refreshUrl = authServiceUrl + "/auth/refresh";
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            
-            HttpEntity<String> request = new HttpEntity<>(refreshToken, headers);
-            
-            ResponseEntity<AuthRefreshResponse> response = restTemplate.postForEntity(
-                    refreshUrl,
-                    request,
-                    AuthRefreshResponse.class
-            );
-            
+            ResponseEntity<AuthRefreshResponse> response = executeRefreshRequest(refreshToken);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 log.info("Token refrescado exitosamente");
                 return response.getBody();
-            } else {
-                throw new IllegalStateException("Falló al refrescar el token: respuesta vacía");
             }
+            throw new IllegalStateException("Falló al refrescar el token: respuesta vacía");
         } catch (RestClientException e) {
             log.severe("Error al conectar con el servicio de autenticación: " + e.getMessage());
             throw new IllegalStateException("No se pudo refrescar el token: servicio de autenticación no disponible", e);
@@ -55,5 +42,12 @@ public class AuthClient {
             log.severe("Error inesperado al refrescar el token: " + e.getMessage());
             throw new IllegalStateException("Error al refrescar el token", e);
         }
+    }
+
+    private ResponseEntity<AuthRefreshResponse> executeRefreshRequest(String refreshToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<>(refreshToken, headers);
+        return restTemplate.postForEntity(authServiceUrl + "/auth/refresh", request, AuthRefreshResponse.class);
     }
 }
