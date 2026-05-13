@@ -10,6 +10,7 @@ class LogsApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// Disabled: requires a running MongoDB instance
 	}
 
 }

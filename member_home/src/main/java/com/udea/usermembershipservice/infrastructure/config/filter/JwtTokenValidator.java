@@ -43,17 +43,10 @@ public class JwtTokenValidator extends OncePerRequestFilter {
 
             if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
                 jwtToken = jwtToken.substring(7);
-                Claims claims = null;
-
-                try {
-                    claims = jwtUtils.validateToken(jwtToken);
-                } catch (ExpiredJwtException e) {
-                    log.info("Token expirado, intentando refrescar...");
-                    claims = tryRefreshToken(request.getHeader("X-Refresh-Token"), response);
-                    if (claims == null) {
-                        filterChain.doFilter(request, response);
-                        return;
-                    }
+                Claims claims = resolveValidClaims(jwtToken, request.getHeader("X-Refresh-Token"), response);
+                if (claims == null) {
+                    filterChain.doFilter(request, response);
+                    return;
                 }
 
                 if (claims != null) {
@@ -73,6 +66,15 @@ public class JwtTokenValidator extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private Claims resolveValidClaims(String jwtToken, String refreshTokenHeader, HttpServletResponse response) {
+        try {
+            return jwtUtils.validateToken(jwtToken);
+        } catch (ExpiredJwtException e) {
+            log.info("Token expirado, intentando refrescar...");
+            return tryRefreshToken(refreshTokenHeader, response);
+        }
     }
 
     private Claims tryRefreshToken(String refreshToken, HttpServletResponse response) {

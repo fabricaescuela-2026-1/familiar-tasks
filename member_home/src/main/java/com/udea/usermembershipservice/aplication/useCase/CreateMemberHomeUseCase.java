@@ -66,8 +66,7 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
     public CompletableFuture<MemberHomeDto> getMemberHome(UUID personId, UUID homeId) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                MemberHomeDto memberHome = memberHomeRepositoryPort.getMemberHome(personId, homeId).orElseThrow(() -> new RuntimeException("Member home not found"));
-                return memberHome;
+                return memberHomeRepositoryPort.getMemberHome(personId, homeId).orElseThrow(() -> new RuntimeException("Member home not found"));
             } catch (Exception e) {
                 throw new SearchException("Error getting member home", e);
             }
@@ -78,9 +77,7 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
     public List<MemberDto> getAllMemberHome(String nameHome) {
         try {
             var home = homeRepositoryPort.getHomeByName(nameHome).orElseThrow(() -> new RuntimeException(HOME_NOT_FOUND));
-            var members = memberHomeRepositoryPort.getAllMemberHome(home.getIdHome());
-
-        return members;
+            return memberHomeRepositoryPort.getAllMemberHome(home.getIdHome());
         } catch (Exception e) {
             throw new SearchException("Error getting all member home", e);
         }
