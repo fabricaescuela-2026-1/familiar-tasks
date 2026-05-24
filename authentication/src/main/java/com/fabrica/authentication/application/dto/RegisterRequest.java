@@ -4,6 +4,10 @@ public record RegisterRequest(
     String name,
     String lastname,
     String email,
-    String password) {
+    String password,
+    String passwordConfirmation) {
 
+  public RegisterRequest(String name, String lastname, String email, String password) {
+    this(name, lastname, email, password, null);
+  }
 }

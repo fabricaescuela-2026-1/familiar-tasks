@@ -49,7 +49,7 @@ class AuthServiceTest {
     @Test
     void registroExitosoConEmailNuevo() {
         // Arrange
-        var request = new RegisterRequest("Carlos", "Ruiz", "carlos@mail.com", "pass1234");
+        var request = new RegisterRequest("Carlos", "Ruiz", "carlos@mail.com", "Segura@123");
         when(userRepo.findByEmail("carlos@mail.com")).thenReturn(Optional.empty());
         when(passwordEncoder.encode(any())).thenReturn("hash-password");
         when(jwtService.generateAccesToken(any())).thenReturn(tokenFalso("access-token"));
@@ -104,7 +104,7 @@ class AuthServiceTest {
     @Test
     void registroConEmailExistenteLanzaExcepcion() {
         // Arrange
-        var request = new RegisterRequest("Carlos", "Ruiz", "carlos@mail.com", "pass1234");
+        var request = new RegisterRequest("Carlos", "Ruiz", "carlos@mail.com", "Segura@123");
         when(userRepo.findByEmail("carlos@mail.com")).thenReturn(Optional.of(new User()));
 
         // Act - Assert
@@ -297,9 +297,9 @@ class AuthServiceTest {
         assertThrows(InvalidTokenException.class, () -> authService.getToken("expirado-hash"));
     }
 
-    // HU05 — al renovar, el refresh token debe permanecer igual (sólo cambia el access)
+    // HU05 — al renovar, se emite un refresh token nuevo distinto al anterior (rotación)
     @Test
-    void refreshTokenValidoMantieneRefreshHashOriginal() {
+    void refreshTokenValidoRotaRefreshToken() {
         // Arrange
         var user = User.builder().userId(UUID.randomUUID()).build();
         var refresh = Token.builder().tokenHash("refresh-original").user(user).build();
@@ -311,9 +311,7 @@ class AuthServiceTest {
         AuthResponse response = authService.refreshToken("refresh-original");
 
         // Assert
-        assertEquals("refresh-original", response.refreshToken());
-        assertEquals("access-nuevo", response.accessToken());
-        verify(jwtService, never()).generateRefreshToken(any());
+        assertNotEquals("refresh-original", response.refreshToken());
     }
 
     // HU05 Scenario 2 — refresh con hash nulo no debe permitir renovación

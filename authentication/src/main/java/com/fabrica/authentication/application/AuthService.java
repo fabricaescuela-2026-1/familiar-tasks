@@ -42,8 +42,15 @@ public class AuthService implements AuthUseCase {
     if (req.name() == null || req.name().isBlank()) {
       throw new IllegalArgumentException("Name is required");
     }
-    if (req.password() == null || req.password().length() < 8) {
-      throw new IllegalArgumentException("Password must be at least 8 characters");
+    if (req.lastname() == null || req.lastname().isBlank()) {
+      throw new IllegalArgumentException("Lastname is required");
+    }
+    if (req.email() == null || req.email().isBlank()) {
+      throw new IllegalArgumentException("Email is required");
+    }
+    validatePasswordComplexity(req.password());
+    if (req.passwordConfirmation() != null && !req.password().equals(req.passwordConfirmation())) {
+      throw new IllegalArgumentException("Password and confirmation do not match");
     }
 
     if (userRepo.findByEmail(req.email()).isPresent()) {
@@ -98,16 +105,46 @@ public class AuthService implements AuthUseCase {
       throw new InvalidRefreshTokenException();
     }
 
-    // Generate new access token
     Token newAccessToken = jwtService.generateAccesToken(token.getUser());
     tokenRepo.save(newAccessToken);
     return new AuthResponse(newAccessToken.getTokenHash(), token.getTokenHash());
+  }
+
+  private void validatePasswordComplexity(String password) {
+    if (password == null || password.isBlank()) {
+      throw new IllegalArgumentException("Password is required");
+    }
+    if (password.length() < 8) {
+      throw new IllegalArgumentException("Password must be at least 8 characters");
+    }
+    boolean hasUpper = false;
+    boolean hasLower = false;
+    boolean hasDigit = false;
+    boolean hasSpecial = false;
+    for (int i = 0; i < password.length(); i++) {
+      char c = password.charAt(i);
+      if (Character.isUpperCase(c)) hasUpper = true;
+      else if (Character.isLowerCase(c)) hasLower = true;
+      else if (Character.isDigit(c)) hasDigit = true;
+      else hasSpecial = true;
+    }
+    if (!hasUpper) throw new IllegalArgumentException("Password must contain at least one uppercase letter");
+    if (!hasLower) throw new IllegalArgumentException("Password must contain at least one lowercase letter");
+    if (!hasDigit) throw new IllegalArgumentException("Password must contain at least one digit");
+    if (!hasSpecial) throw new IllegalArgumentException("Password must contain at least one special character");
   }
 
   @Override
   public TokenResponse getToken(String tokenHash) {
     Token token = tokenRepo.findByHash(tokenHash)
         .orElseThrow(InvalidTokenException::new);
+
+    if (token.getExpirationDate() != null && token.getExpirationDate().isBefore(LocalDateTime.now())) {
+      throw new InvalidTokenException();
+    }
+    if (token.getExpiratedAt() != null && token.getExpiratedAt().isBefore(LocalDateTime.now())) {
+      throw new InvalidTokenException();
+    }
 
     return TokenResponse.builder()
         .tokenId(token.getTokenId())
