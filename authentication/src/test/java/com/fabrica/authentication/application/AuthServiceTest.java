@@ -256,4 +256,90 @@ class AuthServiceTest {
             authService.getToken("no-existe")
         );
     }
+
+    // HU04 Scenario 2 — credenciales en blanco también son inválidas
+    @Test
+    void loginConEmailVacioEsRechazado() {
+        // Arrange
+        var request = new LoginRequest("", "pass1234");
+        when(userRepo.findByEmail("")).thenReturn(Optional.empty());
+
+        // Act - Assert
+        assertThrows(UserNotFoundException.class, () -> authService.login(request));
+    }
+
+    @Test
+    void loginConPasswordVaciaEsRechazado() {
+        // Arrange
+        var user = User.builder().email("juan@mail.com").passwordHash("hashed").build();
+        var request = new LoginRequest("juan@mail.com", "");
+        when(userRepo.findByEmail("juan@mail.com")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("", "hashed")).thenReturn(false);
+
+        // Act - Assert
+        assertThrows(UserNotFoundException.class, () -> authService.login(request));
+    }
+
+    // HU04 Scenario 3 — un token cuya fecha de expiración ya pasó no debe ser válido
+    @Test
+    void obtenerTokenExpiradoLanzaExcepcion() {
+        // Arrange
+        var user = User.builder().userId(UUID.randomUUID()).email("pepe@mail.com").build();
+        var tokenExpirado = Token.builder()
+            .tokenHash("expirado-hash")
+            .expirationDate(java.time.LocalDateTime.now().minusMinutes(1))
+            .tokenType("ACCESS")
+            .user(user)
+            .build();
+        when(tokenRepo.findByHash("expirado-hash")).thenReturn(Optional.of(tokenExpirado));
+
+        // Act - Assert
+        assertThrows(InvalidTokenException.class, () -> authService.getToken("expirado-hash"));
+    }
+
+    // HU05 — al renovar, el refresh token debe permanecer igual (sólo cambia el access)
+    @Test
+    void refreshTokenValidoMantieneRefreshHashOriginal() {
+        // Arrange
+        var user = User.builder().userId(UUID.randomUUID()).build();
+        var refresh = Token.builder().tokenHash("refresh-original").user(user).build();
+        when(tokenRepo.findByHash("refresh-original")).thenReturn(Optional.of(refresh));
+        when(jwtService.isTokenValid(refresh)).thenReturn(true);
+        when(jwtService.generateAccesToken(user)).thenReturn(tokenFalso("access-nuevo"));
+
+        // Act
+        AuthResponse response = authService.refreshToken("refresh-original");
+
+        // Assert
+        assertEquals("refresh-original", response.refreshToken());
+        assertEquals("access-nuevo", response.accessToken());
+        verify(jwtService, never()).generateRefreshToken(any());
+    }
+
+    // HU05 Scenario 2 — refresh con hash nulo no debe permitir renovación
+    @Test
+    void refreshTokenNuloLanzaExcepcion() {
+        // Arrange
+        when(tokenRepo.findByHash(null)).thenReturn(Optional.empty());
+
+        // Act - Assert
+        assertThrows(InvalidRefreshTokenException.class, () -> authService.refreshToken(null));
+    }
+
+    // HU06 Scenario 2 — un token revocado no debe poder usarse para obtener datos
+    @Test
+    void obtenerTokenRevocadoLanzaExcepcion() {
+        // Arrange
+        var user = User.builder().email("carlos@mail.com").build();
+        var tokenRevocado = Token.builder()
+            .tokenHash("revocado-hash")
+            .expirationDate(java.time.LocalDateTime.now().plusDays(1))
+            .expiratedAt(java.time.LocalDateTime.now().minusMinutes(1))
+            .user(user)
+            .build();
+        when(tokenRepo.findByHash("revocado-hash")).thenReturn(Optional.of(tokenRevocado));
+
+        // Act - Assert
+        assertThrows(InvalidTokenException.class, () -> authService.getToken("revocado-hash"));
+    }
 }

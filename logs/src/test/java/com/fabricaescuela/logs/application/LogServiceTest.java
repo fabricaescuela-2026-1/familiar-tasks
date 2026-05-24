@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.mockito.ArgumentCaptor;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -109,5 +111,61 @@ class LogServiceTest {
             logService.execute(null, "   ", "ROLE", "CHANGED")
         );
         verify(logRepository, never()).save(any());
+    }
+
+    // HU27 Scenario 1 — la acción registrada debe incluir usuario, elemento y acción
+    @Test
+    void logCreadoConservaUsuarioElementoYAccion() {
+        // Arrange
+        String userId = UUID.randomUUID().toString();
+        ArgumentCaptor<Log> captor = ArgumentCaptor.forClass(Log.class);
+        when(logRepository.save(any(Log.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        // Act
+        logService.execute(null, userId, "TASK", "UPDATED");
+
+        // Assert
+        verify(logRepository).save(captor.capture());
+        Log persistido = captor.getValue();
+        assertEquals(userId,    persistido.idUser());
+        assertEquals("TASK",    persistido.modifiedElement());
+        assertEquals("UPDATED", persistido.action());
+    }
+
+    // HU27 Scenario 1 — el sistema debe asignar automáticamente la hora del registro
+    @Test
+    void logCreadoIncluyeTimestampAutomatico() {
+        // Arrange
+        ArgumentCaptor<Log> captor = ArgumentCaptor.forClass(Log.class);
+        when(logRepository.save(any(Log.class))).thenAnswer(inv -> inv.getArgument(0));
+        LocalDateTime antes = LocalDateTime.now().minusSeconds(1);
+
+        // Act
+        logService.execute(null, "u1", "TASK", "DELETED");
+
+        // Assert
+        verify(logRepository).save(captor.capture());
+        Log persistido = captor.getValue();
+        assertNotNull(persistido.timestamp());
+        assertTrue(persistido.timestamp().isAfter(antes));
+        assertTrue(persistido.timestamp().isBefore(LocalDateTime.now().plusSeconds(1)));
+    }
+
+    // HU27 Scenario 2 — consultar logs muestra todas las entradas con sus datos completos
+    @Test
+    void getAllLogsRetornaListaConDatosCompletos() {
+        // Arrange
+        String userId = UUID.randomUUID().toString();
+        Log log = new Log(UUID.randomUUID().toString(), userId, LocalDateTime.now(), "TASK", "UPDATED");
+        when(logRepository.findAll()).thenReturn(List.of(log));
+
+        // Act
+        List<Log> resultado = logService.getAllLogs();
+
+        // Assert
+        assertEquals(1, resultado.size());
+        assertEquals(userId,    resultado.get(0).idUser());
+        assertEquals("UPDATED", resultado.get(0).action());
+        assertNotNull(resultado.get(0).timestamp());
     }
 }

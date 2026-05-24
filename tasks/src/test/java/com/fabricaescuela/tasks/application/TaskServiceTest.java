@@ -147,6 +147,108 @@ class TaskServiceTest {
         verify(repository, never()).update(any(), any());
     }
 
+    // HU17 Scenario 2 — guardar una edición con título vacío debe ser rechazado
+    @Test
+    void actualizacionConTituloVacioLanzaExcepcion() {
+        // Arrange
+        UUID taskId = UUID.randomUUID();
+        Task tarea = tareaValida();
+        tarea.setName("");
+
+        // Act - Assert
+        assertThrows(IllegalArgumentException.class, () -> taskService.update(taskId, tarea));
+        verify(repository, never()).update(any(), any());
+    }
+
+    // HU17 Scenario 2 — guardar una edición con título nulo debe ser rechazado
+    @Test
+    void actualizacionConTituloNuloLanzaExcepcion() {
+        // Arrange
+        UUID taskId = UUID.randomUUID();
+        Task tarea = tareaValida();
+        tarea.setName(null);
+
+        // Act - Assert
+        assertThrows(IllegalArgumentException.class, () -> taskService.update(taskId, tarea));
+        verify(repository, never()).update(any(), any());
+    }
+
+    // HU17 — al actualizar, una fecha en el pasado sigue siendo inválida
+    @Test
+    void actualizacionConFechaPasadaLanzaExcepcion() {
+        // Arrange
+        UUID taskId = UUID.randomUUID();
+        Task tarea = tareaValida();
+        tarea.setDeadline(LocalDateTime.now().minusDays(1));
+
+        // Act - Assert
+        assertThrows(IllegalArgumentException.class, () -> taskService.update(taskId, tarea));
+        verify(repository, never()).update(any(), any());
+    }
+
+    // HU17 — los datos actualizados deben quedar persistidos en el repositorio
+    @Test
+    void actualizacionExitosaPersisteLosNuevosValores() {
+        // Arrange
+        UUID taskId = UUID.randomUUID();
+        Task tarea = tareaValida();
+        tarea.setName("Sacar la basura");
+        tarea.setDescription("Sacar las bolsas antes de las 7pm");
+        when(userValidation.validateUserInHome(tarea.getGuestId(), tarea.getHomeId())).thenReturn(true);
+        when(repository.update(taskId, tarea)).thenReturn(tarea);
+
+        // Act
+        Task resultado = taskService.update(taskId, tarea);
+
+        // Assert
+        assertEquals("Sacar la basura", resultado.getName());
+        assertEquals("Sacar las bolsas antes de las 7pm", resultado.getDescription());
+        verify(repository).update(taskId, tarea);
+    }
+
+    // HU18 Scenario 1 — eliminar una tarea por id la quita del repositorio
+    @Test
+    void eliminacionConIdValidoDelegaAlRepositorio() {
+        // Arrange
+        UUID taskId = UUID.randomUUID();
+
+        // Act
+        taskService.delete(taskId);
+
+        // Assert
+        verify(repository).delete(taskId);
+        verifyNoMoreInteractions(repository);
+    }
+
+    // HU28 Scenario 1 — al actualizar una tarea debe quedar registro en el audit log
+    @Test
+    void actualizacionDeTareaPublicaAuditLog() {
+        // Arrange
+        UUID taskId = UUID.randomUUID();
+        Task tarea = tareaValida();
+        when(userValidation.validateUserInHome(tarea.getGuestId(), tarea.getHomeId())).thenReturn(true);
+        when(repository.update(taskId, tarea)).thenReturn(tarea);
+
+        // Act
+        taskService.update(taskId, tarea);
+
+        // Assert
+        verify(auditLog).publishTaskCreated(tarea.getGuestId(), taskId);
+    }
+
+    // HU28 Scenario 1 — al eliminar una tarea debe quedar registro en el audit log
+    @Test
+    void eliminacionDeTareaPublicaAuditLog() {
+        // Arrange
+        UUID taskId = UUID.randomUUID();
+
+        // Act
+        taskService.delete(taskId);
+
+        // Assert
+        verify(auditLog, atLeastOnce()).publishTaskCreated(any(), any());
+    }
+
     // HU13 Scenario 1 — la tarea creada sin estado explícito recibe PENDIENTE por defecto
     @Test
     void tareaCreadaSinEstadoUsaPendientePorDefecto() {
