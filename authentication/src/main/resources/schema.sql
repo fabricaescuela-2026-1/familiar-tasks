@@ -1,0 +1,3 @@
+create table auth.tokens (expirated_at timestamp(6), expiration_date timestamp(6) not null, token_id uuid not null, user_id uuid unique, token_hash varchar(255) not null unique, token_type varchar(255) not null check ((token_type in ('ACCESS','REFRESH'))), primary key (token_id));
+create table auth.users (is_active boolean not null, created_at timestamp(6) not null, user_id uuid not null, lastname varchar(50) not null, name varchar(50) not null, email varchar(255) not null unique, password_hash varchar(255) not null, primary key (user_id));
+alter table if exists auth.tokens add constraint FK2dylsfo39lgjyqml2tbe0b0ss foreign key (user_id) references auth.users;
