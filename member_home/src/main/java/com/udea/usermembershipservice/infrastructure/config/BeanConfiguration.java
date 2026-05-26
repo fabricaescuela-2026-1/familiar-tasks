@@ -1,5 +1,7 @@
 package com.udea.usermembershipservice.infrastructure.config;
 
+import java.beans.BeanProperty;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +33,8 @@ import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.rep
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.repository.SpringDataJpaRepository;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.repository.SpringDataMemberHomeJpaRepository;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.repository.SpringDataRoleJpaRepository;
-
+import com.udea.usermembershipservice.aplication.port.in.IPersonUseCase;
+import com.udea.usermembershipservice.aplication.useCase.PersonUsecase;
 
 @Configuration
 public class BeanConfiguration {
@@ -56,6 +59,7 @@ public class BeanConfiguration {
         return new MemberHomePersistenceMapper();
     }
 
+
     @Bean
     public IPersonRepositoryPort personRepositoryPort(
             SpringDataJpaRepository springDataJpaRepository,
@@ -70,6 +74,13 @@ public class BeanConfiguration {
             RolePersistenceMapper rolePersistenceMapper
     ) {
         return new RolePersistenceAdapter(springDataRoleJpaRepository, rolePersistenceMapper);
+    }
+
+        @Bean
+    public IPersonUseCase personUseCase(
+            IPersonRepositoryPort personRepositoryPort
+    ) {
+        return new PersonUsecase(personRepositoryPort);
     }
 
     @Bean
@@ -152,3 +163,5 @@ public class BeanConfiguration {
         return new ServiceBusAuditLogQueueAdapter(auditLogSenderClient);
     }
 }
+
+

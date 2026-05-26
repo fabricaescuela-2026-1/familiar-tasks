@@ -10,8 +10,11 @@ import com.udea.usermembershipservice.aplication.useCase.dto.mermberHome.Created
 import com.udea.usermembershipservice.aplication.useCase.dto.mermberHome.MemberHomeDto;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,9 +23,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
 
-
-
 @RestController
+@SecurityScheme(name = "Bearer Authentication", type = SecuritySchemeType.HTTP, bearerFormat = "JWT", scheme = "bearer")
 @Tag(name = "Miembros de Hogar", description = "Operaciones para asociar personas a un hogar, consultar su vinculacion y eliminarla.")
 public class MemberHomeController {
 
@@ -38,6 +40,7 @@ public class MemberHomeController {
         @ApiResponse(responseCode = "400", description = "Datos invalidos para asociar el miembro"),
         @ApiResponse(responseCode = "404", description = "No se encontro la persona, el hogar o el rol indicado")
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("save/memberHome")
     public void saveMemberHome(@RequestBody CreatedMemberHomeDto createdMemberHomeDto) {
         createdMemberHome.createdMemberHome(
@@ -52,16 +55,18 @@ public class MemberHomeController {
         @ApiResponse(responseCode = "200", description = "Asociacion eliminada correctamente"),
         @ApiResponse(responseCode = "404", description = "No se encontro la asociacion solicitada")
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("delete/memberHome")
     public void deleteMemberHome(@RequestParam String nameHome, @RequestParam String gmail) {
         createdMemberHome.deleteMemberHome(nameHome, gmail);
     }
 
-    @Operation(summary = "Consultar hogar de un miembro", description = "Obtiene la vinculacion de un usuario con su hogar a partir del correo electronico.")
+    @Operation(summary = "Consultar hogar de un miembro", description = "Obtiene la vinculacion de un usuario con su hogar, incluyendo el rol asignado dentro del hogar.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Vinculacion consultada correctamente"),
         @ApiResponse(responseCode = "404", description = "No se encontro informacion del miembro en un hogar")
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("get/memberHome")
     public CompletableFuture<MemberHomeDto> getMemberHome(@RequestParam UUID personId, @RequestParam UUID homeId) {
         return createdMemberHome.getMemberHome(personId, homeId);
@@ -73,6 +78,7 @@ public class MemberHomeController {
         @ApiResponse(responseCode = "400", description = "Datos inválidos para actualizar el rol"),
         @ApiResponse(responseCode = "404", description = "No se encontró el hogar, la persona o el rol indicado")
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("updateRole")
     public ResponseEntity<String> updateRoleMemberHome(@RequestParam String nameHome, @RequestParam String gmail, @RequestParam String newRol, @RequestParam String gmailAdmin) {
         createdMemberHome.updateRoleMemberHome(nameHome, gmail, newRol, gmailAdmin);

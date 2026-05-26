@@ -14,11 +14,15 @@ import com.udea.usermembershipservice.aplication.useCase.dto.role.CreateRoleDto;
 import com.udea.usermembershipservice.aplication.useCase.dto.role.RoleDto;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
+@SecurityScheme(name = "Bearer Authentication", type = SecuritySchemeType.HTTP, bearerFormat = "JWT", scheme = "bearer")
 @Tag(name = "Roles", description = "Operaciones para crear, consultar y eliminar roles de usuario.")
 public class RoleController {
 
@@ -33,6 +37,7 @@ public class RoleController {
         @ApiResponse(responseCode = "200", description = "Rol registrado correctamente"),
         @ApiResponse(responseCode = "400", description = "Datos invalidos para registrar el rol")
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("registerRole")
     public ResponseEntity<Void> registerRole(@RequestBody CreateRoleDto createRoleDto, @RequestParam String gmail) {
         createRoleUseCase.createdRole(createRoleDto, gmail);
@@ -43,6 +48,7 @@ public class RoleController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de roles obtenida correctamente")
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("getRoles")
     public ResponseEntity<List<RoleDto>> getAllRoles() {
         return ResponseEntity.ok(createRoleUseCase.geatAllRoles());
@@ -53,6 +59,7 @@ public class RoleController {
         @ApiResponse(responseCode = "200", description = "Rol encontrado correctamente"),
         @ApiResponse(responseCode = "404", description = "No se encontro el rol solicitado")
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("getRoleByName")
     public ResponseEntity<RoleDto> getRoleByName(@RequestParam String name) {
         return ResponseEntity.ok(createRoleUseCase.getRoleByName(name));
@@ -63,6 +70,7 @@ public class RoleController {
         @ApiResponse(responseCode = "200", description = "Rol eliminado correctamente"),
         @ApiResponse(responseCode = "404", description = "No se encontro el rol a eliminar")
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("deleteRole")
     public ResponseEntity<Void> deleteRole(@RequestParam String name) {
         createRoleUseCase.deleteRole(name);
