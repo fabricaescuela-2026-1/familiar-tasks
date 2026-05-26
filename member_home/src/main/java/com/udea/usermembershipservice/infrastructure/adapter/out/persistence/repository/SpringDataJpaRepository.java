@@ -9,6 +9,7 @@ import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.ent
 
 public interface SpringDataJpaRepository extends JpaRepository<PersonJpaEntity, UUID> {
     public Optional<PersonJpaEntity> findByEmail(String email);
+    public void deleteByEmail(String email);
     
 
 }
