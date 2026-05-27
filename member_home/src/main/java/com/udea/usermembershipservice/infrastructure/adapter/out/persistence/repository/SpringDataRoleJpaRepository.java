@@ -10,4 +10,5 @@ import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.ent
 public interface SpringDataRoleJpaRepository extends JpaRepository<RoleJpaEntity, UUID> {
 
     Optional<RoleJpaEntity> findByNameIgnoreCase(String name);
+    Optional<RoleJpaEntity> findById(UUID id);
 }

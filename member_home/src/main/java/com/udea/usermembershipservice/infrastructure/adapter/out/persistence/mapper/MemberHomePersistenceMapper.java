@@ -3,7 +3,6 @@ package com.udea.usermembershipservice.infrastructure.adapter.out.persistence.ma
 import java.util.UUID;
 
 import com.udea.usermembershipservice.aplication.useCase.dto.mermberHome.MemberHomeDto;
-import com.udea.usermembershipservice.domain.model.Home;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.entity.HomeJpaEntity;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.entity.MemberHomeJpaEntity;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.entity.MemberHomeJpaEntityId;
