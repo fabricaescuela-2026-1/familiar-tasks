@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -71,7 +72,7 @@ public class RoleController {
         @ApiResponse(responseCode = "404", description = "No se encontro el rol a eliminar")
     })
     @SecurityRequirement(name = "Bearer Authentication")
-    @PostMapping("deleteRole")
+    @DeleteMapping("deleteRole")
     public ResponseEntity<Void> deleteRole(@RequestParam String name) {
         createRoleUseCase.deleteRole(name);
         return ResponseEntity.ok().build();

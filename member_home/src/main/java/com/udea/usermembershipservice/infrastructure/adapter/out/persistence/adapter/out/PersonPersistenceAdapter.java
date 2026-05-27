@@ -36,8 +36,4 @@ public class PersonPersistenceAdapter implements IPersonRepositoryPort {
         return repository.findById(idPerson).map(mapper::toDomain);
     }
 
-    @Override
-    public void deleteUserByEmail(String email) {
-        repository.deleteByEmail(email);
-    }
 }
