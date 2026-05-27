@@ -1,5 +1,6 @@
 package com.udea.usermembershipservice.infrastructure.adapter.out.persistence.adapter.out;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,6 +35,11 @@ public class PersonPersistenceAdapter implements IPersonRepositoryPort {
     @Override
     public Optional<Person> getUserById(UUID idPerson) {
         return repository.findById(idPerson).map(mapper::toDomain);
+    }
+
+    @Override
+    public List<Person> getAllUsers() {
+        return repository.findAll().stream().map(mapper::toDomain).toList();
     }
 
 }

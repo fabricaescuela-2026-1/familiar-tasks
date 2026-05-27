@@ -15,6 +15,7 @@ import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.map
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.repository.SpringDataHomeJpaRepository;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.repository.SpringDataJpaRepository;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.repository.SpringDataMemberHomeJpaRepository;
+import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.repository.SpringDataRoleJpaRepository;
 
 @Transactional
 public class MemberHomePersistenceAdapter implements IMemberHomeRepositoryPort {
@@ -23,16 +24,19 @@ public class MemberHomePersistenceAdapter implements IMemberHomeRepositoryPort {
     private final SpringDataJpaRepository personRepository;
     private final MemberHomePersistenceMapper mapper;
     private final SpringDataHomeJpaRepository homeRepository;
+    private final SpringDataRoleJpaRepository roleRepository;
 
     public MemberHomePersistenceAdapter(
             SpringDataMemberHomeJpaRepository repository,
             SpringDataJpaRepository personRepository,
             MemberHomePersistenceMapper mapper,
-            SpringDataHomeJpaRepository homeRepository) {
+            SpringDataHomeJpaRepository homeRepository,
+            SpringDataRoleJpaRepository roleRepository) {
         this.repository = repository;
         this.personRepository = personRepository;
         this.mapper = mapper;
         this.homeRepository = homeRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -84,5 +88,21 @@ public class MemberHomePersistenceAdapter implements IMemberHomeRepositoryPort {
             .orElseThrow(() -> new RuntimeException("Member home not found"));
         memberHome.setRoleId(newRol);
         repository.save(memberHome);
+    }
+
+    @Override
+    public List<String> getAllHomesByPersonId(UUID personId) {
+        return repository.findAllHomeIdsByIdPersonId(personId).stream()
+            .flatMap(homeId -> homeRepository.findById(homeId).stream())
+            .map(homeJpaEntity -> homeJpaEntity.getName())
+            .toList();
+    }
+
+    @Override
+    public List<String> getAllRolesById(UUID idRole) {
+        return repository.findAllRoleIdsByIdPersonId(idRole).stream()
+        .flatMap(roleId -> roleRepository.findById(roleId).stream())
+        .map(roleJpaEntity -> roleJpaEntity.getName())
+        .toList();
     }
 }

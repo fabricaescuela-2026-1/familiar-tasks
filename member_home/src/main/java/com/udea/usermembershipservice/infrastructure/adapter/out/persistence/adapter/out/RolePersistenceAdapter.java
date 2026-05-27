@@ -54,4 +54,13 @@ public class RolePersistenceAdapter implements IRoleRepositoryPort {
 
         repository.deleteById(role.getIdRole());
     }
+
+    @Override
+    public String getRoleNameById(UUID idRole) {
+        return repository.findById(idRole)
+            .map(mapper::toDomain)
+            .map(Role::getName)
+            .orElseThrow(() -> new RuntimeException("Role not found"));
+    }
+
 }

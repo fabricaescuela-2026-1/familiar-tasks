@@ -1,7 +1,5 @@
 package com.udea.usermembershipservice.infrastructure.config;
 
-import java.beans.BeanProperty;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +10,7 @@ import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import com.udea.usermembershipservice.aplication.port.in.ICreateHomeUseCase;
 import com.udea.usermembershipservice.aplication.port.in.ICreateRoleUseCase;
 import com.udea.usermembershipservice.aplication.port.in.ICreatedMemberHome;
+import com.udea.usermembershipservice.aplication.port.in.IPersonUseCase;
 import com.udea.usermembershipservice.aplication.port.out.IAuditLogQueuePort;
 import com.udea.usermembershipservice.aplication.port.out.IHomeRepositoryPort;
 import com.udea.usermembershipservice.aplication.port.out.IMemberHomeRepositoryPort;
@@ -21,6 +20,7 @@ import com.udea.usermembershipservice.infrastructure.adapter.out.audit.ServiceBu
 import com.udea.usermembershipservice.aplication.useCase.CreateMemberHomeUseCase;
 import com.udea.usermembershipservice.aplication.useCase.CreatedHomeUseCase;
 import com.udea.usermembershipservice.aplication.useCase.CreatedRoleUseCase;
+import com.udea.usermembershipservice.aplication.useCase.PersonUsecase;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.adapter.out.HomePersistenceAdapter;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.adapter.out.MemberHomePersistenceAdapter;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.adapter.out.PersonPersistenceAdapter;
@@ -88,13 +88,15 @@ public class BeanConfiguration {
             SpringDataMemberHomeJpaRepository springDataMemberHomeJpaRepository,
             SpringDataJpaRepository springDataJpaRepository,
             MemberHomePersistenceMapper memberHomePersistenceMapper,
-            SpringDataHomeJpaRepository springDataHomeJpaRepository
+            SpringDataHomeJpaRepository springDataHomeJpaRepository,
+            SpringDataRoleJpaRepository springDataRoleJpaRepository
     ) {
         return new MemberHomePersistenceAdapter(
             springDataMemberHomeJpaRepository,
             springDataJpaRepository,
             memberHomePersistenceMapper,
-            springDataHomeJpaRepository
+            springDataHomeJpaRepository,
+            springDataRoleJpaRepository
         );
     }
 
@@ -132,6 +134,11 @@ public class BeanConfiguration {
             auditLogQueuePort
         );
     }
+
+    @Bean
+    public IPersonUseCase personUseCase(IPersonRepositoryPort personRepositoryPort, IMemberHomeRepositoryPort memberHomeRepositoryPort, IRoleRepositoryPort roleRepositoryPort) {
+        return new PersonUsecase(personRepositoryPort, memberHomeRepositoryPort, roleRepositoryPort);
+   }
 
     @Bean
     public RestTemplate restTemplate() {
