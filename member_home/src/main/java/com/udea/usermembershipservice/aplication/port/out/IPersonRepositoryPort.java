@@ -9,5 +9,4 @@ public interface IPersonRepositoryPort {
     void saveUser(Person person);
     Optional<Person> getUserByEmail(String email);
     Optional<Person> getUserById(UUID idPerson);
-    void deleteUserByEmail(String email);
 }

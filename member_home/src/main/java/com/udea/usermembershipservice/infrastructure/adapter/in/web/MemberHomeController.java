@@ -20,6 +20,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
 
@@ -56,7 +58,7 @@ public class MemberHomeController {
         @ApiResponse(responseCode = "404", description = "No se encontro la asociacion solicitada")
     })
     @SecurityRequirement(name = "Bearer Authentication")
-    @GetMapping("delete/memberHome")
+    @DeleteMapping("delete/memberHome")
     public void deleteMemberHome(@RequestParam String nameHome, @RequestParam String gmail) {
         createdMemberHome.deleteMemberHome(nameHome, gmail);
     }
@@ -79,7 +81,7 @@ public class MemberHomeController {
         @ApiResponse(responseCode = "404", description = "No se encontró el hogar, la persona o el rol indicado")
     })
     @SecurityRequirement(name = "Bearer Authentication")
-    @PostMapping("updateRole")
+    @PutMapping("updateRole")
     public ResponseEntity<String> updateRoleMemberHome(@RequestParam String nameHome, @RequestParam String gmail, @RequestParam String newRol, @RequestParam String gmailAdmin) {
         createdMemberHome.updateRoleMemberHome(nameHome, gmail, newRol, gmailAdmin);
         return ResponseEntity.ok("Rol actualizado correctamente");
