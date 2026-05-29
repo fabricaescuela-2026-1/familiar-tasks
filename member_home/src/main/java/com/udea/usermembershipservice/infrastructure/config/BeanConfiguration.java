@@ -33,6 +33,7 @@ import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.rep
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.repository.SpringDataJpaRepository;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.repository.SpringDataMemberHomeJpaRepository;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.repository.SpringDataRoleJpaRepository;
+import com.udea.usermembershipservice.infrastructure.util.JwtUtils;
 
 
 @Configuration
@@ -124,14 +125,18 @@ public class BeanConfiguration {
             IPersonRepositoryPort personRepositoryPort,
             IRoleRepositoryPort roleRepositoryPort,
             IMemberHomeRepositoryPort memberHomeRepositoryPort,
-            IAuditLogQueuePort auditLogQueuePort
+            IAuditLogQueuePort auditLogQueuePort,
+            JwtUtils jwtUtils,
+            IPersonRepositoryPort personRepository
     ) {
         return new CreateMemberHomeUseCase(
             homeRepositoryPort,
             personRepositoryPort,
             roleRepositoryPort,
             memberHomeRepositoryPort,
-            auditLogQueuePort
+            auditLogQueuePort,
+            jwtUtils,
+            personRepository
         );
     }
 
