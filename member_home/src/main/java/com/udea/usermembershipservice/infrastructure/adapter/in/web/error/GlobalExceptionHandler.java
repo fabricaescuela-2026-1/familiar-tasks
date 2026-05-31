@@ -12,6 +12,8 @@ import com.udea.usermembershipservice.aplication.useCase.exception.PersistenceEx
 import com.udea.usermembershipservice.aplication.useCase.exception.SearchException;
 import com.udea.usermembershipservice.domain.exception.InvalidDataException;
 
+import org.springframework.dao.DataIntegrityViolationException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -65,7 +67,15 @@ public class GlobalExceptionHandler {
         if (hasCause(ex, "already exists")) {
             return HttpStatus.CONFLICT;
         }
-        if (hasCause(ex, "invalid")) {
+        Throwable cause = ex.getCause();
+        if (cause instanceof IllegalArgumentException || cause instanceof InvalidDataException) {
+            return HttpStatus.BAD_REQUEST;
+        }
+        if (cause instanceof DataIntegrityViolationException) {
+            return HttpStatus.CONFLICT;
+        }
+        if (hasCause(ex, "invalid") || hasCause(ex, "not an admin") || hasCause(ex, "only administrator")
+                || hasCause(ex, "cannot be null") || hasCause(ex, "empty")) {
             return HttpStatus.BAD_REQUEST;
         }
         return HttpStatus.INTERNAL_SERVER_ERROR;
