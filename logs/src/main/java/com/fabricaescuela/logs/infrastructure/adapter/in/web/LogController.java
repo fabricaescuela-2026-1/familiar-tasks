@@ -7,6 +7,7 @@ import com.fabricaescuela.logs.application.service.LogService;
 import com.fabricaescuela.logs.domain.ports.in.CreateLogUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class LogController {
 
     @PostMapping
     @Operation(summary = "Create a new log entry", description = "Creates a new log entry with the provided details")
-    public ResponseEntity<LogResponse> createLog(@RequestBody LogRequest logRequest){
+    public ResponseEntity<LogResponse> createLog(@Valid @RequestBody LogRequest logRequest){
         var savedLog = createLogUseCase.execute(
                 logRequest.id(),
                 logRequest.idUser(),
