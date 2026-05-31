@@ -9,6 +9,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.fabricaescuela.tasks.domain.exceptions.PriorityNotFoundException;
 import com.fabricaescuela.tasks.domain.exceptions.StatusNotFoundException;
+import com.fabricaescuela.tasks.domain.exceptions.UserNotValidException;
 import com.fabricaescuela.tasks.infraestructure.presentation.dtos.ProblemDetails;
 
 @RestControllerAdvice
@@ -71,6 +72,18 @@ public class GlobalExceptionHandler {
     var problemDetails = ProblemDetails.builder()
         .type("https://tasks/priority-not-found")
         .title("Priority Not Found")
+        .status(HttpStatus.BAD_REQUEST.value())
+        .detail(ex.getMessage())
+        .instance(ex.getStackTrace()[0].getMethodName())
+        .build();
+    return ResponseEntity.badRequest().body(problemDetails);
+  }
+
+  @ExceptionHandler(UserNotValidException.class)
+  public ResponseEntity<ProblemDetails> handleUserNotValidException(UserNotValidException ex) {
+    var problemDetails = ProblemDetails.builder()
+        .type("https://tasks/user-not-valid")
+        .title("User Not Valid")
         .status(HttpStatus.BAD_REQUEST.value())
         .detail(ex.getMessage())
         .instance(ex.getStackTrace()[0].getMethodName())
