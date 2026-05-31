@@ -5,11 +5,13 @@ import com.fabricaescuela.logs.domain.ports.out.LogRepositoryPort;
 import com.fabricaescuela.logs.infrastructure.adapter.out.persistence.LogEntity;
 import com.fabricaescuela.logs.infrastructure.adapter.out.persistence.LogMongoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@Profile("!acceptance")
 @RequiredArgsConstructor
 public class LogRepositoryAdapter implements LogRepositoryPort {
     private final LogMongoRepository mongoRepository;
