@@ -117,21 +117,18 @@ public class AuthService implements AuthUseCase {
     if (password.length() < 8) {
       throw new IllegalArgumentException("Password must be at least 8 characters");
     }
-    boolean hasUpper = false;
-    boolean hasLower = false;
-    boolean hasDigit = false;
-    boolean hasSpecial = false;
-    for (int i = 0; i < password.length(); i++) {
-      char c = password.charAt(i);
-      if (Character.isUpperCase(c)) hasUpper = true;
-      else if (Character.isLowerCase(c)) hasLower = true;
-      else if (Character.isDigit(c)) hasDigit = true;
-      else hasSpecial = true;
+    if (password.chars().noneMatch(Character::isUpperCase)) {
+      throw new IllegalArgumentException("Password must contain at least one uppercase letter");
     }
-    if (!hasUpper) throw new IllegalArgumentException("Password must contain at least one uppercase letter");
-    if (!hasLower) throw new IllegalArgumentException("Password must contain at least one lowercase letter");
-    if (!hasDigit) throw new IllegalArgumentException("Password must contain at least one digit");
-    if (!hasSpecial) throw new IllegalArgumentException("Password must contain at least one special character");
+    if (password.chars().noneMatch(Character::isLowerCase)) {
+      throw new IllegalArgumentException("Password must contain at least one lowercase letter");
+    }
+    if (password.chars().noneMatch(Character::isDigit)) {
+      throw new IllegalArgumentException("Password must contain at least one digit");
+    }
+    if (password.chars().allMatch(c -> Character.isUpperCase(c) || Character.isLowerCase(c) || Character.isDigit(c))) {
+      throw new IllegalArgumentException("Password must contain at least one special character");
+    }
   }
 
   @Override

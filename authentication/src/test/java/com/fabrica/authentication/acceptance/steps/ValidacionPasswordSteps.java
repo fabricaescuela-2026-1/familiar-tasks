@@ -52,9 +52,7 @@ public class ValidacionPasswordSteps {
 
   @Entonces("el sistema rechaza la operación")
   public void rechazaOperacion() {
-    int status = context.getLastResponse().statusCode();
-    assertTrue(status >= 400 && status < 500,
-        "Se esperaba estado 4xx, se obtuvo " + status);
+    rechazaContrasena();
   }
 
   @Y("la respuesta indica que las contraseñas no coinciden")
