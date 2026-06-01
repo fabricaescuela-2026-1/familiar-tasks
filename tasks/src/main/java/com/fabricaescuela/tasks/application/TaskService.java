@@ -3,6 +3,7 @@ package com.fabricaescuela.tasks.application;
 import java.util.List;
 import java.util.UUID;
 
+import com.fabricaescuela.tasks.application.dto.TaskSearchCriteria;
 import com.fabricaescuela.tasks.domain.exceptions.UserNotValidException;
 import com.fabricaescuela.tasks.domain.ports.out.TaskAuditLogPort;
 import com.fabricaescuela.tasks.domain.ports.out.UserValidationPort;
@@ -68,5 +69,10 @@ public class TaskService implements TaskUseCasePort {
   @Override
   public List<Task> findAll() {
     return repository.findAll();
+  }
+
+  @Override
+  public List<Task> search(TaskSearchCriteria criteria) {
+    return repository.search(criteria);
   }
 }
