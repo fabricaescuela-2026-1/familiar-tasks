@@ -1,51 +1,45 @@
 package com.fabrica.authentication.infrastructure.web.config;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import com.azure.storage.queue.QueueClient;
 import com.azure.storage.queue.QueueClientBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class UsersQueueConfig {
 
-  // CONFIGURATION OF THE HOGAR MEMBER MICROSERVICE
-  @Value("${azure.storage.users.connection-string}")
+  @Value("${azure.storage.connection-string}")
   private String connectionString;
 
-  @Value("${azure.storage.users.queue-name}")
-  private String queueName;
+  @Value("${azure.storage.memebership-service.queue-name}")
+  private String membershipServiceQueueName;
+
+  @Value("${azure.storage.tasks-service.queue-name}")
+  private String tasksServiceQueueName;
 
   @Bean(name = "queueHomeMember")
   public QueueClient queueClient() {
     return new QueueClientBuilder()
-        .connectionString(connectionString)
-        .queueName(queueName)
-        .buildClient();
+      .connectionString(connectionString)
+      .queueName(membershipServiceQueueName)
+      .buildClient();
   }
-
-  // CONFIGURATION OF THE TAKS MICROSERVICE
-  @Value("${azure.storage.users-task.connection-string}")
-  private String taksUsersConnectionString;
-  @Value("${azure.storage.users-task.queue-name}")
-  private String taskUsersQueueName;
 
   @Bean(name = "queueTasks")
   public QueueClient queueUsersTaskClient() {
     return new QueueClientBuilder()
-        .connectionString(taksUsersConnectionString)
-        .queueName(taskUsersQueueName)
-        .buildClient();
+      .connectionString(connectionString)
+      .queueName(tasksServiceQueueName)
+      .buildClient();
   }
 
   @Bean
   public ObjectMapper objectMapper() {
     return new ObjectMapper()
-        .findAndRegisterModules()
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+      .findAndRegisterModules()
+      .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
   }
 }
