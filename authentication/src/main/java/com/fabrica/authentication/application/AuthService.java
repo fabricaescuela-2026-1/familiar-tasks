@@ -7,6 +7,7 @@ import com.fabrica.authentication.application.dto.TokenResponse;
 import com.fabrica.authentication.application.ports.in.AuthUseCase;
 import com.fabrica.authentication.application.ports.out.UserQueuePort;
 import com.fabrica.authentication.domain.exceptions.EmailAlreadyExitsException;
+import com.fabrica.authentication.domain.exceptions.InactiveAccountException;
 import com.fabrica.authentication.domain.exceptions.InvalidRefreshTokenException;
 import com.fabrica.authentication.domain.exceptions.InvalidTokenException;
 import com.fabrica.authentication.domain.exceptions.UserNotFoundException;
@@ -85,18 +86,16 @@ public class AuthService implements AuthUseCase {
 
   @Override
   public AuthResponse login(LoginRequest request) {
-    // TODO: validate login request
-
     var user = userRepo
       .findByEmail(request.email())
-      .orElseThrow(() ->
-        new UserNotFoundException(
-          "User email " + request.email() + " not found"
-        )
-      );
+      .orElseThrow(() -> new UserNotFoundException());
 
     if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
       throw new UserNotFoundException("Invalid credentials");
+    }
+
+    if (!user.isActive()) {
+      throw new InactiveAccountException();
     }
 
     Token accessToken = jwtService.generateAccesToken(user);
