@@ -1,15 +1,12 @@
 package com.fabrica.authentication.infrastructure.database;
 
-import java.util.Optional;
-
-import org.springframework.stereotype.Repository;
-
 import com.fabrica.authentication.domain.model.User;
 import com.fabrica.authentication.domain.ports.out.UserRepositoryPort;
 import com.fabrica.authentication.infrastructure.database.entities.mappers.UserEntityMapper;
 import com.fabrica.authentication.infrastructure.database.jpa.UserJpaRepository;
-
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,7 +22,13 @@ public class UserRepositoryImpl implements UserRepositoryPort {
 
   @Override
   public User save(User user) {
-    return userEntityMapper.toDomain(userJpaRepo.save(userEntityMapper.toEntity(user)));
+    return userEntityMapper.toDomain(
+      userJpaRepo.save(userEntityMapper.toEntity(user))
+    );
   }
 
+  @Override
+  public void activateUserByEmail(String email) {
+    userJpaRepo.activateUserByEmail(email);
+  }
 }

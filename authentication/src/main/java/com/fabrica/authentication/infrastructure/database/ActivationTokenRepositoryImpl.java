@@ -1,12 +1,11 @@
 package com.fabrica.authentication.infrastructure.database;
 
-import com.fabrica.authentication.domain.exceptions.UserNotFoundException;
 import com.fabrica.authentication.domain.model.ActivationToken;
+import com.fabrica.authentication.domain.model.User;
 import com.fabrica.authentication.domain.ports.out.ActivationTokenRepositoryPort;
-import com.fabrica.authentication.infrastructure.database.entities.UserEntity;
 import com.fabrica.authentication.infrastructure.database.entities.mappers.ActivationTokenMapper;
+import com.fabrica.authentication.infrastructure.database.entities.mappers.UserEntityMapper;
 import com.fabrica.authentication.infrastructure.database.jpa.ActivationTokenJpaRepository;
-import com.fabrica.authentication.infrastructure.database.jpa.UserJpaRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,22 +19,15 @@ public class ActivationTokenRepositoryImpl
   implements ActivationTokenRepositoryPort
 {
 
-  private final UserJpaRepository userRepo;
   private final ActivationTokenJpaRepository tokenRepo;
   private final ActivationTokenMapper tokenMapper;
+  private final UserEntityMapper userMapper;
 
   @Override
-  public void save(ActivationToken token) {
-    var userEntity = getUserEntity(token);
+  public void save(ActivationToken token, User user) {
+    var userEntity = userMapper.toEntity(user);
     var tokenEntity = tokenMapper.mapToEntity(token, userEntity);
     tokenRepo.save(tokenEntity);
-  }
-
-  private UserEntity getUserEntity(ActivationToken token) {
-    var userEntity = userRepo
-      .findByEmail(token.getEmail())
-      .orElseThrow(UserNotFoundException::new);
-    return userEntity;
   }
 
   @Override
