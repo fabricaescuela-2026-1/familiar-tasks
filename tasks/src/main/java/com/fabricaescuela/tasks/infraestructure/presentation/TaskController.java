@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fabricaescuela.tasks.application.dto.TaskSearchCriteria;
 import com.fabricaescuela.tasks.domain.ports.in.TaskUseCasePort;
 import com.fabricaescuela.tasks.infraestructure.presentation.dtos.RequestTask;
 import com.fabricaescuela.tasks.infraestructure.presentation.dtos.ResponseTask;
@@ -58,5 +60,13 @@ public class TaskController {
   public ResponseEntity<List<ResponseTask>> findAll() {
     var tasks = service.findAll().stream().map(ResponseTaskMapper::toResponse).toList();
     return ResponseEntity.ok(tasks);
+  }
+
+  @GetMapping("/search")
+  @Operation(summary = "Buscar tareas por nombre o descripción", description = "Búsqueda parcial case-insensitive; sin keyword retorna todas", method = "GET")
+  public ResponseEntity<List<ResponseTask>> search(@RequestParam(required = false) String keyword) {
+    var tareas = service.search(new TaskSearchCriteria(keyword)).stream()
+        .map(ResponseTaskMapper::toResponse).toList();
+    return ResponseEntity.ok(tareas);
   }
 }

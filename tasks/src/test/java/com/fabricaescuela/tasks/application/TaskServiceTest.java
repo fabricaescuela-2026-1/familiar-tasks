@@ -1,5 +1,6 @@
 package com.fabricaescuela.tasks.application;
 
+import com.fabricaescuela.tasks.application.dto.TaskSearchCriteria;
 import com.fabricaescuela.tasks.domain.exceptions.UserNotValidException;
 import com.fabricaescuela.tasks.domain.model.Task;
 import com.fabricaescuela.tasks.domain.ports.out.TaskAuditLogPort;
@@ -247,6 +248,53 @@ class TaskServiceTest {
 
         // Assert
         verify(auditLog, atLeastOnce()).publishTaskCreated(any(), any());
+    }
+
+    // HU19-búsqueda Scenario 1 — búsqueda con keyword retorna lista filtrada del repositorio
+    @Test
+    void busquedaConKeywordRetornaListaFiltrada() {
+        // Arrange
+        TaskSearchCriteria criteria = new TaskSearchCriteria("barrer");
+        List<Task> tareas = List.of(tareaValida());
+        when(repository.search(criteria)).thenReturn(tareas);
+
+        // Act
+        List<Task> resultado = taskService.search(criteria);
+
+        // Assert
+        assertEquals(1, resultado.size());
+        verify(repository).search(criteria);
+    }
+
+    // HU19-búsqueda Scenario 2 — sin coincidencias retorna lista vacía con delegación al repositorio
+    @Test
+    void busquedaSinCoincidenciasRetornaListaVacia() {
+        // Arrange
+        TaskSearchCriteria criteria = new TaskSearchCriteria("xyz_no_existe");
+        when(repository.search(criteria)).thenReturn(List.of());
+
+        // Act
+        List<Task> resultado = taskService.search(criteria);
+
+        // Assert
+        assertTrue(resultado.isEmpty());
+        verify(repository).search(criteria);
+    }
+
+    // HU19-búsqueda Scenario 3 — keyword vacío delega al repositorio sin filtro adicional
+    @Test
+    void busquedaConKeywordVacioRetornaTodasLasTareas() {
+        // Arrange
+        TaskSearchCriteria criteria = new TaskSearchCriteria("");
+        List<Task> tareas = List.of(tareaValida(), tareaValida());
+        when(repository.search(criteria)).thenReturn(tareas);
+
+        // Act
+        List<Task> resultado = taskService.search(criteria);
+
+        // Assert
+        assertEquals(2, resultado.size());
+        verify(repository).search(criteria);
     }
 
     // HU13 Scenario 1 — la tarea creada sin estado explícito recibe PENDIENTE por defecto

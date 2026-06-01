@@ -3,6 +3,7 @@ package com.fabricaescuela.tasks.domain.ports.out;
 import java.util.List;
 import java.util.UUID;
 
+import com.fabricaescuela.tasks.application.dto.TaskSearchCriteria;
 import com.fabricaescuela.tasks.domain.model.Task;
 
 public interface TaskRepositoryPort {
@@ -13,4 +14,6 @@ public interface TaskRepositoryPort {
   void delete(UUID taskId);
 
   List<Task> findAll();
+
+  List<Task> search(TaskSearchCriteria criteria);
 }
