@@ -19,14 +19,14 @@ import com.fabrica.authentication.domain.ports.out.UserRepositoryPort;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-@Log
+@Slf4j
 @Transactional
 public class AuthService implements AuthUseCase {
 
@@ -93,7 +93,7 @@ public class AuthService implements AuthUseCase {
     if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
       throw new UserNotFoundException("Invalid credentials");
     }
-
+    log.info("El usuario esta activo: {}", user.isActive());
     if (!user.isActive()) {
       throw new InactiveAccountException();
     }

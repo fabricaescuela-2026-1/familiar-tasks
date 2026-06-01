@@ -18,6 +18,7 @@ public class ActivationTokenMapper {
     var now = LocalDateTime.now();
     return ActivationTokenEntity.builder()
       .user(userEntity)
+      .id(token.getId())
       .codeHash(token.getCodeHash())
       .createdAt(now)
       .expiresAt(now.plusMinutes(15))

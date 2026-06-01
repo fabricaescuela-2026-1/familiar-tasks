@@ -14,6 +14,6 @@ public interface UserJpaRepository extends JpaRepository<UserEntity, UUID> {
 
   @Modifying
   @Transactional
-  @Query("UPDATE UserEntity u SET u.active = TRUE WHERE u.email = :email")
+  @Query("UPDATE UserEntity u SET u.isActive = TRUE WHERE u.email = :email")
   int activateUserByEmail(@Param("email") String email);
 }

@@ -25,8 +25,8 @@ public class ResendEmailComonent implements EmailSendingPort {
     EmailAccountVerification emailAccountVerification
   ) {
     var email = new CreateEmailOptions.Builder()
-      .from("Familiar Tasks  <onboarding@resend.dev>")
-      .to(emailAccountVerification.recipient())
+      .from("Familiar Tasks <onboarding@resend.dev>")
+      .to("b.jaraba@udea.edu.co")
       .subject("Verificación de la cuenta")
       .html(
         "<h1>Verifica tu cuenta de <strong>Familiar Tasks</strong></h1>" +

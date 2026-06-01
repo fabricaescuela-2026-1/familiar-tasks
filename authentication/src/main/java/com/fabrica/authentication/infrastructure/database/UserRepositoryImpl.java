@@ -12,23 +12,23 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepositoryPort {
 
-  private final UserJpaRepository userJpaRepo;
+  private final UserJpaRepository userRepo;
   private final UserEntityMapper userEntityMapper;
 
   @Override
   public Optional<User> findByEmail(String email) {
-    return userJpaRepo.findByEmail(email).map(userEntityMapper::toDomain);
+    return userRepo.findByEmail(email).map(userEntityMapper::toDomain);
   }
 
   @Override
   public User save(User user) {
     return userEntityMapper.toDomain(
-      userJpaRepo.save(userEntityMapper.toEntity(user))
+      userRepo.save(userEntityMapper.toEntity(user))
     );
   }
 
   @Override
   public void activateUserByEmail(String email) {
-    userJpaRepo.activateUserByEmail(email);
+    userRepo.activateUserByEmail(email);
   }
 }

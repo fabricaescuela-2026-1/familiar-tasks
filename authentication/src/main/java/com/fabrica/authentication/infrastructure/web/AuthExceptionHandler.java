@@ -2,6 +2,7 @@ package com.fabrica.authentication.infrastructure.web;
 
 import com.fabrica.authentication.domain.exceptions.EmailAlreadyExitsException;
 import com.fabrica.authentication.domain.exceptions.InactiveAccountException;
+import com.fabrica.authentication.domain.exceptions.InvalidActivationTokenException;
 import com.fabrica.authentication.domain.exceptions.InvalidRefreshTokenException;
 import com.fabrica.authentication.domain.exceptions.InvalidTokenException;
 import com.fabrica.authentication.domain.exceptions.UserNotFoundException;
@@ -53,6 +54,13 @@ public class AuthExceptionHandler {
   @ExceptionHandler(InactiveAccountException.class)
   public ResponseEntity<Map<String, Object>> handleInactiveAccount(
     InactiveAccountException ex
+  ) {
+    return body(HttpStatus.UNAUTHORIZED, ex.getMessage());
+  }
+
+  @ExceptionHandler(InvalidActivationTokenException.class)
+  public ResponseEntity<Map<String, Object>> handleInvalidActivationToken(
+    InvalidActivationTokenException ex
   ) {
     return body(HttpStatus.UNAUTHORIZED, ex.getMessage());
   }

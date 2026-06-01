@@ -25,4 +25,11 @@ public interface ActivationTokenJpaRepository
     "UPDATE ActivationTokenEntity t SET t.invalidated = TRUE WHERE t.user.email = :email"
   )
   int invalidateAllByUserEmail(@Param("email") String email);
+
+  @Modifying
+  @Transactional
+  @Query(
+    "UPDATE ActivationTokenEntity t SET t.attempts = t.attempts + 1 WHERE t.id = :id"
+  )
+  int increaseAttemptsByOne(@Param("id") UUID id);
 }

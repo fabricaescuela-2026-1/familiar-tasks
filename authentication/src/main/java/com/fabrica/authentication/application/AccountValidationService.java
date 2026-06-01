@@ -1,11 +1,5 @@
 package com.fabrica.authentication.application;
 
-import java.security.SecureRandom;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.fabrica.authentication.application.dto.ActivationAccountResponse;
 import com.fabrica.authentication.application.dto.mail.EmailAccountVerification;
 import com.fabrica.authentication.application.ports.in.AccountValidationUseCase;
@@ -16,8 +10,12 @@ import com.fabrica.authentication.domain.model.ActivationToken;
 import com.fabrica.authentication.domain.model.User;
 import com.fabrica.authentication.domain.ports.out.ActivationTokenRepositoryPort;
 import com.fabrica.authentication.domain.ports.out.UserRepositoryPort;
-
+import java.security.SecureRandom;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +36,7 @@ public class AccountValidationService implements AccountValidationUseCase {
 
     var token = ActivationToken.builder()
       .email(email)
+      .id(UUID.randomUUID())
       .codeHash(codeHash)
       .build();
 
@@ -64,6 +63,9 @@ public class AccountValidationService implements AccountValidationUseCase {
   public ActivationAccountResponse activateAccount(String email, String code) {
     var user = getUser(email);
     var token = getToken(email);
+
+    activationTokenRepo.increaseAttemptsByOne(token.getId());
+
     token.validateToken();
     if (!passwordEncoder.matches(code, token.getCodeHash())) {
       throw new InvalidActivationTokenException("Código incorrecto");
