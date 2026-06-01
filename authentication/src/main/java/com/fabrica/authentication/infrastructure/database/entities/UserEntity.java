@@ -1,12 +1,11 @@
 package com.fabrica.authentication.infrastructure.database.entities;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,7 +34,11 @@ public class UserEntity {
   @Column(name = "password_hash", nullable = false)
   private String passwordHash;
 
-  @Column(name = "is_active", nullable = false)
+  @Column(
+    name = "is_active",
+    nullable = false,
+    columnDefinition = "BOOLEAN DEFAULT FALSE"
+  )
   private Boolean isActive;
 
   @Column(length = 255, nullable = false, unique = true)

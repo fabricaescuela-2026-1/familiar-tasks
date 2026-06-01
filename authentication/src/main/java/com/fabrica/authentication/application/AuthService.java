@@ -1,12 +1,5 @@
 package com.fabrica.authentication.application;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.fabrica.authentication.application.dto.AuthResponse;
 import com.fabrica.authentication.application.dto.LoginRequest;
 import com.fabrica.authentication.application.dto.RegisterRequest;
@@ -22,15 +15,20 @@ import com.fabrica.authentication.domain.model.User;
 import com.fabrica.authentication.domain.ports.out.JwtServicePort;
 import com.fabrica.authentication.domain.ports.out.TokenRepositoryPort;
 import com.fabrica.authentication.domain.ports.out.UserRepositoryPort;
-
+import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 @Log
 @Transactional
 public class AuthService implements AuthUseCase {
+
   private final JwtServicePort jwtService;
   private final TokenRepositoryPort tokenRepo;
   private final UserRepositoryPort userRepo;
@@ -49,22 +47,27 @@ public class AuthService implements AuthUseCase {
       throw new IllegalArgumentException("Email is required");
     }
     validatePasswordComplexity(req.password());
-    if (req.passwordConfirmation() != null && !req.password().equals(req.passwordConfirmation())) {
-      throw new IllegalArgumentException("Password and confirmation do not match");
+    if (
+      req.passwordConfirmation() != null &&
+      !req.password().equals(req.passwordConfirmation())
+    ) {
+      throw new IllegalArgumentException(
+        "Password and confirmation do not match"
+      );
     }
 
     if (userRepo.findByEmail(req.email()).isPresent()) {
       throw new EmailAlreadyExitsException(req.email());
     }
     var user = User.builder()
-        .name(req.name())
-        .userId(UUID.randomUUID())
-        .lastname(req.lastname())
-        .email(req.email())
-        .passwordHash(passwordEncoder.encode(req.password()))
-        .createdAt(LocalDateTime.now())
-        .isActive(true)
-        .build();
+      .name(req.name())
+      .userId(UUID.randomUUID())
+      .lastname(req.lastname())
+      .email(req.email())
+      .passwordHash(passwordEncoder.encode(req.password()))
+      .createdAt(LocalDateTime.now())
+      .isActive(false)
+      .build();
 
     userRepo.save(user);
     Token accessToken = jwtService.generateAccesToken(user);
@@ -74,15 +77,23 @@ public class AuthService implements AuthUseCase {
 
     log.info("Registration complete");
     userQueuePort.sendUserMessage(user);
-    return new AuthResponse(accessToken.getTokenHash(), refreshToken.getTokenHash());
+    return new AuthResponse(
+      accessToken.getTokenHash(),
+      refreshToken.getTokenHash()
+    );
   }
 
   @Override
   public AuthResponse login(LoginRequest request) {
     // TODO: validate login request
 
-    var user = userRepo.findByEmail(request.email())
-        .orElseThrow(() -> new UserNotFoundException("User email " + request.email() + " not found"));
+    var user = userRepo
+      .findByEmail(request.email())
+      .orElseThrow(() ->
+        new UserNotFoundException(
+          "User email " + request.email() + " not found"
+        )
+      );
 
     if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
       throw new UserNotFoundException("Invalid credentials");
@@ -93,13 +104,17 @@ public class AuthService implements AuthUseCase {
 
     tokenRepo.save(accessToken);
     tokenRepo.save(refreshToken);
-    return new AuthResponse(accessToken.getTokenHash(), refreshToken.getTokenHash());
+    return new AuthResponse(
+      accessToken.getTokenHash(),
+      refreshToken.getTokenHash()
+    );
   }
 
   @Override
   public AuthResponse refreshToken(String refreshToken) {
-    var token = tokenRepo.findByHash(refreshToken)
-        .orElseThrow(InvalidRefreshTokenException::new);
+    var token = tokenRepo
+      .findByHash(refreshToken)
+      .orElseThrow(InvalidRefreshTokenException::new);
 
     if (!jwtService.isTokenValid(token)) {
       throw new InvalidRefreshTokenException();
@@ -107,7 +122,10 @@ public class AuthService implements AuthUseCase {
 
     Token newAccessToken = jwtService.generateAccesToken(token.getUser());
     tokenRepo.save(newAccessToken);
-    return new AuthResponse(newAccessToken.getTokenHash(), token.getTokenHash());
+    return new AuthResponse(
+      newAccessToken.getTokenHash(),
+      token.getTokenHash()
+    );
   }
 
   private void validatePasswordComplexity(String password) {
@@ -115,7 +133,9 @@ public class AuthService implements AuthUseCase {
       throw new IllegalArgumentException("Password is required");
     }
     if (password.length() < 8) {
-      throw new IllegalArgumentException("Password must be at least 8 characters");
+      throw new IllegalArgumentException(
+        "Password must be at least 8 characters"
+      );
     }
     boolean hasUpper = false;
     boolean hasLower = false;
@@ -128,32 +148,46 @@ public class AuthService implements AuthUseCase {
       else if (Character.isDigit(c)) hasDigit = true;
       else hasSpecial = true;
     }
-    if (!hasUpper) throw new IllegalArgumentException("Password must contain at least one uppercase letter");
-    if (!hasLower) throw new IllegalArgumentException("Password must contain at least one lowercase letter");
-    if (!hasDigit) throw new IllegalArgumentException("Password must contain at least one digit");
-    if (!hasSpecial) throw new IllegalArgumentException("Password must contain at least one special character");
+    if (!hasUpper) throw new IllegalArgumentException(
+      "Password must contain at least one uppercase letter"
+    );
+    if (!hasLower) throw new IllegalArgumentException(
+      "Password must contain at least one lowercase letter"
+    );
+    if (!hasDigit) throw new IllegalArgumentException(
+      "Password must contain at least one digit"
+    );
+    if (!hasSpecial) throw new IllegalArgumentException(
+      "Password must contain at least one special character"
+    );
   }
 
   @Override
   public TokenResponse getToken(String tokenHash) {
-    Token token = tokenRepo.findByHash(tokenHash)
-        .orElseThrow(InvalidTokenException::new);
+    Token token = tokenRepo
+      .findByHash(tokenHash)
+      .orElseThrow(InvalidTokenException::new);
 
-    if (token.getExpirationDate() != null && token.getExpirationDate().isBefore(LocalDateTime.now())) {
+    if (
+      token.getExpirationDate() != null &&
+      token.getExpirationDate().isBefore(LocalDateTime.now())
+    ) {
       throw new InvalidTokenException();
     }
-    if (token.getExpiratedAt() != null && token.getExpiratedAt().isBefore(LocalDateTime.now())) {
+    if (
+      token.getExpiratedAt() != null &&
+      token.getExpiratedAt().isBefore(LocalDateTime.now())
+    ) {
       throw new InvalidTokenException();
     }
 
     return TokenResponse.builder()
-        .tokenId(token.getTokenId())
-        .tokenHash(token.getTokenHash())
-        .expirationDate(token.getExpirationDate())
-        .userId(token.getUser().getUserId())
-        .tokenType(token.getTokenType())
-        .expiratedAt(token.getExpiratedAt())
-        .build();
+      .tokenId(token.getTokenId())
+      .tokenHash(token.getTokenHash())
+      .expirationDate(token.getExpirationDate())
+      .userId(token.getUser().getUserId())
+      .tokenType(token.getTokenType())
+      .expiratedAt(token.getExpiratedAt())
+      .build();
   }
-
 }
