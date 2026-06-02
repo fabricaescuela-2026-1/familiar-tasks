@@ -3,6 +3,8 @@ package com.fabricaescuela.tasks.application;
 import java.util.List;
 import java.util.UUID;
 
+import java.util.Optional;
+
 import com.fabricaescuela.tasks.application.dto.TaskSearchCriteria;
 import com.fabricaescuela.tasks.domain.exceptions.ForbiddenTaskOperationException;
 import com.fabricaescuela.tasks.domain.exceptions.TaskNotFoundException;
@@ -64,12 +66,16 @@ public class TaskService implements TaskUseCasePort {
       throw new UserNotValidException(
           "User not found in the specified home");
     }
-    return repository.update(taskId, task);
+    Task updated = repository.update(taskId, task);
+    auditLog.publishTaskUpdated(updated.getGuestId(), taskId);
+    return updated;
   }
 
   @Override
   public void delete(UUID taskId) {
+    Optional<Task> existing = repository.findById(taskId);
     repository.delete(taskId);
+    existing.ifPresent(t -> auditLog.publishTaskDeleted(t.getGuestId(), taskId));
   }
 
   @Override

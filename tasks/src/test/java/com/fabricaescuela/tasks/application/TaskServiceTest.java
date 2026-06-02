@@ -223,7 +223,6 @@ class TaskServiceTest {
 
         // Assert
         verify(repository).delete(taskId);
-        verifyNoMoreInteractions(repository);
     }
 
     // HU28 Scenario 1 — al actualizar una tarea debe quedar registro en el audit log
@@ -239,7 +238,7 @@ class TaskServiceTest {
         taskService.update(taskId, tarea);
 
         // Assert
-        verify(auditLog).publishTaskCreated(tarea.getGuestId(), taskId);
+        verify(auditLog).publishTaskUpdated(tarea.getGuestId(), taskId);
     }
 
     // HU28 Scenario 1 — al eliminar una tarea debe quedar registro en el audit log
@@ -247,12 +246,14 @@ class TaskServiceTest {
     void eliminacionDeTareaPublicaAuditLog() {
         // Arrange
         UUID taskId = UUID.randomUUID();
+        Task tarea = tareaValida();
+        when(repository.findById(taskId)).thenReturn(Optional.of(tarea));
 
         // Act
         taskService.delete(taskId);
 
         // Assert
-        verify(auditLog, atLeastOnce()).publishTaskCreated(any(), any());
+        verify(auditLog).publishTaskDeleted(tarea.getGuestId(), taskId);
     }
 
     // HU19-búsqueda Scenario 1 — búsqueda con keyword retorna lista filtrada del repositorio

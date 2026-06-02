@@ -23,6 +23,8 @@ public class E2EAuditLogConfig {
     public TaskAuditLogPort taskAuditLogPortNoOp() {
         return new TaskAuditLogPort() {
             @Override public void publishTaskCreated(java.util.UUID userId, java.util.UUID taskId) { /* no-op */ }
+            @Override public void publishTaskUpdated(java.util.UUID userId, java.util.UUID taskId) { /* no-op */ }
+            @Override public void publishTaskDeleted(java.util.UUID userId, java.util.UUID taskId) { /* no-op */ }
             @Override public void publishTaskStatusChanged(java.util.UUID userId, java.util.UUID taskId, String newStatus) { /* no-op */ }
         };
     }
