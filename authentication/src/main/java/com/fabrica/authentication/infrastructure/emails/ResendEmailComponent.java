@@ -7,9 +7,7 @@ import com.resend.Resend;
 import com.resend.services.emails.model.CreateEmailOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
-@Component
 @Slf4j
 public class ResendEmailComponent implements EmailSendingPort {
 

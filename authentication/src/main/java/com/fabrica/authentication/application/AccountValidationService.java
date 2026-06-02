@@ -11,8 +11,6 @@ import com.fabrica.authentication.domain.model.ActivationToken;
 import com.fabrica.authentication.domain.model.User;
 import com.fabrica.authentication.domain.ports.out.ActivationTokenRepositoryPort;
 import com.fabrica.authentication.domain.ports.out.UserRepositoryPort;
-import jakarta.validation.constraints.Email;
-import java.security.SecureRandom;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
