@@ -77,6 +77,24 @@ public class ApiClient {
     return send(req);
   }
 
+  public ApiResponse patchChangeStatus(UUID taskId, String status, String username) {
+    Map<String, Object> body = new LinkedHashMap<>();
+    body.put("status", status);
+    try {
+      String json = mapper.writeValueAsString(body);
+      HttpRequest.Builder builder = HttpRequest.newBuilder()
+          .uri(URI.create(url("/task/" + taskId + "/status")))
+          .header("Content-Type", "application/json")
+          .method("PATCH", HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8));
+      if (username != null) {
+        builder.header("X-Test-Username", username);
+      }
+      return send(builder.build());
+    } catch (Exception e) {
+      throw new IllegalStateException("Error serializando JSON", e);
+    }
+  }
+
   public ApiResponse getAllTasks() {
     HttpRequest req = HttpRequest.newBuilder()
         .uri(URI.create(url("/task/all")))
