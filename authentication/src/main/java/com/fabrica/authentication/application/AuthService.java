@@ -81,7 +81,7 @@ public class AuthService implements AuthUseCase {
     var user = getUserByEmail(request.email());
 
     if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
-      throw new UserNotFoundException("Invalid credentials");
+      throw new UserNotFoundException("Credenciales incorrectas");
     }
     log.info("El usuario esta activo: {}", user.isActive());
     if (!user.isActive()) {

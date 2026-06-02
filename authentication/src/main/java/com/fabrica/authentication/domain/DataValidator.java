@@ -8,11 +8,11 @@ public class DataValidator {
 
   private void validatePasswordComplexity(String password) {
     if (password == null || password.isBlank()) {
-      throw new IllegalArgumentException("Password is required");
+      throw new IllegalArgumentException("La contraseña es requerida");
     }
     if (password.length() < 8) {
       throw new IllegalArgumentException(
-        "Password must be at least 8 characters"
+        "La contraseña debe tener al menos 8 caracteres"
       );
     }
     boolean hasUpper = false;
@@ -27,28 +27,28 @@ public class DataValidator {
       else hasSpecial = true;
     }
     if (!hasUpper) throw new IllegalArgumentException(
-      "Password must contain at least one uppercase letter"
+      "La contraseña debe contener al menos una letra mayúscula"
     );
     if (!hasLower) throw new IllegalArgumentException(
-      "Password must contain at least one lowercase letter"
+      "La contraseña debe contener al menos una letra minúscula"
     );
     if (!hasDigit) throw new IllegalArgumentException(
-      "Password must contain at least one digit"
+      "La contraseña debe contener al menos un dígito"
     );
     if (!hasSpecial) throw new IllegalArgumentException(
-      "Password must contain at least one special character"
+      "La contraseña debe contener al menos un carácter especial"
     );
   }
 
   public void validateNewUserRequest(RegisterRequest req) {
     if (req.name() == null || req.name().isBlank()) {
-      throw new IllegalArgumentException("Name is required");
+      throw new IllegalArgumentException("El nombre es requerido");
     }
     if (req.lastname() == null || req.lastname().isBlank()) {
-      throw new IllegalArgumentException("Lastname is required");
+      throw new IllegalArgumentException("El apellido es requerido");
     }
     if (req.email() == null || req.email().isBlank()) {
-      throw new IllegalArgumentException("Email is required");
+      throw new IllegalArgumentException("El email es requerido");
     }
     validatePasswordComplexity(req.password());
     if (
@@ -56,7 +56,7 @@ public class DataValidator {
       !req.password().equals(req.passwordConfirmation())
     ) {
       throw new IllegalArgumentException(
-        "Password and confirmation do not match"
+        "La contraseña y la confirmación no coinciden"
       );
     }
   }
