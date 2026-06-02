@@ -1,5 +1,6 @@
 package com.fabricaescuela.tasks.domain.ports.in;
 
+import com.fabricaescuela.tasks.application.dto.TaskSearchCriteria;
 import com.fabricaescuela.tasks.domain.model.Task;
 import java.util.List;
 import java.util.UUID;
@@ -11,5 +12,9 @@ public interface TaskUseCasePort {
 
   void delete(UUID taskId);
 
+  Task changeStatus(UUID taskId, String newStatus, String username);
+
   List<Task> findAll();
+
+  List<Task> search(TaskSearchCriteria criteria);
 }

@@ -22,7 +22,7 @@ spec:
             - containerPort: 8080
           env:
             - name: DB_URL
-              value: "jdbc:postgresql://fabrica-escuela.postgres.database.azure.com:5432/identify_service?currentSchema=users"
+              value: "jdbc:postgresql://dpg-d7s7ohog4nts73d5o1qg-a.virginia-postgres.render.com:5432/fabrica_escuela?sslmode=require&currentSchema=users"
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -80,3 +80,174 @@ spec:
   ports:
     - port: 8080
       targetPort: 8080
+---
+# =============================================================================
+# CONFIGMAP PARA PROMETHEUS
+# =============================================================================
+# ¿Qué es un ConfigMap?
+# Es un objeto de Kubernetes que sirve para guardar archivos de configuración
+# (como si fuera un archivo suelto). Luego lo "montamos" dentro del contenedor
+# de Prometheus como si fuera una carpeta.
+#
+# ¿Por qué necesitamos esto?
+# Porque Prometheus necesita un archivo prometheus.yml para saber a quién
+# tiene que "escrapear" (recolectar métricas). En docker-compose montábamos
+# el archivo local ./prometheus.yml con un volume. En Kubernetes no puedes
+# montar archivos locales fácilmente, usas ConfigMaps.
+#
+# ¿Qué cambia respecto a tu prometheus.yml local?
+# - Antes: targets: ['host.docker.internal:8082']
+#   Esto funcionaba en Docker porque host.docker.internal apuntaba a tu máquina
+#   local y el :8082 era el puerto mapeado del contenedor.
+#
+# - Ahora: targets: ['member-home:8080']
+#   En Kubernetes, los Services crean nombres DNS internos. El Service de tu
+#   app se llama "member-home", así que Prometheus dentro del clúster puede
+#   alcanzarlo como "member-home:8080". No necesita host.docker.internal.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+    scrape_configs:
+      - job_name: 'spring-boot-app'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: ['member-home:8080']
+            labels:
+              application: 'member-home'
+
+---
+# =============================================================================
+# PROMETHEUS - DEPLOYMENT
+# =============================================================================
+# Un Deployment es un objeto que le dice a Kubernetes:
+# "Quiero X copias de un contenedor con tal imagen, ejecutándose así".
+#
+# ¿Qué hace este Deployment?
+# Crea un Pod con la imagen oficial prom/prometheus.
+#
+# ¿Cómo recibe la configuración?
+# Mediante un "volume" (volumen) que monta el ConfigMap que creamos arriba
+# en la ruta /etc/prometheus/. Prometheus lee su configuración de
+# /etc/prometheus/prometheus.yml por defecto.
+#
+# ¿Qué puerto usa?
+# El 9090, que es el puerto por defecto de Prometheus.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus/
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-config
+
+---
+# =============================================================================
+# PROMETHEUS - SERVICE
+# =============================================================================
+# El Service es la "puerta de entrada" al Pod de Prometheus.
+# Como Prometheus solo necesita ser consultado por Grafana (que está dentro
+# del clúster), usamos type: ClusterIP (el tipo por defecto).
+#
+# ClusterIP: El Service solo es accesible desde DENTRO del clúster.
+# No podemos acceder a Prometheus desde nuestro navegador directamente
+# (a menos que hagamos port-forward), pero Grafana sí puede porque está
+# dentro del mismo clúster.
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - port: 9090
+      targetPort: 9090
+
+---
+# =============================================================================
+# GRAFANA - DEPLOYMENT
+# =============================================================================
+# Creamos un Pod con la imagen oficial grafana/grafana.
+#
+# Variable GF_SECURITY_ADMIN_PASSWORD:
+# Grafana permite configurar la contraseña del admin con variables de entorno.
+# GF_SECURITY_ADMIN_PASSWORD=admin significa que el usuario admin tendrá
+# contraseña "admin". Es la misma configuración que tienes en tu
+# docker-compose.yml.
+#
+# Puerto: 3000 (el puerto por defecto de Grafana).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana
+          ports:
+            - containerPort: 3000
+          env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: "admin"
+
+---
+# =============================================================================
+# GRAFANA - SERVICE
+# =============================================================================
+# A diferencia de Prometheus, a Grafana SÍ queremos acceder desde nuestro
+# navegador (para ver los dashboards). Por eso usamos type: LoadBalancer.
+#
+# LoadBalancer: En un clúster local (minikube, kind), esto te permite
+# acceder al servicio desde localhost en un puerto específico.
+#   - En minikube: minikube service grafana
+#   - En kind: kubectl port-forward service/grafana 3000:3000
+#   - En Docker Desktop con Kubernetes incluido: asigna automáticamente
+#     localhost:3000
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+spec:
+  type: LoadBalancer
+  selector:
+    app: grafana
+  ports:
+    - port: 3000
+      targetPort: 3000

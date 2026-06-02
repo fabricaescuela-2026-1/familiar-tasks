@@ -14,6 +14,8 @@ import com.udea.usermembershipservice.aplication.useCase.dto.mermberHome.MemberD
 import com.udea.usermembershipservice.aplication.useCase.dto.mermberHome.MemberHomeDto;
 import com.udea.usermembershipservice.aplication.useCase.exception.PersistenceException;
 import com.udea.usermembershipservice.aplication.useCase.exception.SearchException;
+import com.udea.usermembershipservice.domain.model.Person;
+import com.udea.usermembershipservice.infrastructure.util.JwtUtils;
 
 public class CreateMemberHomeUseCase implements ICreatedMemberHome{
 
@@ -26,14 +28,18 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
     private final IRoleRepositoryPort roleRepositoryPort;
     private final IMemberHomeRepositoryPort memberHomeRepositoryPort;
     private final IAuditLogQueuePort auditLogQueuePort;
+    private final JwtUtils jwtUtils;
+    private final IPersonRepositoryPort personRepository;
 
 
-    public CreateMemberHomeUseCase(IHomeRepositoryPort homeRepositoryPort, IPersonRepositoryPort personRepositoryPort, IRoleRepositoryPort roleRepositoryPort, IMemberHomeRepositoryPort memberHomeRepositoryPort, IAuditLogQueuePort auditLogQueuePort) {
+    public CreateMemberHomeUseCase(IHomeRepositoryPort homeRepositoryPort, IPersonRepositoryPort personRepositoryPort, IRoleRepositoryPort roleRepositoryPort, IMemberHomeRepositoryPort memberHomeRepositoryPort, IAuditLogQueuePort auditLogQueuePort, JwtUtils jwtUtils, IPersonRepositoryPort personRepository) {
         this.homeRepositoryPort = homeRepositoryPort;
         this.personRepositoryPort = personRepositoryPort;
         this.roleRepositoryPort = roleRepositoryPort;
         this.memberHomeRepositoryPort = memberHomeRepositoryPort;
         this.auditLogQueuePort = auditLogQueuePort;
+        this.jwtUtils = jwtUtils;
+        this.personRepository = personRepository;
     }
 
     @Override
@@ -54,9 +60,14 @@ public class CreateMemberHomeUseCase implements ICreatedMemberHome{
     public void deleteMemberHome(String nameHome, String gmail) {
         try {
             var home = homeRepositoryPort.getHomeByName(nameHome).orElseThrow(() -> new RuntimeException(HOME_NOT_FOUND));
-        var person = personRepositoryPort.getUserByEmail(gmail).orElseThrow(() -> new RuntimeException(PERSON_NOT_FOUND));
-
-        memberHomeRepositoryPort.deleteMemberHome(home.getIdHome(), person.getIdPerson());
+            var personDelete = personRepositoryPort.getUserByEmail(gmail).orElseThrow(() -> new RuntimeException(PERSON_NOT_FOUND));
+            String email = jwtUtils.getCurrentUserEmail();
+            Person personLogin = personRepository.getUserByEmail(email).orElseThrow(() -> new RuntimeException("Current user not found"));
+            var memberHomeLogin = memberHomeRepositoryPort.getMemberHome(personLogin.getIdPerson(), home.getIdHome()).orElseThrow(() -> new RuntimeException("Current user is not a member of the home"));
+            if(!memberHomeLogin.roleId().equals(roleRepositoryPort.getRoleByName("Administrador").orElseThrow(() -> new RuntimeException("Admin role not found")).getIdRole())) {
+                throw new IllegalArgumentException("User is not an admin of the home");
+            }
+            memberHomeRepositoryPort.deleteMemberHome(home.getIdHome(), personDelete.getIdPerson());
         } catch (Exception e) {
             throw new PersistenceException("Error deleting member home", e);
         }

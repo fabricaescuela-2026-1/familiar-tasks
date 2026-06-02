@@ -107,8 +107,6 @@ public class RefreshTokenSteps {
 
   @Entonces("el sistema rechaza la acción")
   public void rechazaAccion() {
-    int status = context.getLastResponse().statusCode();
-    assertTrue(status >= 400 && status < 500,
-        "Se esperaba estado 4xx, se obtuvo " + status);
+    rechazaRenovacion();
   }
 }

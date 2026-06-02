@@ -1,0 +1,29 @@
+CREATE SCHEMA IF NOT EXISTS users;
+
+CREATE TABLE IF NOT EXISTS users.person (
+  person_id UUID PRIMARY KEY,
+  name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  active BOOLEAN NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS users.roles (
+  role_id UUID PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS users.home (
+  home_id UUID PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE,
+  created_at TIMESTAMP NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS users.member_home (
+  home_id UUID NOT NULL,
+  person_id UUID NOT NULL,
+  role_id UUID NOT NULL,
+  PRIMARY KEY (home_id, person_id)
+);

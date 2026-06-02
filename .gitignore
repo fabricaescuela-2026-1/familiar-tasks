@@ -1,6 +1,8 @@
 # IntelliJ IDEA - Configuración del espacio de trabajo global
 .idea/
 *.iml
+CLAUDE.md
+.claude/
 
 # Archivos temporales del sistema
 .DS_Store

@@ -1,5 +1,6 @@
 package com.udea.usermembershipservice.infrastructure.adapter.out.persistence.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -9,7 +10,6 @@ import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.ent
 
 public interface SpringDataJpaRepository extends JpaRepository<PersonJpaEntity, UUID> {
     public Optional<PersonJpaEntity> findByEmail(String email);
-    public void deleteByEmail(String email);
-    
+    public List<PersonJpaEntity> findAll();
 
 }

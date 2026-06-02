@@ -141,10 +141,28 @@ public class AuthService implements AuthUseCase {
 
     Token newAccessToken = jwtService.generateAccesToken(token.getUser());
     tokenRepo.save(newAccessToken);
-    return new AuthResponse(
-      newAccessToken.getTokenHash(),
-      token.getTokenHash()
-    );
+    return new AuthResponse(newAccessToken.getTokenHash(), token.getTokenHash());
+  }
+
+  private void validatePasswordComplexity(String password) {
+    if (password == null || password.isBlank()) {
+      throw new IllegalArgumentException("Password is required");
+    }
+    if (password.length() < 8) {
+      throw new IllegalArgumentException("Password must be at least 8 characters");
+    }
+    if (password.chars().noneMatch(Character::isUpperCase)) {
+      throw new IllegalArgumentException("Password must contain at least one uppercase letter");
+    }
+    if (password.chars().noneMatch(Character::isLowerCase)) {
+      throw new IllegalArgumentException("Password must contain at least one lowercase letter");
+    }
+    if (password.chars().noneMatch(Character::isDigit)) {
+      throw new IllegalArgumentException("Password must contain at least one digit");
+    }
+    if (password.chars().allMatch(c -> Character.isUpperCase(c) || Character.isLowerCase(c) || Character.isDigit(c))) {
+      throw new IllegalArgumentException("Password must contain at least one special character");
+    }
   }
 
   @Override

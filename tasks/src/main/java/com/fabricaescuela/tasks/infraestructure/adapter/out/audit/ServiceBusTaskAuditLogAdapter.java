@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory;
 import com.azure.messaging.servicebus.ServiceBusMessage;
 import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import com.fabricaescuela.tasks.application.dto.TaskCreatedLog;
+import com.fabricaescuela.tasks.application.dto.TaskDeletedLog;
+import com.fabricaescuela.tasks.application.dto.TaskStatusChangedLog;
+import com.fabricaescuela.tasks.application.dto.TaskUpdatedLog;
 import com.fabricaescuela.tasks.domain.ports.out.TaskAuditLogPort;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +30,26 @@ public class ServiceBusTaskAuditLogAdapter implements TaskAuditLogPort {
     @Override
     public void publishTaskCreated(UUID userId, UUID taskId) {
         TaskCreatedLog log = TaskCreatedLog.taskCreated(userId, taskId);
+        sendPayload(log);
+    }
+
+    @Override
+    public void publishTaskUpdated(UUID userId, UUID taskId) {
+        sendPayload(TaskUpdatedLog.of(userId, taskId));
+    }
+
+    @Override
+    public void publishTaskDeleted(UUID userId, UUID taskId) {
+        sendPayload(TaskDeletedLog.of(userId, taskId));
+    }
+
+    @Override
+    public void publishTaskStatusChanged(UUID userId, UUID taskId, String newStatus) {
+        TaskStatusChangedLog log = TaskStatusChangedLog.of(userId, taskId, newStatus);
+        sendPayload(log);
+    }
+
+    private void sendPayload(Object log) {
         try {
             String payload = objectMapper.writeValueAsString(log);
             senderClient.sendMessage(new ServiceBusMessage(payload));

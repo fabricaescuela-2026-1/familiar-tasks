@@ -1,5 +1,6 @@
 package com.udea.usermembershipservice.aplication.port.out;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -9,5 +10,5 @@ public interface IPersonRepositoryPort {
     void saveUser(Person person);
     Optional<Person> getUserByEmail(String email);
     Optional<Person> getUserById(UUID idPerson);
-    void deleteUserByEmail(String email);
+    List<Person> getAllUsers();
 }

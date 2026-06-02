@@ -1,5 +1,11 @@
 package com.udea.usermembershipservice.aplication.port.in;
 
+import java.util.List;
+
+import com.udea.usermembershipservice.aplication.useCase.dto.person.PersonDTO;
+
 public interface IPersonUseCase {
-    void deletePerson(String gmail);
+    List<PersonDTO> getAllPersons();
+    PersonDTO getPersonByEmail(String email);
+
 }

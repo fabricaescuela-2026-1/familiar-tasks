@@ -7,8 +7,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import com.fabricaescuela.tasks.domain.exceptions.ForbiddenTaskOperationException;
 import com.fabricaescuela.tasks.domain.exceptions.PriorityNotFoundException;
 import com.fabricaescuela.tasks.domain.exceptions.StatusNotFoundException;
+import com.fabricaescuela.tasks.domain.exceptions.TaskNotFoundException;
+import com.fabricaescuela.tasks.domain.exceptions.UserNotValidException;
 import com.fabricaescuela.tasks.infraestructure.presentation.dtos.ProblemDetails;
 
 @RestControllerAdvice
@@ -76,5 +79,41 @@ public class GlobalExceptionHandler {
         .instance(ex.getStackTrace()[0].getMethodName())
         .build();
     return ResponseEntity.badRequest().body(problemDetails);
+  }
+
+  @ExceptionHandler(UserNotValidException.class)
+  public ResponseEntity<ProblemDetails> handleUserNotValidException(UserNotValidException ex) {
+    var problemDetails = ProblemDetails.builder()
+        .type("https://tasks/user-not-valid")
+        .title("User Not Valid")
+        .status(HttpStatus.BAD_REQUEST.value())
+        .detail(ex.getMessage())
+        .instance(ex.getStackTrace()[0].getMethodName())
+        .build();
+    return ResponseEntity.badRequest().body(problemDetails);
+  }
+
+  @ExceptionHandler(ForbiddenTaskOperationException.class)
+  public ResponseEntity<ProblemDetails> handleForbiddenTaskOperation(ForbiddenTaskOperationException ex) {
+    var problemDetails = ProblemDetails.builder()
+        .type("https://tasks/forbidden-task-operation")
+        .title("Forbidden Task Operation")
+        .status(HttpStatus.FORBIDDEN.value())
+        .detail(ex.getMessage())
+        .instance(ex.getStackTrace()[0].getMethodName())
+        .build();
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problemDetails);
+  }
+
+  @ExceptionHandler(TaskNotFoundException.class)
+  public ResponseEntity<ProblemDetails> handleTaskNotFound(TaskNotFoundException ex) {
+    var problemDetails = ProblemDetails.builder()
+        .type("https://tasks/task-not-found")
+        .title("Task Not Found")
+        .status(HttpStatus.NOT_FOUND.value())
+        .detail(ex.getMessage())
+        .instance(ex.getStackTrace()[0].getMethodName())
+        .build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetails);
   }
 }
