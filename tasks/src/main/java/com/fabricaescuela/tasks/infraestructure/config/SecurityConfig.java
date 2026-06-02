@@ -37,14 +37,14 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(http -> {
                     // EndPoints publicos - Autenticación
-                    http.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
+                    http.requestMatchers(HttpMethod.POST, "/auth/**" ).permitAll();
                     http.requestMatchers(HttpMethod.GET, "/task/**").authenticated();
 
                     // EndPoints Privados - requieren autenticación con token
                     http.requestMatchers(HttpMethod.POST, "/task/**").authenticated();
                     
                     // Permitir Swagger y otros endpoints
-                    http.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll();
+                    http.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/actuator/prometheus").permitAll();
 
                     http.anyRequest().authenticated();
                 })

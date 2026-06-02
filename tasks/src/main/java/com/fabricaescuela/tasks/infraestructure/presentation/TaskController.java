@@ -25,15 +25,15 @@ import com.fabricaescuela.tasks.infraestructure.presentation.dtos.mappers.Reques
 import com.fabricaescuela.tasks.infraestructure.presentation.dtos.mappers.ResponseTaskMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
-//import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-//import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-//import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/task")
 @Tag(name = "Task", description = "Operations for managing tasks")
-//@SecurityScheme(name = "Bearer Authentication", type = SecuritySchemeType.HTTP, bearerFormat = "JWT", scheme = "bearer")
+@SecurityScheme(name = "Bearer Authentication", type = SecuritySchemeType.HTTP, bearerFormat = "JWT", scheme = "bearer")
 public class TaskController {
   private final TaskUseCasePort service;
 
@@ -42,7 +42,7 @@ public class TaskController {
   }
 
   @PostMapping("/create")
-//@SecurityRequirement(name = "Bearer Authentication")
+  @SecurityRequirement(name = "Bearer Authentication")
   @Operation(summary = "Create a new task", description = "Creates a new task with the provided details", method = "POST")
   public ResponseEntity<ResponseTask> createTask(@RequestBody RequestTask request) {
     var task = service.create(RequestTaskMapper.toDomain(request));
@@ -50,7 +50,7 @@ public class TaskController {
   }
 
   @PutMapping("/update/{id}")
-//@SecurityRequirement(name = "Bearer Authentication")
+  @SecurityRequirement(name = "Bearer Authentication")
   @Operation(summary = "Update an existing task", description = "Updates the details of an existing task identified by its ID", method = "PUT")
   public ResponseEntity<ResponseTask> updateTask(@PathVariable UUID id, @RequestBody RequestTask request) {
     var task = service.update(id, RequestTaskMapper.toDomain(request));
@@ -58,7 +58,7 @@ public class TaskController {
   }
 
   @DeleteMapping("/delete/{id}")
-//@SecurityRequirement(name = "Bearer Authentication")
+  @SecurityRequirement(name = "Bearer Authentication")
   @Operation(summary = "Delete a task", description = "Deletes a task identified by its ID", method = "DELETE")
   public ResponseEntity<Void> deleteTask(@PathVariable UUID id) {
     service.delete(id);
@@ -66,7 +66,7 @@ public class TaskController {
   }
 
   @PatchMapping("/{id}/status")
-//@SecurityRequirement(name = "Bearer Authentication")
+  @SecurityRequirement(name = "Bearer Authentication")
   @Operation(summary = "Cambiar el estado de una tarea",
       description = "Solo el miembro asignado (guestId) puede cambiar el estado. HU20",
       method = "PATCH")
@@ -79,7 +79,7 @@ public class TaskController {
   }
 
   @GetMapping("/all")
-//@SecurityRequirement(name = "Bearer Authentication")
+  @SecurityRequirement(name = "Bearer Authentication")
   @Operation(summary = "Find all tasks", description = "Retrieves a list of all tasks", method = "GET")
   public ResponseEntity<List<ResponseTask>> findAll() {
     var tasks = service.findAll().stream().map(ResponseTaskMapper::toResponse).toList();
@@ -87,7 +87,7 @@ public class TaskController {
   }
 
   @GetMapping("/search")
-//@SecurityRequirement(name = "Bearer Authentication")
+  @SecurityRequirement(name = "Bearer Authentication")
   @Operation(summary = "Buscar tareas por nombre o descripción", description = "Búsqueda parcial case-insensitive; sin keyword retorna todas", method = "GET")
   public ResponseEntity<List<ResponseTask>> search(@RequestParam(required = false) String keyword) {
     var tareas = service.search(new TaskSearchCriteria(keyword)).stream()
