@@ -6,9 +6,11 @@ import com.fabrica.authentication.application.dto.RegisterRequest;
 import com.fabrica.authentication.application.dto.TokenResponse;
 
 public interface AuthUseCase {
-  AuthResponse register(RegisterRequest request);
+  void register(RegisterRequest request);
 
-  AuthResponse login(LoginRequest request);
+  void login(LoginRequest request);
+
+  AuthResponse verifyTwoFactorAuthCode(String code, String email);
 
   AuthResponse refreshToken(String refreshToken);
 

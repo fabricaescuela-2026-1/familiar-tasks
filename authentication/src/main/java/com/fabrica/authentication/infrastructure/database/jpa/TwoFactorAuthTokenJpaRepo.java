@@ -13,7 +13,7 @@ public interface TwoFactorAuthTokenJpaRepo
   extends JpaRepository<TwoFactorAuthTokenEntity, UUID>
 {
   @Query(
-    "SELECT t FROM TwoFactorAuthTokenEntity WHERE t.user.email = :email  ORDER BY t.createdAt DESC LIMIT 1"
+    "SELECT t FROM TwoFactorAuthTokenEntity t WHERE t.user.email = :email ORDER BY t.createdAt DESC LIMIT 1"
   )
   Optional<TwoFactorAuthTokenEntity> findLastByUserEmail(
     @Param("email") String email

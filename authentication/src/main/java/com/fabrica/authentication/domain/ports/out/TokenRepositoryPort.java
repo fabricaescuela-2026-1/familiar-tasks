@@ -1,8 +1,7 @@
 package com.fabrica.authentication.domain.ports.out;
 
-import java.util.Optional;
-
 import com.fabrica.authentication.domain.model.Token;
+import java.util.Optional;
 
 public interface TokenRepositoryPort {
   Token save(Token token);

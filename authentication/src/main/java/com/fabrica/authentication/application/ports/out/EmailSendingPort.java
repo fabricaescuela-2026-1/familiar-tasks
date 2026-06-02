@@ -1,7 +1,7 @@
 package com.fabrica.authentication.application.ports.out;
 
-import com.fabrica.authentication.application.dto.mail.EmailAccountVerification;
+import com.fabrica.authentication.application.dto.mail.EmailProperties;
 
 public interface EmailSendingPort {
-  void sendVerificationEmail(EmailAccountVerification emailAccoundVerification);
+  void sendCodeEmail(EmailProperties emailProps);
 }

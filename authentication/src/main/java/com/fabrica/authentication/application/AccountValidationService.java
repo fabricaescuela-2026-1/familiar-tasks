@@ -1,9 +1,10 @@
 package com.fabrica.authentication.application;
 
 import com.fabrica.authentication.application.dto.ActivationAccountResponse;
-import com.fabrica.authentication.application.dto.mail.EmailAccountVerification;
+import com.fabrica.authentication.application.dto.mail.EmailProperties;
 import com.fabrica.authentication.application.ports.in.AccountValidationUseCase;
 import com.fabrica.authentication.application.ports.out.EmailSendingPort;
+import com.fabrica.authentication.application.util.CodeGeneration;
 import com.fabrica.authentication.domain.exceptions.InvalidActivationTokenException;
 import com.fabrica.authentication.domain.exceptions.UserNotFoundException;
 import com.fabrica.authentication.domain.model.ActivationToken;
@@ -25,13 +26,12 @@ public class AccountValidationService implements AccountValidationUseCase {
   private final PasswordEncoder passwordEncoder;
   private final UserRepositoryPort userRepo;
   private final EmailSendingPort emailSendingComp;
-  private final SecureRandom RANDOM = new SecureRandom();
 
   @Override
   @Transactional
   public void createActivationToken(String email) {
     var user = getUser(email);
-    var code = generateSixDigitsCode();
+    var code = CodeGeneration.generateSixDigitCode();
     var codeHash = passwordEncoder.encode(code);
 
     var token = ActivationToken.builder()
@@ -43,15 +43,11 @@ public class AccountValidationService implements AccountValidationUseCase {
     activationTokenRepo.invalidateAllByUserEmail(email);
     activationTokenRepo.save(token, user);
     var emailContent = getEmailContent(email, code);
-    emailSendingComp.sendVerificationEmail(emailContent);
+    emailSendingComp.sendCodeEmail(emailContent);
   }
 
-  private EmailAccountVerification getEmailContent(String email, String code) {
-    return new EmailAccountVerification(code, email);
-  }
-
-  private String generateSixDigitsCode() {
-    return String.format("%06d", RANDOM.nextInt(1_000_000));
+  private EmailProperties getEmailContent(String email, String code) {
+    return new EmailProperties(code, email);
   }
 
   private User getUser(String email) {
