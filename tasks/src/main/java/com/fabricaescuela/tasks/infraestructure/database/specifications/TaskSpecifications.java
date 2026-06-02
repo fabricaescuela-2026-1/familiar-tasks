@@ -10,7 +10,7 @@ public class TaskSpecifications {
 
   public static Specification<TaskEntity> nameOrDescriptionContains(String keyword) {
     if (keyword == null || keyword.isBlank()) {
-      return null;
+      return (root, query, builder) -> builder.conjunction();
     }
     String patron = "%" + keyword.toLowerCase() + "%";
     return (root, query, builder) -> builder.or(
