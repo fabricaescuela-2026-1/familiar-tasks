@@ -1,8 +1,8 @@
 package com.fabrica.authentication.infrastructure.web;
 
-import com.fabrica.authentication.application.dto.ActivationAccountRequest;
 import com.fabrica.authentication.application.dto.ActivationAccountResponse;
 import com.fabrica.authentication.application.dto.AuthResponse;
+import com.fabrica.authentication.application.dto.CodeAuthRequest;
 import com.fabrica.authentication.application.dto.LoginRequest;
 import com.fabrica.authentication.application.dto.RegisterRequest;
 import com.fabrica.authentication.application.dto.TokenResponse;
@@ -10,6 +10,7 @@ import com.fabrica.authentication.application.ports.in.AccountValidationUseCase;
 import com.fabrica.authentication.application.ports.in.AuthUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,25 +36,32 @@ public class AuthController {
 
   @Operation(
     summary = "login a user",
-    description = "get an acces token and a refresh token using username - password authentication",
+    description = "create a two factor authentication code and send it to the user's email",
     method = "POST"
   )
   @PostMapping("/login")
-  public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-    return new ResponseEntity<>(authUseCase.login(request), HttpStatus.OK);
+  public ResponseEntity<Map<String, String>> login(
+    @RequestBody LoginRequest request
+  ) {
+    authUseCase.login(request);
+    return new ResponseEntity<>(
+      Map.of("message", "Revisa tu correo e ingresa el código de verificación"),
+      HttpStatus.OK
+    );
   }
 
   @Operation(
     summary = "register a new user on syste",
-    description = "register a new user on system and get a acces token and a refresh token",
+    description = "register a new user on system",
     method = "POST"
   )
   @PostMapping("/register")
-  public ResponseEntity<AuthResponse> register(
+  public ResponseEntity<Map<String, String>> register(
     @RequestBody RegisterRequest request
   ) {
+    authUseCase.register(request);
     return new ResponseEntity<>(
-      authUseCase.register(request),
+      Map.of("message", "Usuario registrado exitosamente"),
       HttpStatus.CREATED
     );
   }
@@ -75,7 +83,7 @@ public class AuthController {
 
   @Operation(
     summary = "Get token  details",
-    description = "Get token details seding the token hash",
+    description = "Get token details sending the token hash",
     method = "GET"
   )
   @GetMapping("/token/{tokenHash}")
@@ -86,11 +94,22 @@ public class AuthController {
   }
 
   @PostMapping("/activate/code")
-  public ResponseEntity<Void> getActivationCode(
+  public ResponseEntity<Map<String, String>> getActivationCode(
     @RequestParam("email") String email
   ) {
     accountValidationUseCase.createActivationToken(email);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok().body(
+      Map.of("message", "Código de activación enviado")
+    );
+  }
+
+  @PostMapping("/login/verification-code")
+  public ResponseEntity<AuthResponse> verifyTwoFactorAuthCode(
+    @RequestBody CodeAuthRequest request
+  ) {
+    return ResponseEntity.ok(
+      authUseCase.verifyTwoFactorAuthCode(request.code(), request.email())
+    );
   }
 
   @Operation(
@@ -100,7 +119,7 @@ public class AuthController {
   )
   @PostMapping("/activate")
   public ResponseEntity<ActivationAccountResponse> activateAccount(
-    @RequestBody ActivationAccountRequest request
+    @RequestBody CodeAuthRequest request
   ) {
     return ResponseEntity.ok(
       accountValidationUseCase.activateAccount(request.email(), request.code())

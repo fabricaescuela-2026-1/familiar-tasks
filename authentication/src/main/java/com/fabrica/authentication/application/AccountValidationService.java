@@ -11,6 +11,7 @@ import com.fabrica.authentication.domain.model.ActivationToken;
 import com.fabrica.authentication.domain.model.User;
 import com.fabrica.authentication.domain.ports.out.ActivationTokenRepositoryPort;
 import com.fabrica.authentication.domain.ports.out.UserRepositoryPort;
+import jakarta.validation.constraints.Email;
 import java.security.SecureRandom;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,11 @@ public class AccountValidationService implements AccountValidationUseCase {
   }
 
   private EmailProperties getEmailContent(String email, String code) {
-    return new EmailProperties(code, email);
+    return EmailProperties.builder()
+      .code(code)
+      .recipient(email)
+      .subject("Código de activación")
+      .build();
   }
 
   private User getUser(String email) {

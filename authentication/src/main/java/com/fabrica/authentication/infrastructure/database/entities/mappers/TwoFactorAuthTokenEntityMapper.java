@@ -13,6 +13,7 @@ public class TwoFactorAuthTokenEntityMapper {
 
   public TwoFactorAuthTokenEntity toEntity(TwoFactorAuthToken token) {
     return TwoFactorAuthTokenEntity.builder()
+      .id(token.getId())
       .user(userEntityMapper.toEntity(token.getUser()))
       .codeHash(token.getCodeHash())
       .createdAt(token.getCreatedAt())

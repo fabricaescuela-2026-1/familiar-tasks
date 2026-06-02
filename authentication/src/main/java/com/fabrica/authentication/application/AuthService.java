@@ -215,6 +215,7 @@ public class AuthService implements AuthUseCase {
   @Override
   @Transactional
   public AuthResponse verifyTwoFactorAuthCode(String code, String email) {
+    log.info("Verifying two-factor auth code for user: {}", email);
     var user = getUserByEmail(email);
     var authToken = getTwoFactorAuthTokenByEmail(email);
 
