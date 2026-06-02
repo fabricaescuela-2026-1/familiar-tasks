@@ -59,20 +59,25 @@ public class AuthService implements AuthUseCase {
     if (existsUserWithEmail) {
       throw new EmailAlreadyExitsException(req.email());
     }
-    var user = User.builder()
-      .name(req.name())
-      .userId(UUID.randomUUID())
-      .lastname(req.lastname())
-      .email(req.email())
-      .passwordHash(passwordEncoder.encode(req.password()))
-      .createdAt(LocalDateTime.now())
-      .isActive(false)
-      .build();
 
+    var user = createUserFromRequest(req);
     userRepo.save(user);
 
     log.info("Registration complete");
     userQueuePort.sendUserMessage(user);
+  }
+
+  private User createUserFromRequest(RegisterRequest req) {
+    var hashedPassword = passwordEncoder.encode(req.password());
+    return User.builder()
+      .name(req.name())
+      .userId(UUID.randomUUID())
+      .lastname(req.lastname())
+      .email(req.email())
+      .passwordHash(hashedPassword)
+      .createdAt(LocalDateTime.now())
+      .isActive(false)
+      .build();
   }
 
   @Override
@@ -83,7 +88,7 @@ public class AuthService implements AuthUseCase {
     if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
       throw new UserNotFoundException("Credenciales incorrectas");
     }
-    log.info("El usuario esta activo: {}", user.isActive());
+
     if (!user.isActive()) {
       throw new InactiveAccountException();
     }
@@ -131,6 +136,9 @@ public class AuthService implements AuthUseCase {
       throw new InvalidRefreshTokenException();
     }
 
+    var userEmail = token.getUserEmail();
+    jwtService.invalidateAllTokensByUserEmail(userEmail);
+
     Token newAccessToken = jwtService.generateAccesToken(token.getUser());
     tokenRepo.save(newAccessToken);
     return new AuthResponse(
@@ -173,7 +181,8 @@ public class AuthService implements AuthUseCase {
   public AuthResponse verifyTwoFactorAuthCode(String code, String email) {
     log.info("Verifying two-factor auth code for user: {}", email);
     var user = getUserByEmail(email);
-    var authToken = getTwoFactorAuthTokenByEmail(email);
+    var authToken = getLastTwoFactorAuthTokenByEmail(email);
+    log.info("two-factor auth token, econtrado: {}", authToken);
 
     twoFactorAuthTokenRepo.increaseAttemptsByOne(authToken.getId());
 
@@ -199,7 +208,7 @@ public class AuthService implements AuthUseCase {
     return userRepo.findByEmail(email).orElseThrow(UserNotFoundException::new);
   }
 
-  private TwoFactorAuthToken getTwoFactorAuthTokenByEmail(String email) {
+  private TwoFactorAuthToken getLastTwoFactorAuthTokenByEmail(String email) {
     return twoFactorAuthTokenRepo
       .findLastByUserEmail(email)
       .orElseThrow(() ->
