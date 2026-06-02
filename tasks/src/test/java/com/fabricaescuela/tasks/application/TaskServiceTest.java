@@ -1,10 +1,13 @@
 package com.fabricaescuela.tasks.application;
 
 import com.fabricaescuela.tasks.application.dto.TaskSearchCriteria;
+import com.fabricaescuela.tasks.domain.exceptions.ForbiddenTaskOperationException;
+import com.fabricaescuela.tasks.domain.exceptions.TaskNotFoundException;
 import com.fabricaescuela.tasks.domain.exceptions.UserNotValidException;
 import com.fabricaescuela.tasks.domain.model.Task;
 import com.fabricaescuela.tasks.domain.ports.out.TaskAuditLogPort;
 import com.fabricaescuela.tasks.domain.ports.out.TaskRepositoryPort;
+import com.fabricaescuela.tasks.domain.ports.out.UserLookupPort;
 import com.fabricaescuela.tasks.domain.ports.out.UserValidationPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,6 +29,7 @@ class TaskServiceTest {
     @Mock private TaskRepositoryPort repository;
     @Mock private UserValidationPort userValidation;
     @Mock private TaskAuditLogPort auditLog;
+    @Mock private UserLookupPort userLookup;
 
     @InjectMocks
     private TaskService taskService;
@@ -295,6 +300,87 @@ class TaskServiceTest {
         // Assert
         assertEquals(2, resultado.size());
         verify(repository).search(criteria);
+    }
+
+    // HU20 Scenario 1 — el asignado cambia el estado: persiste, retorna y publica audit log
+    @Test
+    void changeStatusExitosoCuandoLoEjecutaElAsignado() {
+        // Arrange
+        UUID taskId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        String username = "tomas@familia.com";
+        Task tarea = Task.builder().taskId(taskId).guestId(userId).status("PENDIENTE").build();
+        Task actualizada = Task.builder().taskId(taskId).guestId(userId).status("EN_PROGRESO").build();
+        when(userLookup.findUserIdByUsername(username)).thenReturn(Optional.of(userId));
+        when(repository.findById(taskId)).thenReturn(Optional.of(tarea));
+        when(repository.updateStatus(taskId, "EN_PROGRESO")).thenReturn(actualizada);
+
+        // Act
+        Task resultado = taskService.changeStatus(taskId, "EN_PROGRESO", username);
+
+        // Assert
+        assertEquals("EN_PROGRESO", resultado.getStatus());
+        verify(repository).updateStatus(taskId, "EN_PROGRESO");
+        verify(auditLog).publishTaskStatusChanged(userId, taskId, "EN_PROGRESO");
+    }
+
+    // HU20 Scenario 3 — quien NO es el asignado recibe ForbiddenTaskOperationException
+    @Test
+    void changeStatusFallaCuandoElUsuarioNoEsElAsignado() {
+        // Arrange
+        UUID taskId = UUID.randomUUID();
+        UUID assignedUserId = UUID.randomUUID();
+        UUID otroUserId = UUID.randomUUID();
+        String username = "gabriela@familia.com";
+        Task tarea = Task.builder().taskId(taskId).guestId(assignedUserId).status("PENDIENTE").build();
+        when(userLookup.findUserIdByUsername(username)).thenReturn(Optional.of(otroUserId));
+        when(repository.findById(taskId)).thenReturn(Optional.of(tarea));
+
+        // Act - Assert
+        assertThrows(ForbiddenTaskOperationException.class,
+            () -> taskService.changeStatus(taskId, "EN_PROGRESO", username));
+        verify(repository, never()).updateStatus(any(), any());
+        verify(auditLog, never()).publishTaskStatusChanged(any(), any(), any());
+    }
+
+    // HU20 — si la tarea no existe, lanza TaskNotFoundException
+    @Test
+    void changeStatusFallaCuandoLaTareaNoExiste() {
+        // Arrange
+        UUID taskId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        String username = "tomas@familia.com";
+        when(userLookup.findUserIdByUsername(username)).thenReturn(Optional.of(userId));
+        when(repository.findById(taskId)).thenReturn(Optional.empty());
+
+        // Act - Assert
+        assertThrows(TaskNotFoundException.class,
+            () -> taskService.changeStatus(taskId, "EN_PROGRESO", username));
+        verify(repository, never()).updateStatus(any(), any());
+        verify(auditLog, never()).publishTaskStatusChanged(any(), any(), any());
+    }
+
+    // HU20 — si no se puede resolver el usuario (sin auth), lanza ForbiddenTaskOperationException
+    @Test
+    void changeStatusFallaCuandoNoHayUsuarioAutenticado() {
+        // Arrange
+        UUID taskId = UUID.randomUUID();
+        when(userLookup.findUserIdByUsername(null)).thenReturn(Optional.empty());
+
+        // Act - Assert
+        assertThrows(ForbiddenTaskOperationException.class,
+            () -> taskService.changeStatus(taskId, "EN_PROGRESO", null));
+        verify(repository, never()).findById(any());
+        verify(repository, never()).updateStatus(any(), any());
+    }
+
+    // HU20 — un estado nulo o vacío es rechazado antes de tocar repositorio
+    @Test
+    void changeStatusFallaCuandoElNuevoEstadoEsVacio() {
+        UUID taskId = UUID.randomUUID();
+        assertThrows(IllegalArgumentException.class,
+            () -> taskService.changeStatus(taskId, "", "tomas@familia.com"));
+        verifyNoInteractions(repository, auditLog, userLookup);
     }
 
     // HU13 Scenario 1 — la tarea creada sin estado explícito recibe PENDIENTE por defecto

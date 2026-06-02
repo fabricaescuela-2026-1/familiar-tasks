@@ -2,6 +2,7 @@ package com.fabricaescuela.tasks.infraestructure.database;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.domain.Specification;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.fabricaescuela.tasks.application.dto.TaskSearchCriteria;
 import com.fabricaescuela.tasks.domain.exceptions.PriorityNotFoundException;
 import com.fabricaescuela.tasks.domain.exceptions.StatusNotFoundException;
+import com.fabricaescuela.tasks.domain.exceptions.TaskNotFoundException;
 import com.fabricaescuela.tasks.domain.model.Task;
 import com.fabricaescuela.tasks.domain.ports.out.TaskRepositoryPort;
 import com.fabricaescuela.tasks.infraestructure.database.mappers.TaskEntityMapper;
@@ -64,6 +66,21 @@ public class TaskRepositoryAdapter implements TaskRepositoryPort {
 
     var updatedTask = taskRepository.save(existingTask);
     return TaskEntityMapper.toDomain(updatedTask);
+  }
+
+  @Override
+  public Task updateStatus(UUID taskId, String newStatus) {
+    var existingTask = taskRepository.findById(taskId)
+        .orElseThrow(() -> new TaskNotFoundException(taskId));
+    var statusEntity = statusRepository.findByName(newStatus)
+        .orElseThrow(() -> new StatusNotFoundException(newStatus));
+    existingTask.setStatus(statusEntity);
+    return TaskEntityMapper.toDomain(taskRepository.save(existingTask));
+  }
+
+  @Override
+  public Optional<Task> findById(UUID taskId) {
+    return taskRepository.findById(taskId).map(TaskEntityMapper::toDomain);
   }
 
   @Override

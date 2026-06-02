@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fabricaescuela.tasks.application.dto.TaskSearchCriteria;
 import com.fabricaescuela.tasks.domain.ports.in.TaskUseCasePort;
+import com.fabricaescuela.tasks.infraestructure.presentation.dtos.ChangeStatusRequest;
 import com.fabricaescuela.tasks.infraestructure.presentation.dtos.RequestTask;
 import com.fabricaescuela.tasks.infraestructure.presentation.dtos.ResponseTask;
 import com.fabricaescuela.tasks.infraestructure.presentation.dtos.mappers.RequestTaskMapper;
@@ -53,6 +56,18 @@ public class TaskController {
   public ResponseEntity<Void> deleteTask(@PathVariable UUID id) {
     service.delete(id);
     return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/{id}/status")
+  @Operation(summary = "Cambiar el estado de una tarea",
+      description = "Solo el miembro asignado (guestId) puede cambiar el estado. HU20",
+      method = "PATCH")
+  public ResponseEntity<ResponseTask> changeStatus(@PathVariable UUID id,
+                                                   @RequestBody ChangeStatusRequest request,
+                                                   Authentication authentication) {
+    String username = authentication != null ? authentication.getName() : null;
+    var task = service.changeStatus(id, request.status(), username);
+    return ResponseEntity.ok(ResponseTaskMapper.toResponse(task));
   }
 
   @GetMapping("/all")

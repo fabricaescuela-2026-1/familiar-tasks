@@ -12,6 +12,8 @@ public interface TaskUseCasePort {
 
   void delete(UUID taskId);
 
+  Task changeStatus(UUID taskId, String newStatus, String username);
+
   List<Task> findAll();
 
   List<Task> search(TaskSearchCriteria criteria);
