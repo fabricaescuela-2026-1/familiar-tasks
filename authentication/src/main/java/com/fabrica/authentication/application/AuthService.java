@@ -9,6 +9,7 @@ import com.fabrica.authentication.application.ports.in.AuthUseCase;
 import com.fabrica.authentication.application.ports.out.EmailSendingPort;
 import com.fabrica.authentication.application.ports.out.UserQueuePort;
 import com.fabrica.authentication.application.util.CodeGeneration;
+import com.fabrica.authentication.domain.DataValidator;
 import com.fabrica.authentication.domain.exceptions.EmailAlreadyExitsException;
 import com.fabrica.authentication.domain.exceptions.InactiveAccountException;
 import com.fabrica.authentication.domain.exceptions.InvalidRefreshTokenException;
@@ -37,33 +38,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService implements AuthUseCase {
 
   private final JwtServicePort jwtService;
+
   private final TokenRepositoryPort tokenRepo;
   private final UserRepositoryPort userRepo;
-  private final PasswordEncoder passwordEncoder;
-  private final UserQueuePort userQueuePort;
-  private final EmailSendingPort emailSendingComp;
   private final TwoFactorAuthTokenRepositoryPort twoFactorAuthTokenRepo;
+
+  private final PasswordEncoder passwordEncoder;
+
+  private final UserQueuePort userQueuePort;
+
+  private final EmailSendingPort emailSendingComp;
+
+  private final DataValidator validator;
 
   @Override
   public void register(RegisterRequest req) {
-    if (req.name() == null || req.name().isBlank()) {
-      throw new IllegalArgumentException("Name is required");
-    }
-    if (req.lastname() == null || req.lastname().isBlank()) {
-      throw new IllegalArgumentException("Lastname is required");
-    }
-    if (req.email() == null || req.email().isBlank()) {
-      throw new IllegalArgumentException("Email is required");
-    }
-    validatePasswordComplexity(req.password());
-    if (
-      req.passwordConfirmation() != null &&
-      !req.password().equals(req.passwordConfirmation())
-    ) {
-      throw new IllegalArgumentException(
-        "Password and confirmation do not match"
-      );
-    }
+    validator.validateNewUserRequest(req);
 
     boolean existsUserWithEmail = userRepo.findByEmail(req.email()).isPresent();
     if (existsUserWithEmail) {
@@ -146,40 +136,6 @@ public class AuthService implements AuthUseCase {
     return new AuthResponse(
       newAccessToken.getTokenHash(),
       token.getTokenHash()
-    );
-  }
-
-  private void validatePasswordComplexity(String password) {
-    if (password == null || password.isBlank()) {
-      throw new IllegalArgumentException("Password is required");
-    }
-    if (password.length() < 8) {
-      throw new IllegalArgumentException(
-        "Password must be at least 8 characters"
-      );
-    }
-    boolean hasUpper = false;
-    boolean hasLower = false;
-    boolean hasDigit = false;
-    boolean hasSpecial = false;
-    for (int i = 0; i < password.length(); i++) {
-      char c = password.charAt(i);
-      if (Character.isUpperCase(c)) hasUpper = true;
-      else if (Character.isLowerCase(c)) hasLower = true;
-      else if (Character.isDigit(c)) hasDigit = true;
-      else hasSpecial = true;
-    }
-    if (!hasUpper) throw new IllegalArgumentException(
-      "Password must contain at least one uppercase letter"
-    );
-    if (!hasLower) throw new IllegalArgumentException(
-      "Password must contain at least one lowercase letter"
-    );
-    if (!hasDigit) throw new IllegalArgumentException(
-      "Password must contain at least one digit"
-    );
-    if (!hasSpecial) throw new IllegalArgumentException(
-      "Password must contain at least one special character"
     );
   }
 
