@@ -1,109 +1,143 @@
 package com.fabrica.authentication.application;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.fabrica.authentication.application.dto.AuthResponse;
 import com.fabrica.authentication.application.dto.LoginRequest;
 import com.fabrica.authentication.application.dto.RegisterRequest;
 import com.fabrica.authentication.application.dto.TokenResponse;
+import com.fabrica.authentication.application.dto.mail.EmailProperties;
 import com.fabrica.authentication.application.ports.in.AuthUseCase;
+import com.fabrica.authentication.application.ports.out.EmailSendingPort;
 import com.fabrica.authentication.application.ports.out.UserQueuePort;
+import com.fabrica.authentication.application.util.CodeGeneration;
+import com.fabrica.authentication.domain.DataValidator;
 import com.fabrica.authentication.domain.exceptions.EmailAlreadyExitsException;
+import com.fabrica.authentication.domain.exceptions.InactiveAccountException;
 import com.fabrica.authentication.domain.exceptions.InvalidRefreshTokenException;
 import com.fabrica.authentication.domain.exceptions.InvalidTokenException;
+import com.fabrica.authentication.domain.exceptions.InvalidTwoFactorAuthTokenException;
 import com.fabrica.authentication.domain.exceptions.UserNotFoundException;
 import com.fabrica.authentication.domain.model.Token;
+import com.fabrica.authentication.domain.model.TwoFactorAuthToken;
 import com.fabrica.authentication.domain.model.User;
 import com.fabrica.authentication.domain.ports.out.JwtServicePort;
 import com.fabrica.authentication.domain.ports.out.TokenRepositoryPort;
+import com.fabrica.authentication.domain.ports.out.TwoFactorAuthTokenRepositoryPort;
 import com.fabrica.authentication.domain.ports.out.UserRepositoryPort;
-
+import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-@Log
+@Slf4j
 @Transactional
 public class AuthService implements AuthUseCase {
+
   private final JwtServicePort jwtService;
+
   private final TokenRepositoryPort tokenRepo;
   private final UserRepositoryPort userRepo;
+  private final TwoFactorAuthTokenRepositoryPort twoFactorAuthTokenRepo;
+
   private final PasswordEncoder passwordEncoder;
+
   private final UserQueuePort userQueuePort;
 
-  @Override
-  public AuthResponse register(RegisterRequest req) {
-    if (req.name() == null || req.name().isBlank()) {
-      throw new IllegalArgumentException("Name is required");
-    }
-    if (req.lastname() == null || req.lastname().isBlank()) {
-      throw new IllegalArgumentException("Lastname is required");
-    }
-    if (req.email() == null || req.email().isBlank()) {
-      throw new IllegalArgumentException("Email is required");
-    }
-    validatePasswordComplexity(req.password());
-    if (req.passwordConfirmation() != null && !req.password().equals(req.passwordConfirmation())) {
-      throw new IllegalArgumentException("Password and confirmation do not match");
-    }
+  private final EmailSendingPort emailSendingComp;
 
-    if (userRepo.findByEmail(req.email()).isPresent()) {
+  private final DataValidator validator;
+
+  @Override
+  public void register(RegisterRequest req) {
+    validator.validateNewUserRequest(req);
+
+    boolean existsUserWithEmail = userRepo.findByEmail(req.email()).isPresent();
+    if (existsUserWithEmail) {
       throw new EmailAlreadyExitsException(req.email());
     }
-    var user = User.builder()
-        .name(req.name())
-        .userId(UUID.randomUUID())
-        .lastname(req.lastname())
-        .email(req.email())
-        .passwordHash(passwordEncoder.encode(req.password()))
-        .createdAt(LocalDateTime.now())
-        .isActive(true)
-        .build();
 
+    var user = createUserFromRequest(req);
     userRepo.save(user);
-    Token accessToken = jwtService.generateAccesToken(user);
-    Token refreshToken = jwtService.generateRefreshToken(user);
-    tokenRepo.save(accessToken);
-    tokenRepo.save(refreshToken);
 
     log.info("Registration complete");
     userQueuePort.sendUserMessage(user);
-    return new AuthResponse(accessToken.getTokenHash(), refreshToken.getTokenHash());
+  }
+
+  private User createUserFromRequest(RegisterRequest req) {
+    var hashedPassword = passwordEncoder.encode(req.password());
+    return User.builder()
+      .name(req.name())
+      .userId(UUID.randomUUID())
+      .lastname(req.lastname())
+      .email(req.email())
+      .passwordHash(hashedPassword)
+      .createdAt(LocalDateTime.now())
+      .isActive(false)
+      .build();
   }
 
   @Override
-  public AuthResponse login(LoginRequest request) {
-    // TODO: validate login request
-
-    var user = userRepo.findByEmail(request.email())
-        .orElseThrow(() -> new UserNotFoundException("User email " + request.email() + " not found"));
+  @Transactional
+  public void login(LoginRequest request) {
+    var user = getUserByEmail(request.email());
 
     if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
-      throw new UserNotFoundException("Invalid credentials");
+      throw new UserNotFoundException("Credenciales incorrectas");
     }
 
-    Token accessToken = jwtService.generateAccesToken(user);
-    Token refreshToken = jwtService.generateRefreshToken(user);
+    if (!user.isActive()) {
+      throw new InactiveAccountException();
+    }
 
-    tokenRepo.save(accessToken);
-    tokenRepo.save(refreshToken);
-    return new AuthResponse(accessToken.getTokenHash(), refreshToken.getTokenHash());
+    twoFactorAuthTokenRepo.invalidateAllByUserEmail(request.email());
+
+    var code = CodeGeneration.generateSixDigitCode();
+    var codeHash = passwordEncoder.encode(code);
+
+    var emailProps = EmailProperties.builder()
+      .code(code)
+      .recipient(user.getEmail())
+      .subject("Codigo de verificacion de dos factores")
+      .build();
+
+    var twoFactorAuthToken = createTwoFactorAuthToken(user, codeHash);
+    twoFactorAuthTokenRepo.save(twoFactorAuthToken);
+
+    emailSendingComp.sendCodeEmail(emailProps);
+  }
+
+  private TwoFactorAuthToken createTwoFactorAuthToken(
+    User user,
+    String codeHash
+  ) {
+    var now = LocalDateTime.now();
+    return TwoFactorAuthToken.builder()
+      .id(UUID.randomUUID())
+      .createdAt(now)
+      .expiresAt(now.plusMinutes(10))
+      .invalidated(false)
+      .attempts(0)
+      .codeHash(codeHash)
+      .user(user)
+      .build();
   }
 
   @Override
   public AuthResponse refreshToken(String refreshToken) {
-    var token = tokenRepo.findByHash(refreshToken)
-        .orElseThrow(InvalidRefreshTokenException::new);
+    var token = tokenRepo
+      .findByHash(refreshToken)
+      .orElseThrow(InvalidRefreshTokenException::new);
 
     if (!jwtService.isTokenValid(token)) {
       throw new InvalidRefreshTokenException();
     }
+
+    var userEmail = token.getUserEmail();
+    jwtService.invalidateAllTokensByUserEmail(userEmail);
 
     Token newAccessToken = jwtService.generateAccesToken(token.getUser());
     tokenRepo.save(newAccessToken);
@@ -133,24 +167,72 @@ public class AuthService implements AuthUseCase {
 
   @Override
   public TokenResponse getToken(String tokenHash) {
-    Token token = tokenRepo.findByHash(tokenHash)
-        .orElseThrow(InvalidTokenException::new);
+    Token token = tokenRepo
+      .findByHash(tokenHash)
+      .orElseThrow(InvalidTokenException::new);
 
-    if (token.getExpirationDate() != null && token.getExpirationDate().isBefore(LocalDateTime.now())) {
+    if (
+      token.getExpirationDate() != null &&
+      token.getExpirationDate().isBefore(LocalDateTime.now())
+    ) {
       throw new InvalidTokenException();
     }
-    if (token.getExpiratedAt() != null && token.getExpiratedAt().isBefore(LocalDateTime.now())) {
+    if (
+      token.getExpiratedAt() != null &&
+      token.getExpiratedAt().isBefore(LocalDateTime.now())
+    ) {
       throw new InvalidTokenException();
     }
 
     return TokenResponse.builder()
-        .tokenId(token.getTokenId())
-        .tokenHash(token.getTokenHash())
-        .expirationDate(token.getExpirationDate())
-        .userId(token.getUser().getUserId())
-        .tokenType(token.getTokenType())
-        .expiratedAt(token.getExpiratedAt())
-        .build();
+      .tokenId(token.getTokenId())
+      .tokenHash(token.getTokenHash())
+      .expirationDate(token.getExpirationDate())
+      .userId(token.getUser().getUserId())
+      .tokenType(token.getTokenType())
+      .expiratedAt(token.getExpiratedAt())
+      .build();
   }
 
+  @Override
+  @Transactional
+  public AuthResponse verifyTwoFactorAuthCode(String code, String email) {
+    log.info("Verifying two-factor auth code for user: {}", email);
+    var user = getUserByEmail(email);
+    var authToken = getLastTwoFactorAuthTokenByEmail(email);
+    log.info("two-factor auth token, econtrado: {}", authToken);
+
+    twoFactorAuthTokenRepo.increaseAttemptsByOne(authToken.getId());
+
+    if (!passwordEncoder.matches(code, authToken.getCodeHash())) {
+      throw new InvalidTwoFactorAuthTokenException("Codigo incorrecto");
+    }
+
+    authToken.validate();
+    twoFactorAuthTokenRepo.invalidateAllByUserEmail(email);
+
+    var accessToken = jwtService.generateAccesToken(user);
+    var refreshToken = jwtService.generateRefreshToken(user);
+
+    tokenRepo.save(accessToken);
+    tokenRepo.save(refreshToken);
+    return new AuthResponse(
+      accessToken.getTokenHash(),
+      refreshToken.getTokenHash()
+    );
+  }
+
+  private User getUserByEmail(String email) {
+    return userRepo.findByEmail(email).orElseThrow(UserNotFoundException::new);
+  }
+
+  private TwoFactorAuthToken getLastTwoFactorAuthTokenByEmail(String email) {
+    return twoFactorAuthTokenRepo
+      .findLastByUserEmail(email)
+      .orElseThrow(() ->
+        new InvalidTwoFactorAuthTokenException(
+          "No hay ningun codigo activo para tu email"
+        )
+      );
+  }
 }

@@ -9,4 +9,6 @@ public interface JwtServicePort {
   Token generateRefreshToken(User user);
 
   boolean isTokenValid(Token token);
+
+  void invalidateAllTokensByUserEmail(String email);
 }
