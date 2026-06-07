@@ -34,7 +34,6 @@ class AuthControllerTest {
   void loginRestorna200EnviandoEmail() {
     // Arrange
     LoginRequest request = new LoginRequest("carlos@mail.com", "pass1234");
-    AuthResponse response = new AuthResponse("access", "refresh");
 
     // Act
     ResponseEntity<Map<String, String>> resultado = controller.login(request);
@@ -57,7 +56,6 @@ class AuthControllerTest {
       "carlos@mail.com",
       "Segura@1"
     );
-    AuthResponse response = new AuthResponse("access", "refresh");
 
     // Act
     ResponseEntity<Map<String, String>> resultado = controller.register(

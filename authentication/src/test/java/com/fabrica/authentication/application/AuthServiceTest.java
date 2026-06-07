@@ -8,15 +8,21 @@ import com.fabrica.authentication.application.dto.AuthResponse;
 import com.fabrica.authentication.application.dto.LoginRequest;
 import com.fabrica.authentication.application.dto.RegisterRequest;
 import com.fabrica.authentication.application.dto.TokenResponse;
+import com.fabrica.authentication.application.ports.out.EmailSendingPort;
 import com.fabrica.authentication.application.ports.out.UserQueuePort;
+import com.fabrica.authentication.domain.DataValidator;
 import com.fabrica.authentication.domain.exceptions.EmailAlreadyExitsException;
+import com.fabrica.authentication.domain.exceptions.InactiveAccountException;
 import com.fabrica.authentication.domain.exceptions.InvalidRefreshTokenException;
 import com.fabrica.authentication.domain.exceptions.InvalidTokenException;
+import com.fabrica.authentication.domain.exceptions.InvalidTwoFactorAuthTokenException;
 import com.fabrica.authentication.domain.exceptions.UserNotFoundException;
 import com.fabrica.authentication.domain.model.Token;
+import com.fabrica.authentication.domain.model.TwoFactorAuthToken;
 import com.fabrica.authentication.domain.model.User;
 import com.fabrica.authentication.domain.ports.out.JwtServicePort;
 import com.fabrica.authentication.domain.ports.out.TokenRepositoryPort;
+import com.fabrica.authentication.domain.ports.out.TwoFactorAuthTokenRepositoryPort;
 import com.fabrica.authentication.domain.ports.out.UserRepositoryPort;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,6 +51,15 @@ class AuthServiceTest {
   @Mock
   private UserQueuePort userQueuePort;
 
+  @Mock
+  private TwoFactorAuthTokenRepositoryPort twoFactorAuthTokenRepo;
+
+  @Mock
+  private EmailSendingPort emailSendingComp;
+
+  @Mock
+  private DataValidator validator;
+
   @InjectMocks
   private AuthService authService;
 
@@ -65,14 +80,13 @@ class AuthServiceTest {
     );
     when(userRepo.findByEmail("carlos@mail.com")).thenReturn(Optional.empty());
     when(passwordEncoder.encode(any())).thenReturn("hash-password");
-    when(jwtService.generateAccesToken(any())).thenReturn(
-      tokenFalso("access-token")
-    );
-    when(jwtService.generateRefreshToken(any())).thenReturn(
-      tokenFalso("refresh-token")
-    );
 
+    // Act
     authService.register(request);
+
+    // Assert
+    verify(userRepo).save(any(User.class));
+    verify(userQueuePort).sendUserMessage(any(User.class));
   }
 
   @Test
@@ -81,18 +95,20 @@ class AuthServiceTest {
     var user = User.builder()
       .email("laura@mail.com")
       .passwordHash("hashed")
+      .isActive(true)
       .build();
     var request = new LoginRequest("laura@mail.com", "pass1234");
     when(userRepo.findByEmail("laura@mail.com")).thenReturn(Optional.of(user));
     when(passwordEncoder.matches("pass1234", "hashed")).thenReturn(true);
-    when(jwtService.generateAccesToken(user)).thenReturn(
-      tokenFalso("access-token")
-    );
-    when(jwtService.generateRefreshToken(user)).thenReturn(
-      tokenFalso("refresh-token")
-    );
+    when(passwordEncoder.encode(any())).thenReturn("hashed-code");
 
+    // Act
     authService.login(request);
+
+    // Assert
+    verify(twoFactorAuthTokenRepo).invalidateAllByUserEmail("laura@mail.com");
+    verify(twoFactorAuthTokenRepo).save(any(TwoFactorAuthToken.class));
+    verify(emailSendingComp).sendCodeEmail(any());
   }
 
   @Test
@@ -207,6 +223,9 @@ class AuthServiceTest {
       "carlos@mail.com",
       "abc"
     );
+    doThrow(new IllegalArgumentException())
+      .when(validator)
+      .validateNewUserRequest(request);
 
     // Act - Assert
     assertThrows(IllegalArgumentException.class, () ->
@@ -225,6 +244,9 @@ class AuthServiceTest {
       "carlos@mail.com",
       "Segura@123"
     );
+    doThrow(new IllegalArgumentException())
+      .when(validator)
+      .validateNewUserRequest(request);
 
     // Act - Assert
     assertThrows(IllegalArgumentException.class, () ->
@@ -238,6 +260,9 @@ class AuthServiceTest {
   void registroConEmailNuloEsRechazado() {
     // Arrange
     var request = new RegisterRequest("Carlos", "Ruiz", null, "Segura@123");
+    doThrow(new IllegalArgumentException())
+      .when(validator)
+      .validateNewUserRequest(request);
 
     // Act - Assert
     assertThrows(IllegalArgumentException.class, () ->
@@ -256,6 +281,9 @@ class AuthServiceTest {
       "carlos@mail.com",
       "Segura@123"
     );
+    doThrow(new IllegalArgumentException())
+      .when(validator)
+      .validateNewUserRequest(request);
 
     // Act - Assert
     assertThrows(IllegalArgumentException.class, () ->
@@ -274,6 +302,9 @@ class AuthServiceTest {
       "carlos@mail.com",
       "sinEspecial8"
     );
+    doThrow(new IllegalArgumentException())
+      .when(validator)
+      .validateNewUserRequest(request);
 
     // Act - Assert
     assertThrows(IllegalArgumentException.class, () ->
@@ -292,6 +323,9 @@ class AuthServiceTest {
       "carlos@mail.com",
       "segura@123"
     );
+    doThrow(new IllegalArgumentException())
+      .when(validator)
+      .validateNewUserRequest(request);
 
     // Act - Assert
     assertThrows(IllegalArgumentException.class, () ->

@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
+  private static final String MESSAGE_KEY = "message";
+
   private final AuthUseCase authUseCase;
   private final AccountValidationUseCase accountValidationUseCase;
 
@@ -45,7 +47,7 @@ public class AuthController {
   ) {
     authUseCase.login(request);
     return new ResponseEntity<>(
-      Map.of("message", "Revisa tu correo e ingresa el código de verificación"),
+      Map.of(MESSAGE_KEY, "Revisa tu correo e ingresa el código de verificación"),
       HttpStatus.OK
     );
   }
@@ -61,7 +63,7 @@ public class AuthController {
   ) {
     authUseCase.register(request);
     return new ResponseEntity<>(
-      Map.of("message", "Usuario registrado exitosamente"),
+      Map.of(MESSAGE_KEY, "Usuario registrado exitosamente"),
       HttpStatus.CREATED
     );
   }
@@ -99,7 +101,7 @@ public class AuthController {
   ) {
     accountValidationUseCase.createActivationToken(email);
     return ResponseEntity.ok().body(
-      Map.of("message", "Código de activación enviado")
+      Map.of(MESSAGE_KEY, "Código de activación enviado")
     );
   }
 

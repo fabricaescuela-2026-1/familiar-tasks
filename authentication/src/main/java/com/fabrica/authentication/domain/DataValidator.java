@@ -15,29 +15,34 @@ public class DataValidator {
         "La contraseña debe tener al menos 8 caracteres"
       );
     }
-    boolean hasUpper = false;
-    boolean hasLower = false;
-    boolean hasDigit = false;
-    boolean hasSpecial = false;
-    for (int i = 0; i < password.length(); i++) {
-      char c = password.charAt(i);
-      if (Character.isUpperCase(c)) hasUpper = true;
-      else if (Character.isLowerCase(c)) hasLower = true;
-      else if (Character.isDigit(c)) hasDigit = true;
-      else hasSpecial = true;
+    if (password.chars().noneMatch(Character::isUpperCase)) {
+      throw new IllegalArgumentException(
+        "La contraseña debe contener al menos una letra mayúscula"
+      );
     }
-    if (!hasUpper) throw new IllegalArgumentException(
-      "La contraseña debe contener al menos una letra mayúscula"
-    );
-    if (!hasLower) throw new IllegalArgumentException(
-      "La contraseña debe contener al menos una letra minúscula"
-    );
-    if (!hasDigit) throw new IllegalArgumentException(
-      "La contraseña debe contener al menos un dígito"
-    );
-    if (!hasSpecial) throw new IllegalArgumentException(
-      "La contraseña debe contener al menos un carácter especial"
-    );
+    if (password.chars().noneMatch(Character::isLowerCase)) {
+      throw new IllegalArgumentException(
+        "La contraseña debe contener al menos una letra minúscula"
+      );
+    }
+    if (password.chars().noneMatch(Character::isDigit)) {
+      throw new IllegalArgumentException(
+        "La contraseña debe contener al menos un dígito"
+      );
+    }
+    if (
+      password
+        .chars()
+        .allMatch(c ->
+          Character.isUpperCase(c) ||
+          Character.isLowerCase(c) ||
+          Character.isDigit(c)
+        )
+    ) {
+      throw new IllegalArgumentException(
+        "La contraseña debe contener al menos un carácter especial"
+      );
+    }
   }
 
   public void validateNewUserRequest(RegisterRequest req) {

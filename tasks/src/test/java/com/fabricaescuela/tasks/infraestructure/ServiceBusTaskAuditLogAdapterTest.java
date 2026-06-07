@@ -40,6 +40,60 @@ class ServiceBusTaskAuditLogAdapterTest {
         assertTrue(payload.contains("task_created"));
     }
 
+    @Test
+    void publishTaskUpdatedEnviaMensajeSerializadoAlServiceBus() {
+        // Arrange
+        ServiceBusTaskAuditLogAdapter adapter = new ServiceBusTaskAuditLogAdapter(senderClient);
+        UUID userId = UUID.randomUUID();
+        UUID taskId = UUID.randomUUID();
+        ArgumentCaptor<ServiceBusMessage> captor = ArgumentCaptor.forClass(ServiceBusMessage.class);
+
+        // Act
+        adapter.publishTaskUpdated(userId, taskId);
+
+        // Assert
+        verify(senderClient).sendMessage(captor.capture());
+        String payload = captor.getValue().getBody().toString();
+        assertTrue(payload.contains(userId.toString()));
+        assertTrue(payload.contains(taskId.toString()));
+    }
+
+    @Test
+    void publishTaskDeletedEnviaMensajeSerializadoAlServiceBus() {
+        // Arrange
+        ServiceBusTaskAuditLogAdapter adapter = new ServiceBusTaskAuditLogAdapter(senderClient);
+        UUID userId = UUID.randomUUID();
+        UUID taskId = UUID.randomUUID();
+        ArgumentCaptor<ServiceBusMessage> captor = ArgumentCaptor.forClass(ServiceBusMessage.class);
+
+        // Act
+        adapter.publishTaskDeleted(userId, taskId);
+
+        // Assert
+        verify(senderClient).sendMessage(captor.capture());
+        String payload = captor.getValue().getBody().toString();
+        assertTrue(payload.contains(userId.toString()));
+        assertTrue(payload.contains(taskId.toString()));
+    }
+
+    @Test
+    void publishTaskStatusChangedEnviaMensajeConElNuevoEstado() {
+        // Arrange
+        ServiceBusTaskAuditLogAdapter adapter = new ServiceBusTaskAuditLogAdapter(senderClient);
+        UUID userId = UUID.randomUUID();
+        UUID taskId = UUID.randomUUID();
+        ArgumentCaptor<ServiceBusMessage> captor = ArgumentCaptor.forClass(ServiceBusMessage.class);
+
+        // Act
+        adapter.publishTaskStatusChanged(userId, taskId, "EN_PROGRESO");
+
+        // Assert
+        verify(senderClient).sendMessage(captor.capture());
+        String payload = captor.getValue().getBody().toString();
+        assertTrue(payload.contains("EN_PROGRESO"));
+        assertTrue(payload.contains(taskId.toString()));
+    }
+
     // ── CASOS DE EXCEPCIÓN ──────────────────────────────────────────────────
 
     @Test
@@ -51,5 +105,29 @@ class ServiceBusTaskAuditLogAdapterTest {
 
         // Act - Assert
         assertDoesNotThrow(() -> adapter.publishTaskCreated(UUID.randomUUID(), UUID.randomUUID()));
+    }
+
+    @Test
+    void publishTaskUpdatedConFalloDeServiceBusNoPropagaExcepcion() {
+        ServiceBusTaskAuditLogAdapter adapter = new ServiceBusTaskAuditLogAdapter(senderClient);
+        doThrow(new RuntimeException("boom"))
+            .when(senderClient).sendMessage(any(ServiceBusMessage.class));
+        assertDoesNotThrow(() -> adapter.publishTaskUpdated(UUID.randomUUID(), UUID.randomUUID()));
+    }
+
+    @Test
+    void publishTaskDeletedConFalloDeServiceBusNoPropagaExcepcion() {
+        ServiceBusTaskAuditLogAdapter adapter = new ServiceBusTaskAuditLogAdapter(senderClient);
+        doThrow(new RuntimeException("boom"))
+            .when(senderClient).sendMessage(any(ServiceBusMessage.class));
+        assertDoesNotThrow(() -> adapter.publishTaskDeleted(UUID.randomUUID(), UUID.randomUUID()));
+    }
+
+    @Test
+    void publishTaskStatusChangedConFalloDeServiceBusNoPropagaExcepcion() {
+        ServiceBusTaskAuditLogAdapter adapter = new ServiceBusTaskAuditLogAdapter(senderClient);
+        doThrow(new RuntimeException("boom"))
+            .when(senderClient).sendMessage(any(ServiceBusMessage.class));
+        assertDoesNotThrow(() -> adapter.publishTaskStatusChanged(UUID.randomUUID(), UUID.randomUUID(), "DONE"));
     }
 }
