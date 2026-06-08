@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,7 +32,7 @@ class TwoFactorAuthTokenEntityMapperTest {
         UUID id = UUID.randomUUID();
         User user = User.builder().email("a@mail.com").build();
         UserEntity userEntity = UserEntity.builder().email("a@mail.com").build();
-        LocalDateTime now = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
+        LocalDateTime now = LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0);
         TwoFactorAuthToken token = TwoFactorAuthToken.builder()
             .id(id).codeHash("h").user(user)
             .createdAt(now).expiresAt(now.plusMinutes(5))
@@ -54,7 +55,7 @@ class TwoFactorAuthTokenEntityMapperTest {
         // Arrange
         UserEntity userEntity = UserEntity.builder().email("a@mail.com").build();
         User user = User.builder().email("a@mail.com").build();
-        LocalDateTime now = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
+        LocalDateTime now = LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0);
         TwoFactorAuthTokenEntity entity = TwoFactorAuthTokenEntity.builder()
             .id(UUID.randomUUID()).codeHash("h").user(userEntity)
             .createdAt(now).expiresAt(now.plusMinutes(5))

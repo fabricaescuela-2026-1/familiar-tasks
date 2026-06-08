@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import java.time.ZoneId;
 
 @RestControllerAdvice
 public class AuthExceptionHandler {
@@ -72,7 +73,7 @@ public class AuthExceptionHandler {
     return ResponseEntity.status(status).body(
       Map.of(
         "timestamp",
-        LocalDateTime.now().toString(),
+        LocalDateTime.now(ZoneId.systemDefault()).toString(),
         "status",
         status.value(),
         "error",

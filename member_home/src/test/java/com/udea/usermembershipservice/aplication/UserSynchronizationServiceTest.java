@@ -1,5 +1,7 @@
 package com.udea.usermembershipservice.aplication;
 
+import java.time.Month;
+
 import com.udea.usermembershipservice.aplication.port.out.IPersonRepositoryPort;
 import com.udea.usermembershipservice.aplication.useCase.UserSynchronizationService;
 import com.udea.usermembershipservice.aplication.useCase.dto.queue.UserRegistrationEvent;
@@ -54,7 +56,7 @@ class UserSynchronizationServiceTest {
         String userId = UUID.randomUUID().toString();
         Person personaExistente = Person.restore(
             UUID.fromString(userId), "Carlos", "Ruiz",
-            "carlos@mail.com", "hashed", java.time.LocalDateTime.of(2026, 1, 1, 10, 0, 0), true
+            "carlos@mail.com", "hashed", java.time.LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), true
         );
         when(personRepositoryPort.getUserById(any(UUID.class))).thenReturn(Optional.of(personaExistente));
 

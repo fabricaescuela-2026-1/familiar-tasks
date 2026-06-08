@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,7 +39,7 @@ class TaskControllerTest {
             .priorityName("MEDIA")
             .homeId(UUID.randomUUID())
             .guestId(UUID.randomUUID())
-            .deadline(LocalDateTime.of(2099, 1, 2, 10, 0, 0))
+            .deadline(LocalDateTime.of(2099, Month.JANUARY, 2, 10, 0, 0))
             .build();
     }
 
@@ -51,7 +52,7 @@ class TaskControllerTest {
             .priority("MEDIA")
             .homeId(UUID.randomUUID())
             .guestId(UUID.randomUUID())
-            .deadline(LocalDateTime.of(2099, 1, 2, 10, 0, 0))
+            .deadline(LocalDateTime.of(2099, Month.JANUARY, 2, 10, 0, 0))
             .build();
     }
 

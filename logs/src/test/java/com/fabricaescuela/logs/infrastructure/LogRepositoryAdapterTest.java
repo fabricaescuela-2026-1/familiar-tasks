@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,7 +34,7 @@ class LogRepositoryAdapterTest {
         // Arrange
         String id = UUID.randomUUID().toString();
         String userId = UUID.randomUUID().toString();
-        LocalDateTime timestamp = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
+        LocalDateTime timestamp = LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0);
         Log log = new Log(id, userId, timestamp, "TASK", "CREATED");
         LogEntity entity = new LogEntity(id, userId, timestamp, "TASK", "CREATED");
         when(mongoRepository.save(any(LogEntity.class))).thenReturn(entity);
@@ -51,8 +52,8 @@ class LogRepositoryAdapterTest {
     @Test
     void findAllRetornaListaDeDominio() {
         // Arrange
-        LogEntity e1 = new LogEntity("1", "u1", LocalDateTime.of(2026, 1, 1, 10, 0, 0), "TASK", "CREATED");
-        LogEntity e2 = new LogEntity("2", "u2", LocalDateTime.of(2026, 1, 1, 10, 0, 0), "ROLE", "CHANGED");
+        LogEntity e1 = new LogEntity("1", "u1", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), "TASK", "CREATED");
+        LogEntity e2 = new LogEntity("2", "u2", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), "ROLE", "CHANGED");
         when(mongoRepository.findAll()).thenReturn(List.of(e1, e2));
 
         // Act

@@ -1,6 +1,7 @@
 package com.udea.usermembershipservice.acceptance.support;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class TestDataFactory {
         "Apellido",
         email.toLowerCase(),
         "hash",
-        LocalDateTime.of(2026, 1, 1, 10, 0, 0),
+        LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0),
         true
     );
     return personRepo.save(p);
@@ -45,7 +46,7 @@ public class TestDataFactory {
   }
 
   public HomeJpaEntity createHome(String name) {
-    HomeJpaEntity h = new HomeJpaEntity(UUID.randomUUID(), name, LocalDateTime.of(2026, 1, 1, 10, 0, 0));
+    HomeJpaEntity h = new HomeJpaEntity(UUID.randomUUID(), name, LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0));
     return homeRepo.save(h);
   }
 

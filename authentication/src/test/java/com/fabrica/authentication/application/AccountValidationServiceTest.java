@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -45,7 +46,7 @@ class AccountValidationServiceTest {
             .lastname("Perez")
             .passwordHash("hash")
             .isActive(false)
-            .createdAt(LocalDateTime.of(2026, 1, 1, 10, 0, 0))
+            .createdAt(LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0))
             .build();
     }
 
@@ -81,7 +82,7 @@ class AccountValidationServiceTest {
             .id(UUID.randomUUID())
             .email("ana@mail.com")
             .codeHash("hash-code")
-            .expiresAt(LocalDateTime.of(2099, 1, 1, 10, 5, 0))
+            .expiresAt(LocalDateTime.of(2099, Month.JANUARY, 1, 10, 5, 0))
             .attempts(0)
             .invalidated(false)
             .build();
@@ -145,7 +146,7 @@ class AccountValidationServiceTest {
             .id(UUID.randomUUID())
             .email("ana@mail.com")
             .codeHash("hash-code")
-            .expiresAt(LocalDateTime.of(2099, 1, 1, 10, 5, 0))
+            .expiresAt(LocalDateTime.of(2099, Month.JANUARY, 1, 10, 5, 0))
             .attempts(0)
             .invalidated(false)
             .build();
@@ -168,7 +169,7 @@ class AccountValidationServiceTest {
             .id(UUID.randomUUID())
             .email("ana@mail.com")
             .codeHash("hash-code")
-            .expiresAt(LocalDateTime.of(2026, 1, 1, 9, 59, 0))
+            .expiresAt(LocalDateTime.of(2026, Month.JANUARY, 1, 9, 59, 0))
             .attempts(0)
             .invalidated(false)
             .build();

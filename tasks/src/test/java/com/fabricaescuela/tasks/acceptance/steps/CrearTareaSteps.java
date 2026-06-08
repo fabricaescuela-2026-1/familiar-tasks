@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,10 @@ public class CrearTareaSteps {
                                     String email, String homeName, int daysOffset) {
     UUID guestId = context.get("guest:" + email);
     UUID homeId = context.get("home:" + homeName);
-    String deadline = LocalDateTime.now().plusDays(daysOffset).toString();
+    LocalDateTime base = daysOffset < 0
+        ? LocalDateTime.of(2024, Month.JANUARY, 1, 10, 0, 0)
+        : LocalDateTime.of(2099, Month.JANUARY, 1, 10, 0, 0);
+    String deadline = base.plusDays(daysOffset).toString();
     context.setLastResponse(api.postCreateTask(name, description, status, priority, homeId, guestId, deadline));
   }
 
@@ -36,7 +40,10 @@ public class CrearTareaSteps {
                                            String homeName, int daysOffset) {
     UUID guestId = UUID.randomUUID();
     UUID homeId = context.get("home:" + homeName);
-    String deadline = LocalDateTime.now().plusDays(daysOffset).toString();
+    LocalDateTime base = daysOffset < 0
+        ? LocalDateTime.of(2024, Month.JANUARY, 1, 10, 0, 0)
+        : LocalDateTime.of(2099, Month.JANUARY, 1, 10, 0, 0);
+    String deadline = base.plusDays(daysOffset).toString();
     context.setLastResponse(api.postCreateTask(name, description, status, priority, homeId, guestId, deadline));
   }
 

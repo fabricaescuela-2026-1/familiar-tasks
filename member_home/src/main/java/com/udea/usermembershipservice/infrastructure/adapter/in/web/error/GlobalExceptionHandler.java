@@ -13,6 +13,7 @@ import com.udea.usermembershipservice.aplication.useCase.exception.SearchExcepti
 import com.udea.usermembershipservice.domain.exception.InvalidDataException;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import java.time.ZoneId;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -48,7 +49,7 @@ public class GlobalExceptionHandler {
 
     private ResponseEntity<ApiErrorResponseDto> buildResponse(HttpStatus status, String message) {
         ApiErrorResponseDto errorResponse = new ApiErrorResponseDto(
-            LocalDateTime.now(),
+            LocalDateTime.now(ZoneId.systemDefault()),
             status.value(),
             status.getReasonPhrase(),
             message

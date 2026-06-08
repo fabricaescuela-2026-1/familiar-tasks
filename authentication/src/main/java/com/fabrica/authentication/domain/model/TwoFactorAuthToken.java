@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Data;
+import java.time.ZoneId;
 
 @Data
 @Builder
@@ -24,7 +25,7 @@ public class TwoFactorAuthToken {
         "El codigo es invalidado, asegurate de usar el ultimo codigo enviado a tu email"
       );
     }
-    if (LocalDateTime.now().isAfter(expiresAt)) {
+    if (LocalDateTime.now(ZoneId.systemDefault()).isAfter(expiresAt)) {
       throw new InvalidTowFactorAuthTokenException(
         "El codigo ha expirado, solicita uno nuevo"
       );

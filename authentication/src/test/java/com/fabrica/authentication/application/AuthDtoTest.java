@@ -6,6 +6,7 @@ import com.fabrica.authentication.infrastructure.database.entities.TokenType;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,7 +19,7 @@ class AuthDtoTest {
     void userMessageBuilderConstruyeCorrectamente() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime now = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
+        LocalDateTime now = LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0);
 
         // Act
         UserMessage msg = UserMessage.builder()

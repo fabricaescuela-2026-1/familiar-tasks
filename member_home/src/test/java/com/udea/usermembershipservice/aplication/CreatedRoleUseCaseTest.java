@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,7 +37,7 @@ class CreatedRoleUseCaseTest {
     private Person personaActiva() {
         return Person.restore(
             UUID.randomUUID(), "Ana", "López",
-            "ana@mail.com", "hashedPass", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true
+            "ana@mail.com", "hashedPass", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), true
         );
     }
 

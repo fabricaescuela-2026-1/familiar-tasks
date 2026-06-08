@@ -1,5 +1,7 @@
 package com.fabrica.authentication.application;
 
+import java.time.Month;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -405,7 +407,7 @@ class AuthServiceTest {
       .build();
     var tokenExpirado = Token.builder()
       .tokenHash("expirado-hash")
-      .expirationDate(java.time.LocalDateTime.of(2026, 1, 1, 9, 59, 0))
+      .expirationDate(java.time.LocalDateTime.of(2026, Month.JANUARY, 1, 9, 59, 0))
       .tokenType("ACCESS")
       .user(user)
       .build();
@@ -467,7 +469,7 @@ class AuthServiceTest {
       .codeHash("hash-codigo")
       .user(user)
       .invalidated(false)
-      .expiresAt(java.time.LocalDateTime.of(2099, 1, 1, 10, 0))
+      .expiresAt(java.time.LocalDateTime.of(2099, Month.JANUARY, 1, 10, 0))
       .build();
     when(userRepo.findByEmail("ana@mail.com")).thenReturn(Optional.of(user));
     when(twoFactorAuthTokenRepo.findLastByUserEmail("ana@mail.com")).thenReturn(
@@ -571,8 +573,8 @@ class AuthServiceTest {
     var user = User.builder().email("carlos@mail.com").build();
     var tokenRevocado = Token.builder()
       .tokenHash("revocado-hash")
-      .expirationDate(java.time.LocalDateTime.of(2026, 1, 2, 10, 0, 0))
-      .expiratedAt(java.time.LocalDateTime.of(2026, 1, 1, 9, 59, 0))
+      .expirationDate(java.time.LocalDateTime.of(2026, Month.JANUARY, 2, 10, 0, 0))
+      .expiratedAt(java.time.LocalDateTime.of(2026, Month.JANUARY, 1, 9, 59, 0))
       .user(user)
       .build();
     when(tokenRepo.findByHash("revocado-hash")).thenReturn(

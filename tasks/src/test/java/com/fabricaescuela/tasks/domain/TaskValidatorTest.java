@@ -4,6 +4,7 @@ import com.fabricaescuela.tasks.domain.model.Task;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,7 +17,7 @@ class TaskValidatorTest {
                 .description("Limpiar mesones y lavar platos")
                 .status("PENDIENTE")
                 .priority("ALTA")
-                .deadline(LocalDateTime.of(2099, 1, 4, 10, 0, 0))
+                .deadline(LocalDateTime.of(2099, Month.JANUARY, 4, 10, 0, 0))
                 .homeId(UUID.randomUUID())
                 .guestId(UUID.randomUUID())
                 .build();
@@ -38,7 +39,7 @@ class TaskValidatorTest {
     void deadlineMananaEsValido() {
         // Arrange
         Task tarea = tareaValida();
-        tarea.setDeadline(LocalDateTime.of(2099, 1, 2, 10, 0, 0));
+        tarea.setDeadline(LocalDateTime.of(2099, Month.JANUARY, 2, 10, 0, 0));
 
         // Act - Assert
         assertDoesNotThrow(() -> TaskValidator.validate(tarea));
@@ -122,7 +123,7 @@ class TaskValidatorTest {
     void deadlineEnElPasadoLanzaExcepcion() {
         // Arrange
         Task tarea = tareaValida();
-        tarea.setDeadline(LocalDateTime.of(2026, 1, 1, 9, 59, 59));
+        tarea.setDeadline(LocalDateTime.of(2026, Month.JANUARY, 1, 9, 59, 59));
 
         // Act - Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,

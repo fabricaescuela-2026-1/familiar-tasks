@@ -95,7 +95,7 @@ public class JwtServiceImpl implements JwtServicePort {
       !dbToken
         .get()
         .getExpirationDate()
-        .isBefore(java.time.LocalDateTime.now()) &&
+        .isBefore(java.time.LocalDateTime.now(java.time.ZoneId.systemDefault())) &&
       getEmailFromTokenHash(hash).equals(dbToken.get().getUser().getEmail()) &&
       getUserIdFromTokenHash(hash).equals(
         dbToken.get().getUser().getUserId().toString()

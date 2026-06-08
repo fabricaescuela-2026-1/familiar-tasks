@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.time.ZoneId;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class LogService implements CreateLogUseCase {
         Log log = new Log(
                 id,
                 idUser,
-                LocalDateTime.now(),
+                LocalDateTime.now(ZoneId.systemDefault()),
                 modifiedElement,
                 action
         );

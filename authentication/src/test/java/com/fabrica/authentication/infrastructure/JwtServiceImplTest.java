@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,7 +45,7 @@ class JwtServiceImplTest {
             .lastname("Lopez")
             .passwordHash("hash")
             .isActive(true)
-            .createdAt(LocalDateTime.of(2026, 1, 1, 10, 0, 0))
+            .createdAt(LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0))
             .build();
     }
 
@@ -88,7 +89,7 @@ class JwtServiceImplTest {
         Token persistido = Token.builder()
             .tokenId(generado.getTokenId())
             .tokenHash(generado.getTokenHash())
-            .expirationDate(LocalDateTime.of(2099, 1, 1, 11, 0, 0))
+            .expirationDate(LocalDateTime.of(2099, Month.JANUARY, 1, 11, 0, 0))
             .tokenType(TokenType.ACCESS.toString())
             .user(user)
             .build();
@@ -118,7 +119,7 @@ class JwtServiceImplTest {
         Token expirado = Token.builder()
             .tokenId(generado.getTokenId())
             .tokenHash(generado.getTokenHash())
-            .expirationDate(LocalDateTime.of(2026, 1, 1, 9, 59, 0))
+            .expirationDate(LocalDateTime.of(2026, Month.JANUARY, 1, 9, 59, 0))
             .tokenType(TokenType.ACCESS.toString())
             .user(user)
             .build();

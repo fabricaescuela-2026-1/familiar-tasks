@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,7 +49,7 @@ class HomeControllerTest {
     @Test
     void getAllHomesRetornaListaDeHogares() {
         // Arrange
-        HomeDto home = new HomeDto(UUID.randomUUID(), "Hogar1", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
+        HomeDto home = new HomeDto(UUID.randomUUID(), "Hogar1", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0));
         when(createHomeUseCase.geatAllHomes()).thenReturn(List.of(home));
 
         // Act
@@ -63,7 +64,7 @@ class HomeControllerTest {
     @Test
     void getHomeByNameRetornaHogarBuscado() {
         // Arrange
-        HomeDto home = new HomeDto(UUID.randomUUID(), "Hogar1", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
+        HomeDto home = new HomeDto(UUID.randomUUID(), "Hogar1", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0));
         when(createHomeUseCase.getHomeByName("Hogar1")).thenReturn(home);
 
         // Act

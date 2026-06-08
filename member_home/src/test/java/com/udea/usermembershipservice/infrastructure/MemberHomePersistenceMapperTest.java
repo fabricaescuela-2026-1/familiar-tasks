@@ -9,6 +9,7 @@ import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.map
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,9 +47,9 @@ class MemberHomePersistenceMapperTest {
             new MemberHomeJpaEntityId(homeId, personId), roleId
         );
         PersonJpaEntity personEntity = new PersonJpaEntity(
-            personId, "Ana", "López", "ana@mail.com", "Segura@123", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true
+            personId, "Ana", "López", "ana@mail.com", "Segura@123", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), true
         );
-        HomeJpaEntity homeEntity = new HomeJpaEntity(homeId, "Los García", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
+        HomeJpaEntity homeEntity = new HomeJpaEntity(homeId, "Los García", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0));
 
         // Act
         MemberHomeDto dto = mapper.toDto(memberHomeEntity, personEntity, homeEntity);

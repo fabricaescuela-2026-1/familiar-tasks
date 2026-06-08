@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,7 +40,7 @@ class UserQueueServiceTest {
             .lastname("Lopez")
             .email("a@mail.com")
             .passwordHash("hash")
-            .createdAt(LocalDateTime.of(2026, 1, 1, 10, 0, 0))
+            .createdAt(LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0))
             .build();
     }
 

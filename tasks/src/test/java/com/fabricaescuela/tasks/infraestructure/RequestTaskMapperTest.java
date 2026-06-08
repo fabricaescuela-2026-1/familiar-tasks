@@ -6,6 +6,7 @@ import com.fabricaescuela.tasks.infraestructure.presentation.dtos.mappers.Reques
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +20,7 @@ class RequestTaskMapperTest {
         // Arrange
         UUID homeId  = UUID.randomUUID();
         UUID guestId = UUID.randomUUID();
-        LocalDateTime deadline = LocalDateTime.of(2099, 1, 4, 10, 0, 0);
+        LocalDateTime deadline = LocalDateTime.of(2099, Month.JANUARY, 4, 10, 0, 0);
 
         RequestTask request = RequestTask.builder()
             .name("Barrer patio")

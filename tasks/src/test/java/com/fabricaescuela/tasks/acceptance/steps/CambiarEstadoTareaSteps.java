@@ -3,6 +3,7 @@ package com.fabricaescuela.tasks.acceptance.steps;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class CambiarEstadoTareaSteps {
     StatusEntity status = data.ensureStatus(statusName);
     PriorityEntity priority = data.ensurePriority("MEDIA");
     TaskEntity created = data.createTask(taskName, "Descripción de prueba", status, priority,
-        homeId, guestId, LocalDateTime.of(2099, 1, 4, 10, 0, 0));
+        homeId, guestId, LocalDateTime.of(2099, Month.JANUARY, 4, 10, 0, 0));
     context.put("task:" + taskName, created.getTaskId());
   }
 

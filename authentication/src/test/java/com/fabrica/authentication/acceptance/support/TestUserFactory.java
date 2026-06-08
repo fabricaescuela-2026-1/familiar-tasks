@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 @Component
@@ -28,7 +29,7 @@ public class TestUserFactory {
         .email(email)
         .passwordHash(passwordEncoder.encode(password))
         .isActive(true)
-        .createdAt(LocalDateTime.of(2026, 1, 1, 10, 0, 0))
+        .createdAt(LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0))
         .build();
     return userRepo.save(user);
   }

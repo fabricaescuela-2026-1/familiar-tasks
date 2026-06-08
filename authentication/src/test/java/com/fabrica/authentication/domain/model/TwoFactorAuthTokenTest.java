@@ -4,6 +4,7 @@ import com.fabrica.authentication.domain.exceptions.InvalidTowFactorAuthTokenExc
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,8 +16,8 @@ class TwoFactorAuthTokenTest {
             .id(UUID.randomUUID())
             .codeHash("hash")
             .user(User.builder().email("ana@mail.com").build())
-            .createdAt(LocalDateTime.of(2099, 1, 1, 10, 0, 0))
-            .expiresAt(LocalDateTime.of(2099, 1, 1, 10, 10, 0))
+            .createdAt(LocalDateTime.of(2099, Month.JANUARY, 1, 10, 0, 0))
+            .expiresAt(LocalDateTime.of(2099, Month.JANUARY, 1, 10, 10, 0))
             .invalidated(false)
             .attempts(0)
             .build();
@@ -37,7 +38,7 @@ class TwoFactorAuthTokenTest {
             .user(user)
             .attempts(2)
             .invalidated(false)
-            .expiresAt(LocalDateTime.of(2026, 1, 1, 10, 5, 0))
+            .expiresAt(LocalDateTime.of(2026, Month.JANUARY, 1, 10, 5, 0))
             .build();
 
         // Assert
@@ -65,7 +66,7 @@ class TwoFactorAuthTokenTest {
     @Test
     void validateFallaCuandoTokenExpiro() {
         TwoFactorAuthToken token = tokenBase();
-        token.setExpiresAt(LocalDateTime.of(2026, 1, 1, 9, 59, 0));
+        token.setExpiresAt(LocalDateTime.of(2026, Month.JANUARY, 1, 9, 59, 0));
         assertThrows(InvalidTowFactorAuthTokenException.class, token::validate);
     }
 

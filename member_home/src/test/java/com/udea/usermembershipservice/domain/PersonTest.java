@@ -5,6 +5,7 @@ import com.udea.usermembershipservice.domain.model.Person;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class PersonTest {
 
     private final UUID id = UUID.randomUUID();
-    private final LocalDateTime ahora = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
+    private final LocalDateTime ahora = LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0);
 
     // ── CASOS DE ÉXITO ──────────────────────────────────────────────────────
 

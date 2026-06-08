@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,7 +41,7 @@ class CreatedHomeUseCaseTest {
 
     @Test
     void creacionDeGrupoExitosa() {
-        var creator = Person.restore(UUID.randomUUID(), "Carlos", "Ruiz", "carlos@mail.com", "hashed", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true);
+        var creator = Person.restore(UUID.randomUUID(), "Carlos", "Ruiz", "carlos@mail.com", "hashed", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), true);
         var adminRole = Role.create(UUID.randomUUID(), "Administrador");
         when(homeRepositoryPort.getHomeByName("Los García")).thenReturn(Optional.empty());
         when(personRepositoryPort.getUserByEmail("carlos@mail.com")).thenReturn(Optional.of(creator));
@@ -57,7 +58,7 @@ class CreatedHomeUseCaseTest {
     void nombreVacioNoCrearElGrupo() {
         when(homeRepositoryPort.getHomeByName("")).thenReturn(Optional.empty());
         when(personRepositoryPort.getUserByEmail("carlos@mail.com")).thenReturn(
-            Optional.of(Person.restore(UUID.randomUUID(), "Carlos", "Ruiz", "carlos@mail.com", "hashed", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true))
+            Optional.of(Person.restore(UUID.randomUUID(), "Carlos", "Ruiz", "carlos@mail.com", "hashed", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), true))
         );
         when(roleRepositoryPort.getRoleByName("Administrador")).thenReturn(
             Optional.of(Role.create(UUID.randomUUID(), "Administrador"))
@@ -71,7 +72,7 @@ class CreatedHomeUseCaseTest {
 
     @Test
     void hogarConNombreYaExistenteLanzaExcepcion() {
-        var home = Home.create(UUID.randomUUID(), "Los García", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
+        var home = Home.create(UUID.randomUUID(), "Los García", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0));
         when(homeRepositoryPort.getHomeByName("Los García")).thenReturn(Optional.of(home));
 
         assertThrows(PersistenceException.class, () ->
@@ -82,7 +83,7 @@ class CreatedHomeUseCaseTest {
 
     @Test
     void obtenerTodosLosHogaresRetornaLista() {
-        var home = Home.create(UUID.randomUUID(), "Los García", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
+        var home = Home.create(UUID.randomUUID(), "Los García", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0));
         when(homeRepositoryPort.getAllHomes()).thenReturn(List.of(home));
 
         List<HomeDto> result = useCase.geatAllHomes();
@@ -93,7 +94,7 @@ class CreatedHomeUseCaseTest {
 
     @Test
     void obtenerHogarPorNombreExistenteRetornaDto() {
-        var home = Home.create(UUID.randomUUID(), "Los García", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
+        var home = Home.create(UUID.randomUUID(), "Los García", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0));
         when(homeRepositoryPort.getHomeByName("Los García")).thenReturn(Optional.of(home));
 
         HomeDto result = useCase.getHomeByName("Los García");

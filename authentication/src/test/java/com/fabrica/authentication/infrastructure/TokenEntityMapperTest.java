@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,7 +38,7 @@ class TokenEntityMapperTest {
     void toEntityConvierteTokenADominio() {
         // Arrange
         UUID tokenId = UUID.randomUUID();
-        LocalDateTime ahora = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
+        LocalDateTime ahora = LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0);
         User user = User.builder().email("carlos@mail.com").build();
         UserEntity userEntity = UserEntity.builder().email("carlos@mail.com").build();
         Token token = Token.builder()
@@ -69,7 +70,7 @@ class TokenEntityMapperTest {
         TokenEntity entity = TokenEntity.builder()
             .tokenId(tokenId)
             .tokenHash("hash-abc")
-            .expirationDate(LocalDateTime.of(2026, 1, 1, 12, 0, 0))
+            .expirationDate(LocalDateTime.of(2026, Month.JANUARY, 1, 12, 0, 0))
             .tokenType(TokenType.REFRESH)
             .user(userEntity)
             .build();
@@ -94,7 +95,7 @@ class TokenEntityMapperTest {
         Token token = Token.builder()
             .tokenHash("hash")
             .tokenType("ACCESS")
-            .expirationDate(LocalDateTime.of(2026, 1, 1, 11, 0, 0))
+            .expirationDate(LocalDateTime.of(2026, Month.JANUARY, 1, 11, 0, 0))
             .user(user)
             .build();
         when(userJpaRepo.findByEmail("noexiste@mail.com")).thenReturn(Optional.empty());

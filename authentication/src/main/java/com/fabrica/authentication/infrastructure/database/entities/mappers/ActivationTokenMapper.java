@@ -6,6 +6,7 @@ import com.fabrica.authentication.infrastructure.database.entities.UserEntity;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import java.time.ZoneId;
 
 @Component
 @RequiredArgsConstructor
@@ -15,7 +16,7 @@ public class ActivationTokenMapper {
     ActivationToken token,
     UserEntity userEntity
   ) {
-    var now = LocalDateTime.now();
+    var now = LocalDateTime.now(ZoneId.systemDefault());
     return ActivationTokenEntity.builder()
       .user(userEntity)
       .id(token.getId())

@@ -8,6 +8,7 @@ import com.fabricaescuela.tasks.infraestructure.database.mappers.TaskEntityMappe
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +23,7 @@ class TaskEntityMapperTest {
         UUID taskId = UUID.randomUUID();
         UUID homeId = UUID.randomUUID();
         UUID guestId = UUID.randomUUID();
-        LocalDateTime deadline = LocalDateTime.of(2099, 1, 3, 10, 0, 0);
+        LocalDateTime deadline = LocalDateTime.of(2099, Month.JANUARY, 3, 10, 0, 0);
         StatusEntity status = StatusEntity.builder().statusId(UUID.randomUUID()).name("PENDIENTE").build();
         PriorityEntity priority = PriorityEntity.builder().priorityId(UUID.randomUUID()).name("ALTA").build();
         TaskEntity entity = TaskEntity.builder()
@@ -56,7 +57,7 @@ class TaskEntityMapperTest {
         UUID taskId = UUID.randomUUID();
         UUID homeId = UUID.randomUUID();
         UUID guestId = UUID.randomUUID();
-        LocalDateTime deadline = LocalDateTime.of(2099, 1, 4, 10, 0, 0);
+        LocalDateTime deadline = LocalDateTime.of(2099, Month.JANUARY, 4, 10, 0, 0);
         Task task = Task.builder()
             .taskId(taskId)
             .name("Cocinar")

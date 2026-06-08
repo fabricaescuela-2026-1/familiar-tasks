@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.ZoneId;
 
 @RequiredArgsConstructor
 @Service
@@ -75,7 +76,7 @@ public class AuthService implements AuthUseCase {
       .lastname(req.lastname())
       .email(req.email())
       .passwordHash(hashedPassword)
-      .createdAt(LocalDateTime.now())
+      .createdAt(LocalDateTime.now(ZoneId.systemDefault()))
       .isActive(false)
       .build();
   }
@@ -114,7 +115,7 @@ public class AuthService implements AuthUseCase {
     User user,
     String codeHash
   ) {
-    var now = LocalDateTime.now();
+    var now = LocalDateTime.now(ZoneId.systemDefault());
     return TwoFactorAuthToken.builder()
       .id(UUID.randomUUID())
       .createdAt(now)
@@ -152,13 +153,13 @@ public class AuthService implements AuthUseCase {
 
     if (
       token.getExpirationDate() != null &&
-      token.getExpirationDate().isBefore(LocalDateTime.now())
+      token.getExpirationDate().isBefore(LocalDateTime.now(ZoneId.systemDefault()))
     ) {
       throw new InvalidTokenException();
     }
     if (
       token.getExpiratedAt() != null &&
-      token.getExpiratedAt().isBefore(LocalDateTime.now())
+      token.getExpiratedAt().isBefore(LocalDateTime.now(ZoneId.systemDefault()))
     ) {
       throw new InvalidTokenException();
     }

@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,11 +55,11 @@ class MemberHomePersistenceAdapterTest {
   private PersonJpaEntity persona(UUID id) {
     return new PersonJpaEntity(
         id, "Carlos", "Ruiz", "carlos@familia.com",
-        "hash", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true);
+        "hash", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), true);
   }
 
   private HomeJpaEntity hogar(UUID id) {
-    return new HomeJpaEntity(id, "Los García", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
+    return new HomeJpaEntity(id, "Los García", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0));
   }
 
   // ── CASOS DE ÉXITO ──────────────────────────────────────────────────────

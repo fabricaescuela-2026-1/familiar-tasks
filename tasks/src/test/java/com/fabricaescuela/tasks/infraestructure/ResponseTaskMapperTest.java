@@ -6,6 +6,7 @@ import com.fabricaescuela.tasks.infraestructure.presentation.dtos.mappers.Respon
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +21,7 @@ class ResponseTaskMapperTest {
         UUID taskId  = UUID.randomUUID();
         UUID homeId  = UUID.randomUUID();
         UUID guestId = UUID.randomUUID();
-        LocalDateTime ahora   = LocalDateTime.of(2099, 1, 1, 10, 0, 0);
+        LocalDateTime ahora   = LocalDateTime.of(2099, Month.JANUARY, 1, 10, 0, 0);
         LocalDateTime deadline = ahora.plusDays(5);
 
         Task task = Task.builder()

@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.ArgumentCaptor;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,7 +35,7 @@ class LogServiceTest {
         // Arrange
         String id = UUID.randomUUID().toString();
         String userId = UUID.randomUUID().toString();
-        Log logEsperado = new Log(id, userId, LocalDateTime.of(2026, 1, 1, 10, 0, 0), "ROLE", "CHANGED");
+        Log logEsperado = new Log(id, userId, LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), "ROLE", "CHANGED");
         when(logRepository.save(any(Log.class))).thenReturn(logEsperado);
 
         // Act
@@ -51,8 +52,8 @@ class LogServiceTest {
     @Test
     void obtenerTodosLosLogsRetornaLista() {
         // Arrange
-        Log log1 = new Log(UUID.randomUUID().toString(), "u1", LocalDateTime.of(2026, 1, 1, 10, 0, 0), "TASK", "CREATED");
-        Log log2 = new Log(UUID.randomUUID().toString(), "u2", LocalDateTime.of(2026, 1, 1, 10, 0, 0), "ROLE", "CHANGED");
+        Log log1 = new Log(UUID.randomUUID().toString(), "u1", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), "TASK", "CREATED");
+        Log log2 = new Log(UUID.randomUUID().toString(), "u2", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), "ROLE", "CHANGED");
         when(logRepository.findAll()).thenReturn(List.of(log1, log2));
 
         // Act
@@ -156,7 +157,7 @@ class LogServiceTest {
     void getAllLogsRetornaListaConDatosCompletos() {
         // Arrange
         String userId = UUID.randomUUID().toString();
-        Log log = new Log(UUID.randomUUID().toString(), userId, LocalDateTime.of(2026, 1, 1, 10, 0, 0), "TASK", "UPDATED");
+        Log log = new Log(UUID.randomUUID().toString(), userId, LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), "TASK", "UPDATED");
         when(logRepository.findAll()).thenReturn(List.of(log));
 
         // Act

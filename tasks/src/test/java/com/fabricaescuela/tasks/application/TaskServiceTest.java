@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,7 +41,7 @@ class TaskServiceTest {
                 .description("Barrer hojas del patio trasero")
                 .status("PENDIENTE")
                 .priority("MEDIA")
-                .deadline(LocalDateTime.of(2099, 1, 3, 10, 0, 0))
+                .deadline(LocalDateTime.of(2099, Month.JANUARY, 3, 10, 0, 0))
                 .homeId(UUID.randomUUID())
                 .guestId(UUID.randomUUID())
                 .build();
@@ -185,7 +186,7 @@ class TaskServiceTest {
         // Arrange
         UUID taskId = UUID.randomUUID();
         Task tarea = tareaValida();
-        tarea.setDeadline(LocalDateTime.of(2025, 12, 31, 10, 0, 0));
+        tarea.setDeadline(LocalDateTime.of(2025, Month.DECEMBER, 31, 10, 0, 0));
 
         // Act - Assert
         assertThrows(IllegalArgumentException.class, () -> taskService.update(taskId, tarea));
@@ -392,7 +393,7 @@ class TaskServiceTest {
                 .name("Barrer patio")
                 .description("Barrer hojas del patio trasero")
                 .priority("MEDIA")
-                .deadline(LocalDateTime.of(2099, 1, 3, 10, 0, 0))
+                .deadline(LocalDateTime.of(2099, Month.JANUARY, 3, 10, 0, 0))
                 .homeId(UUID.randomUUID())
                 .guestId(UUID.randomUUID())
                 .build();

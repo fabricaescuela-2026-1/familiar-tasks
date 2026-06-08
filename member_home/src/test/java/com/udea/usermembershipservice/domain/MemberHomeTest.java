@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,9 +22,9 @@ class MemberHomeTest {
 
     @BeforeEach
     void setUp() {
-        home   = Home.create(UUID.randomUUID(), "Los García", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
+        home   = Home.create(UUID.randomUUID(), "Los García", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0));
         role   = Role.create(UUID.randomUUID(), "Administrador");
-        person = Person.restore(UUID.randomUUID(), "Ana", "López", "ana@mail.com", "Segura@123", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true);
+        person = Person.restore(UUID.randomUUID(), "Ana", "López", "ana@mail.com", "Segura@123", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), true);
     }
 
     // ── CASOS DE ÉXITO ──────────────────────────────────────────────────────
@@ -54,7 +55,7 @@ class MemberHomeTest {
     void cambiarHogarActualizaCorrectamente() {
         // Arrange
         MemberHome memberHome = MemberHome.create(home, role, person);
-        Home nuevoHogar = Home.create(UUID.randomUUID(), "Los Ruiz", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
+        Home nuevoHogar = Home.create(UUID.randomUUID(), "Los Ruiz", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0));
 
         // Act
         memberHome.changeHome(nuevoHogar);
@@ -80,7 +81,7 @@ class MemberHomeTest {
     void cambiarPersonaActualizaCorrectamente() {
         // Arrange
         MemberHome memberHome = MemberHome.create(home, role, person);
-        Person nuevaPersona = Person.restore(UUID.randomUUID(), "Carlos", "Díaz", "carlos@mail.com", "Segura@123", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true);
+        Person nuevaPersona = Person.restore(UUID.randomUUID(), "Carlos", "Díaz", "carlos@mail.com", "Segura@123", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), true);
 
         // Act
         memberHome.changePerson(nuevaPersona);

@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,7 +40,7 @@ class TaskRepositoryAdapterTest {
             .description("Patio")
             .priority("MEDIA")
             .status("PENDIENTE")
-            .deadline(LocalDateTime.of(2099, 1, 3, 10, 0, 0))
+            .deadline(LocalDateTime.of(2099, Month.JANUARY, 3, 10, 0, 0))
             .homeId(UUID.randomUUID())
             .guestId(UUID.randomUUID())
             .build();
@@ -52,7 +53,7 @@ class TaskRepositoryAdapterTest {
             .description("Patio")
             .priority(PriorityEntity.builder().name("MEDIA").build())
             .status(StatusEntity.builder().name("PENDIENTE").build())
-            .deadline(LocalDateTime.of(2099, 1, 3, 10, 0, 0))
+            .deadline(LocalDateTime.of(2099, Month.JANUARY, 3, 10, 0, 0))
             .homeId(UUID.randomUUID())
             .guestId(UUID.randomUUID())
             .build();

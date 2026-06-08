@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,13 +42,13 @@ class PersonPersistenceAdapterTest {
   private Person personaValida() {
     return Person.restore(
         UUID.randomUUID(), "Carlos", "Ruiz", "carlos@familia.com",
-        "hash", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true);
+        "hash", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), true);
   }
 
   private PersonJpaEntity entidadValida(UUID id) {
     return new PersonJpaEntity(
         id, "Carlos", "Ruiz", "carlos@familia.com",
-        "hash", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true);
+        "hash", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), true);
   }
 
   // ── CASOS DE ÉXITO ──────────────────────────────────────────────────────

@@ -6,6 +6,7 @@ import com.fabricaescuela.logs.domain.model.Log;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +22,7 @@ class LogMapperTest {
         // Arrange
         String id = UUID.randomUUID().toString();
         String userId = UUID.randomUUID().toString();
-        LocalDateTime timestamp = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
+        LocalDateTime timestamp = LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0);
         Log log = new Log(id, userId, timestamp, "TASK", "CREATED");
 
         // Act
@@ -38,7 +39,7 @@ class LogMapperTest {
     @Test
     void toResponseConIdNuloMappeSinError() {
         // Arrange
-        Log log = new Log(null, "userId", LocalDateTime.of(2026, 1, 1, 10, 0, 0), "ROLE", "CHANGED");
+        Log log = new Log(null, "userId", LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0), "ROLE", "CHANGED");
 
         // Act
         LogResponse response = mapper.toResponse(log);

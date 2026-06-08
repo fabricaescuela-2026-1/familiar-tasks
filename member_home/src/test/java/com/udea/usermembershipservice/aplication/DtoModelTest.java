@@ -15,6 +15,7 @@ import com.udea.usermembershipservice.infrastructure.adapter.in.web.error.ApiErr
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -81,7 +82,7 @@ class DtoModelTest {
     @Test
     void apiErrorResponseDtoAlmacenaCamposCorrectamente() {
         // Arrange
-        LocalDateTime now = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
+        LocalDateTime now = LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0);
 
         // Act
         ApiErrorResponseDto dto = new ApiErrorResponseDto(now, 400, "Bad Request", "campo requerido");
@@ -107,7 +108,7 @@ class DtoModelTest {
     void homeDtoAlmacenaCamposCorrectamente() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime now = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
+        LocalDateTime now = LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0);
 
         // Act
         HomeDto dto = new HomeDto(id, "Casa", now);

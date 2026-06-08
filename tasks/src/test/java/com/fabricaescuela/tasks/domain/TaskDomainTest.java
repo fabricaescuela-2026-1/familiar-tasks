@@ -14,6 +14,7 @@ import com.fabricaescuela.tasks.infraestructure.presentation.dtos.ResponseTask;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,7 +29,7 @@ class TaskDomainTest {
         UUID taskId = UUID.randomUUID();
         UUID homeId = UUID.randomUUID();
         UUID guestId = UUID.randomUUID();
-        LocalDateTime deadline = LocalDateTime.of(2099, 1, 3, 10, 0, 0);
+        LocalDateTime deadline = LocalDateTime.of(2099, Month.JANUARY, 3, 10, 0, 0);
 
         // Act
         Task task = Task.builder()
@@ -72,7 +73,7 @@ class TaskDomainTest {
         // Arrange
         UUID homeId = UUID.randomUUID();
         UUID guestId = UUID.randomUUID();
-        LocalDateTime deadline = LocalDateTime.of(2099, 1, 2, 10, 0, 0);
+        LocalDateTime deadline = LocalDateTime.of(2099, Month.JANUARY, 2, 10, 0, 0);
 
         // Act
         RequestTask request = RequestTask.builder()
@@ -96,7 +97,7 @@ class TaskDomainTest {
     void responseTaskBuilderAsignaTodosLosCampos() {
         // Arrange
         UUID taskId = UUID.randomUUID();
-        LocalDateTime now = LocalDateTime.of(2099, 1, 1, 10, 0, 0);
+        LocalDateTime now = LocalDateTime.of(2099, Month.JANUARY, 1, 10, 0, 0);
 
         // Act
         ResponseTask response = ResponseTask.builder()

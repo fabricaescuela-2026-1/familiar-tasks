@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Data;
+import java.time.ZoneId;
 
 @Data
 @Builder
@@ -24,7 +25,7 @@ public class ActivationToken {
         "Has superado el número máximo de intentos, genera un codigo nuevo"
       );
     }
-    if (LocalDateTime.now().isAfter(expiresAt)) {
+    if (LocalDateTime.now(ZoneId.systemDefault()).isAfter(expiresAt)) {
       throw new InvalidActivationTokenException(
         "El token ha expirado, intenta generar uno nuevo"
       );

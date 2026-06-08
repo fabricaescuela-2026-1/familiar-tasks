@@ -6,6 +6,7 @@ import com.fabrica.authentication.infrastructure.database.entities.mappers.UserE
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +21,7 @@ class UserEntityMapperTest {
     void toEntityConvierteDominioAEntidad() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime ahora = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
+        LocalDateTime ahora = LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0);
         User user = User.builder()
             .userId(id)
             .name("Carlos")
@@ -47,7 +48,7 @@ class UserEntityMapperTest {
     void toDomainConvierteEntidadADominio() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime ahora = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
+        LocalDateTime ahora = LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0);
         UserEntity entity = UserEntity.builder()
             .userId(id)
             .name("Carlos")
@@ -81,7 +82,7 @@ class UserEntityMapperTest {
             .email("carlos@mail.com")
             .passwordHash("hash-pass")
             .isActive(true)
-            .createdAt(LocalDateTime.of(2026, 1, 1, 10, 0, 0))
+            .createdAt(LocalDateTime.of(2026, Month.JANUARY, 1, 10, 0, 0))
             .build();
 
         // Act
