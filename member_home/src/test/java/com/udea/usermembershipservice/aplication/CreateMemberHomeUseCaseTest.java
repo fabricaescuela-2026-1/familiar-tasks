@@ -13,6 +13,7 @@ import com.udea.usermembershipservice.aplication.useCase.exception.SearchExcepti
 import com.udea.usermembershipservice.domain.model.Home;
 import com.udea.usermembershipservice.domain.model.Person;
 import com.udea.usermembershipservice.domain.model.Role;
+import com.udea.usermembershipservice.infrastructure.util.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +37,7 @@ class CreateMemberHomeUseCaseTest {
     @Mock private IRoleRepositoryPort roleRepositoryPort;
     @Mock private IMemberHomeRepositoryPort memberHomeRepositoryPort;
     @Mock private IAuditLogQueuePort auditLogQueuePort;
+    @Mock private JwtUtils jwtUtils;
 
     @InjectMocks
     private CreateMemberHomeUseCase useCase;
@@ -215,6 +217,10 @@ class CreateMemberHomeUseCaseTest {
         // Arrange
         when(homeRepositoryPort.getHomeByName("Los García")).thenReturn(Optional.of(home));
         when(personRepositoryPort.getUserByEmail("carlos@mail.com")).thenReturn(Optional.of(person));
+        when(jwtUtils.getCurrentUserEmail()).thenReturn("ana@mail.com");
+        when(personRepositoryPort.getUserByEmail("ana@mail.com")).thenReturn(Optional.of(admin));
+        when(memberHomeRepositoryPort.getMemberHome(adminId, homeId)).thenReturn(Optional.of(adminMembership));
+        when(roleRepositoryPort.getRoleByName("Administrador")).thenReturn(Optional.of(adminRole));
 
         // Act - Assert
         assertDoesNotThrow(() ->
