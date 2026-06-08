@@ -48,7 +48,7 @@ class HomeControllerTest {
     @Test
     void getAllHomesRetornaListaDeHogares() {
         // Arrange
-        HomeDto home = new HomeDto(UUID.randomUUID(), "Hogar1", LocalDateTime.now());
+        HomeDto home = new HomeDto(UUID.randomUUID(), "Hogar1", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
         when(createHomeUseCase.geatAllHomes()).thenReturn(List.of(home));
 
         // Act
@@ -63,7 +63,7 @@ class HomeControllerTest {
     @Test
     void getHomeByNameRetornaHogarBuscado() {
         // Arrange
-        HomeDto home = new HomeDto(UUID.randomUUID(), "Hogar1", LocalDateTime.now());
+        HomeDto home = new HomeDto(UUID.randomUUID(), "Hogar1", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
         when(createHomeUseCase.getHomeByName("Hogar1")).thenReturn(home);
 
         // Act

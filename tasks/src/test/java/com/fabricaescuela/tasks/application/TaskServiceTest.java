@@ -40,7 +40,7 @@ class TaskServiceTest {
                 .description("Barrer hojas del patio trasero")
                 .status("PENDIENTE")
                 .priority("MEDIA")
-                .deadline(LocalDateTime.now().plusDays(2))
+                .deadline(LocalDateTime.of(2099, 1, 3, 10, 0, 0))
                 .homeId(UUID.randomUUID())
                 .guestId(UUID.randomUUID())
                 .build();
@@ -185,7 +185,7 @@ class TaskServiceTest {
         // Arrange
         UUID taskId = UUID.randomUUID();
         Task tarea = tareaValida();
-        tarea.setDeadline(LocalDateTime.now().minusDays(1));
+        tarea.setDeadline(LocalDateTime.of(2025, 12, 31, 10, 0, 0));
 
         // Act - Assert
         assertThrows(IllegalArgumentException.class, () -> taskService.update(taskId, tarea));
@@ -392,7 +392,7 @@ class TaskServiceTest {
                 .name("Barrer patio")
                 .description("Barrer hojas del patio trasero")
                 .priority("MEDIA")
-                .deadline(LocalDateTime.now().plusDays(2))
+                .deadline(LocalDateTime.of(2099, 1, 3, 10, 0, 0))
                 .homeId(UUID.randomUUID())
                 .guestId(UUID.randomUUID())
                 .build();

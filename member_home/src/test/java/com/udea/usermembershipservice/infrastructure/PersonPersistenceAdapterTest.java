@@ -41,13 +41,13 @@ class PersonPersistenceAdapterTest {
   private Person personaValida() {
     return Person.restore(
         UUID.randomUUID(), "Carlos", "Ruiz", "carlos@familia.com",
-        "hash", LocalDateTime.now(), true);
+        "hash", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true);
   }
 
   private PersonJpaEntity entidadValida(UUID id) {
     return new PersonJpaEntity(
         id, "Carlos", "Ruiz", "carlos@familia.com",
-        "hash", LocalDateTime.now(), true);
+        "hash", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true);
   }
 
   // ── CASOS DE ÉXITO ──────────────────────────────────────────────────────

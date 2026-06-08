@@ -38,7 +38,7 @@ class TaskControllerTest {
             .priorityName("MEDIA")
             .homeId(UUID.randomUUID())
             .guestId(UUID.randomUUID())
-            .deadline(LocalDateTime.now().plusDays(1))
+            .deadline(LocalDateTime.of(2099, 1, 2, 10, 0, 0))
             .build();
     }
 
@@ -51,7 +51,7 @@ class TaskControllerTest {
             .priority("MEDIA")
             .homeId(UUID.randomUUID())
             .guestId(UUID.randomUUID())
-            .deadline(LocalDateTime.now().plusDays(1))
+            .deadline(LocalDateTime.of(2099, 1, 2, 10, 0, 0))
             .build();
     }
 

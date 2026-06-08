@@ -54,7 +54,7 @@ class UserSynchronizationServiceTest {
         String userId = UUID.randomUUID().toString();
         Person personaExistente = Person.restore(
             UUID.fromString(userId), "Carlos", "Ruiz",
-            "carlos@mail.com", "hashed", java.time.LocalDateTime.now(), true
+            "carlos@mail.com", "hashed", java.time.LocalDateTime.of(2026, 1, 1, 10, 0, 0), true
         );
         when(personRepositoryPort.getUserById(any(UUID.class))).thenReturn(Optional.of(personaExistente));
 

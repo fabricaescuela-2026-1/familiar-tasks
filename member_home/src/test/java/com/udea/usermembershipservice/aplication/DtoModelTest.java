@@ -81,7 +81,7 @@ class DtoModelTest {
     @Test
     void apiErrorResponseDtoAlmacenaCamposCorrectamente() {
         // Arrange
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
 
         // Act
         ApiErrorResponseDto dto = new ApiErrorResponseDto(now, 400, "Bad Request", "campo requerido");
@@ -107,7 +107,7 @@ class DtoModelTest {
     void homeDtoAlmacenaCamposCorrectamente() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
 
         // Act
         HomeDto dto = new HomeDto(id, "Casa", now);

@@ -25,7 +25,7 @@ class AuthDomainTest {
     void userBuilderAsignaTodosLosCampos() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ahora = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
 
         // Act
         User user = User.builder()
@@ -68,7 +68,7 @@ class AuthDomainTest {
     void tokenBuilderAsignaTodosLosCampos() {
         // Arrange
         UUID tokenId = UUID.randomUUID();
-        LocalDateTime exp = LocalDateTime.now().plusHours(1);
+        LocalDateTime exp = LocalDateTime.of(2026, 1, 1, 11, 0, 0);
         User user = User.builder().email("a@b.co").build();
 
         // Act
@@ -129,7 +129,7 @@ class AuthDomainTest {
         // Arrange
         UUID tokenId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
-        LocalDateTime exp = LocalDateTime.now().plusDays(1);
+        LocalDateTime exp = LocalDateTime.of(2026, 1, 2, 10, 0, 0);
 
         // Act
         TokenResponse response = TokenResponse.builder()

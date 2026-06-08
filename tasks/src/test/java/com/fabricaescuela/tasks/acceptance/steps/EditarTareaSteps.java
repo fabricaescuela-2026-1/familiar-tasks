@@ -32,7 +32,7 @@ public class EditarTareaSteps {
     StatusEntity status = data.ensureStatus("PENDIENTE");
     PriorityEntity priority = data.ensurePriority("MEDIA");
     TaskEntity created = data.createTask(taskName, "Descripción de prueba", status, priority,
-        homeId, guestId, LocalDateTime.now().plusDays(7));
+        homeId, guestId, LocalDateTime.of(2099, 1, 8, 10, 0, 0));
     context.put("task:" + taskName, created.getTaskId());
   }
 
@@ -42,7 +42,7 @@ public class EditarTareaSteps {
     TaskEntity existing = data.tasks().findById(taskId).orElseThrow();
     UUID guestId = existing.getGuestId();
     UUID homeId = existing.getHomeId();
-    String deadline = LocalDateTime.now().plusDays(10).toString();
+    String deadline = LocalDateTime.of(2099, 1, 11, 10, 0, 0).toString();
     context.setLastResponse(api.putUpdateTask(
         taskId,
         newName,

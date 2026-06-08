@@ -17,7 +17,7 @@ class HomeTest {
     void creacionExitosaConDatosValidos() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ahora = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
 
         // Act
         Home home = Home.create(id, "Casa Familiar", ahora);
@@ -31,7 +31,7 @@ class HomeTest {
     @Test
     void cambiarNombreExitoso() {
         // Arrange
-        Home home = Home.create(UUID.randomUUID(), "Casa Vieja", LocalDateTime.now());
+        Home home = Home.create(UUID.randomUUID(), "Casa Vieja", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
 
         // Act
         home.changeName("Casa Nueva");
@@ -46,7 +46,7 @@ class HomeTest {
     void idNuloLanzaExcepcion() {
         // Arrange - Act - Assert
         assertThrows(InvalidDataException.class, () ->
-            Home.create(null, "Casa Familiar", LocalDateTime.now())
+            Home.create(null, "Casa Familiar", LocalDateTime.of(2026, 1, 1, 10, 0, 0))
         );
     }
 
@@ -54,7 +54,7 @@ class HomeTest {
     void nombreNuloLanzaExcepcion() {
         // Arrange - Act - Assert
         assertThrows(InvalidDataException.class, () ->
-            Home.create(UUID.randomUUID(), null, LocalDateTime.now())
+            Home.create(UUID.randomUUID(), null, LocalDateTime.of(2026, 1, 1, 10, 0, 0))
         );
     }
 
@@ -65,7 +65,7 @@ class HomeTest {
 
         // Act - Assert
         assertThrows(InvalidDataException.class, () ->
-            Home.create(UUID.randomUUID(), nombreVacio, LocalDateTime.now())
+            Home.create(UUID.randomUUID(), nombreVacio, LocalDateTime.of(2026, 1, 1, 10, 0, 0))
         );
     }
 
@@ -80,7 +80,7 @@ class HomeTest {
     @Test
     void cambiarNombreVacioLanzaExcepcion() {
         // Arrange
-        Home home = Home.create(UUID.randomUUID(), "Casa Familiar", LocalDateTime.now());
+        Home home = Home.create(UUID.randomUUID(), "Casa Familiar", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
 
         // Act - Assert
         assertThrows(InvalidDataException.class, () -> home.changeName(""));

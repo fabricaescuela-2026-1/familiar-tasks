@@ -21,7 +21,7 @@ class LogMapperTest {
         // Arrange
         String id = UUID.randomUUID().toString();
         String userId = UUID.randomUUID().toString();
-        LocalDateTime timestamp = LocalDateTime.now();
+        LocalDateTime timestamp = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
         Log log = new Log(id, userId, timestamp, "TASK", "CREATED");
 
         // Act
@@ -38,7 +38,7 @@ class LogMapperTest {
     @Test
     void toResponseConIdNuloMappeSinError() {
         // Arrange
-        Log log = new Log(null, "userId", LocalDateTime.now(), "ROLE", "CHANGED");
+        Log log = new Log(null, "userId", LocalDateTime.of(2026, 1, 1, 10, 0, 0), "ROLE", "CHANGED");
 
         // Act
         LogResponse response = mapper.toResponse(log);

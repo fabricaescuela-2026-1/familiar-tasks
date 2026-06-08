@@ -15,8 +15,8 @@ class ActivationTokenTest {
             .id(UUID.randomUUID())
             .email("ana@mail.com")
             .codeHash("hash")
-            .createdAt(LocalDateTime.now())
-            .expiresAt(LocalDateTime.now().plusMinutes(10))
+            .createdAt(LocalDateTime.of(2099, 1, 1, 10, 0, 0))
+            .expiresAt(LocalDateTime.of(2099, 1, 1, 10, 10, 0))
             .attempts(0)
             .invalidated(false)
             .build();
@@ -28,7 +28,7 @@ class ActivationTokenTest {
     void builderYGettersExponenLosCamposCorrectamente() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime created = LocalDateTime.now();
+        LocalDateTime created = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
         LocalDateTime expires = created.plusMinutes(15);
 
         // Act
@@ -77,7 +77,7 @@ class ActivationTokenTest {
     void validateTokenFallaCuandoTokenExpiro() {
         // Arrange
         ActivationToken token = tokenBase();
-        token.setExpiresAt(LocalDateTime.now().minusMinutes(1));
+        token.setExpiresAt(LocalDateTime.of(2026, 1, 1, 9, 59, 0));
 
         // Act - Assert
         assertThrows(InvalidActivationTokenException.class, token::validateToken);

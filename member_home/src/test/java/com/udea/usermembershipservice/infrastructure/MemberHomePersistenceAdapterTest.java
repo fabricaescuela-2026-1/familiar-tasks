@@ -54,11 +54,11 @@ class MemberHomePersistenceAdapterTest {
   private PersonJpaEntity persona(UUID id) {
     return new PersonJpaEntity(
         id, "Carlos", "Ruiz", "carlos@familia.com",
-        "hash", LocalDateTime.now(), true);
+        "hash", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true);
   }
 
   private HomeJpaEntity hogar(UUID id) {
-    return new HomeJpaEntity(id, "Los García", LocalDateTime.now());
+    return new HomeJpaEntity(id, "Los García", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
   }
 
   // ── CASOS DE ÉXITO ──────────────────────────────────────────────────────

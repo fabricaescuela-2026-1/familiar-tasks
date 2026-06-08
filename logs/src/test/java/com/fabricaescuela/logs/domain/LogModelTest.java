@@ -17,7 +17,7 @@ class LogModelTest {
         // Arrange
         String id = UUID.randomUUID().toString();
         String userId = UUID.randomUUID().toString();
-        LocalDateTime timestamp = LocalDateTime.now();
+        LocalDateTime timestamp = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
 
         // Act
         Log log = new Log(id, userId, timestamp, "TASK", "CREATED");
@@ -36,7 +36,7 @@ class LogModelTest {
     void userIdNuloLanzaExcepcion() {
         // Arrange - Act - Assert
         assertThrows(NullPointerException.class, () ->
-            new Log(null, null, LocalDateTime.now(), "TASK", "CREATED")
+            new Log(null, null, LocalDateTime.of(2026, 1, 1, 10, 0, 0), "TASK", "CREATED")
         );
     }
 
@@ -44,7 +44,7 @@ class LogModelTest {
     void elementoNuloLanzaExcepcion() {
         // Arrange - Act - Assert
         assertThrows(NullPointerException.class, () ->
-            new Log(null, "userId", LocalDateTime.now(), null, "CREATED")
+            new Log(null, "userId", LocalDateTime.of(2026, 1, 1, 10, 0, 0), null, "CREATED")
         );
     }
 
@@ -52,7 +52,7 @@ class LogModelTest {
     void accionNulaLanzaExcepcion() {
         // Arrange - Act - Assert
         assertThrows(NullPointerException.class, () ->
-            new Log(null, "userId", LocalDateTime.now(), "TASK", null)
+            new Log(null, "userId", LocalDateTime.of(2026, 1, 1, 10, 0, 0), "TASK", null)
         );
     }
 
@@ -60,7 +60,7 @@ class LogModelTest {
     void userIdVacioLanzaExcepcion() {
         // Arrange - Act - Assert
         assertThrows(IllegalArgumentException.class, () ->
-            new Log(null, "   ", LocalDateTime.now(), "TASK", "CREATED")
+            new Log(null, "   ", LocalDateTime.of(2026, 1, 1, 10, 0, 0), "TASK", "CREATED")
         );
     }
 }

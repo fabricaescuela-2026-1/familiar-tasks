@@ -20,7 +20,7 @@ class HomePersistenceMapperTest {
     void toDomainConviertEntidadADominio() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ahora = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
         HomeJpaEntity entity = new HomeJpaEntity(id, "Los García", ahora);
 
         // Act
@@ -36,7 +36,7 @@ class HomePersistenceMapperTest {
     void toEntityConviertesDominioAEntidad() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ahora = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
         Home home = Home.create(id, "Los García", ahora);
 
         // Act
@@ -52,7 +52,7 @@ class HomePersistenceMapperTest {
     void conversionIdaYVueltaEsConsistente() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ahora = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
         Home original = Home.create(id, "Los García", ahora);
 
         // Act

@@ -61,9 +61,9 @@ class CreateMemberHomeUseCaseTest {
         adminRoleId = UUID.randomUUID();
         newRoleId   = UUID.randomUUID();
 
-        home   = Home.create(homeId, "Los García", LocalDateTime.now());
-        person = Person.restore(personId, "Carlos", "Díaz", "carlos@mail.com", "pass123", LocalDateTime.now(), true);
-        admin  = Person.restore(adminId,  "Ana",    "López", "ana@mail.com",    "pass123", LocalDateTime.now(), true);
+        home   = Home.create(homeId, "Los García", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
+        person = Person.restore(personId, "Carlos", "Díaz", "carlos@mail.com", "pass123", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true);
+        admin  = Person.restore(adminId,  "Ana",    "López", "ana@mail.com",    "pass123", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true);
 
         adminRole = Role.create(adminRoleId, "Administrador");
         newRole   = Role.create(newRoleId,   "Miembro");

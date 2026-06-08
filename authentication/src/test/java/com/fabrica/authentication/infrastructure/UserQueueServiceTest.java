@@ -39,7 +39,7 @@ class UserQueueServiceTest {
             .lastname("Lopez")
             .email("a@mail.com")
             .passwordHash("hash")
-            .createdAt(LocalDateTime.now())
+            .createdAt(LocalDateTime.of(2026, 1, 1, 10, 0, 0))
             .build();
     }
 

@@ -41,7 +41,7 @@ class ActivationTokenMapperTest {
     void mapToActivationTokenConstruyeDominioDesdeEntidad() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
         ActivationTokenEntity entity = ActivationTokenEntity.builder()
             .id(id)
             .codeHash("h")

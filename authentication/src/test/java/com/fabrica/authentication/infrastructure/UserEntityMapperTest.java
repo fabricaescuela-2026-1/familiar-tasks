@@ -20,7 +20,7 @@ class UserEntityMapperTest {
     void toEntityConvierteDominioAEntidad() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ahora = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
         User user = User.builder()
             .userId(id)
             .name("Carlos")
@@ -47,7 +47,7 @@ class UserEntityMapperTest {
     void toDomainConvierteEntidadADominio() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ahora = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
         UserEntity entity = UserEntity.builder()
             .userId(id)
             .name("Carlos")
@@ -81,7 +81,7 @@ class UserEntityMapperTest {
             .email("carlos@mail.com")
             .passwordHash("hash-pass")
             .isActive(true)
-            .createdAt(LocalDateTime.now())
+            .createdAt(LocalDateTime.of(2026, 1, 1, 10, 0, 0))
             .build();
 
         // Act

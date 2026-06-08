@@ -20,7 +20,7 @@ class ResponseTaskMapperTest {
         UUID taskId  = UUID.randomUUID();
         UUID homeId  = UUID.randomUUID();
         UUID guestId = UUID.randomUUID();
-        LocalDateTime ahora   = LocalDateTime.now();
+        LocalDateTime ahora   = LocalDateTime.of(2099, 1, 1, 10, 0, 0);
         LocalDateTime deadline = ahora.plusDays(5);
 
         Task task = Task.builder()

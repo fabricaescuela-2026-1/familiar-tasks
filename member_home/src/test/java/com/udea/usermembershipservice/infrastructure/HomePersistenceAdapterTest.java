@@ -39,7 +39,7 @@ class HomePersistenceAdapterTest {
   }
 
   private Home hogarValido() {
-    return Home.create(UUID.randomUUID(), "Los García", LocalDateTime.now());
+    return Home.create(UUID.randomUUID(), "Los García", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
   }
 
   // ── CASOS DE ÉXITO ──────────────────────────────────────────────────────
@@ -61,8 +61,8 @@ class HomePersistenceAdapterTest {
   @Test
   void obtenerTodosLosHogaresRetornaListaMapeada() {
     // Arrange
-    HomeJpaEntity e1 = new HomeJpaEntity(UUID.randomUUID(), "Los García", LocalDateTime.now());
-    HomeJpaEntity e2 = new HomeJpaEntity(UUID.randomUUID(), "Los Pérez", LocalDateTime.now());
+    HomeJpaEntity e1 = new HomeJpaEntity(UUID.randomUUID(), "Los García", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
+    HomeJpaEntity e2 = new HomeJpaEntity(UUID.randomUUID(), "Los Pérez", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
     when(repository.findAll()).thenReturn(List.of(e1, e2));
 
     // Act
@@ -79,7 +79,7 @@ class HomePersistenceAdapterTest {
     // Arrange
     UUID id = UUID.randomUUID();
     when(repository.findByNameIgnoreCase("Los García"))
-        .thenReturn(Optional.of(new HomeJpaEntity(id, "Los García", LocalDateTime.now())));
+        .thenReturn(Optional.of(new HomeJpaEntity(id, "Los García", LocalDateTime.of(2026, 1, 1, 10, 0, 0))));
 
     // Act
     Optional<Home> home = adapter.getHomeByName("Los García");
@@ -94,7 +94,7 @@ class HomePersistenceAdapterTest {
     // Arrange
     UUID id = UUID.randomUUID();
     when(repository.findById(id))
-        .thenReturn(Optional.of(new HomeJpaEntity(id, "Los García", LocalDateTime.now())));
+        .thenReturn(Optional.of(new HomeJpaEntity(id, "Los García", LocalDateTime.of(2026, 1, 1, 10, 0, 0))));
 
     // Act
     Optional<Home> home = adapter.getHomeById(id);
@@ -109,7 +109,7 @@ class HomePersistenceAdapterTest {
     // Arrange
     UUID id = UUID.randomUUID();
     when(repository.findByNameIgnoreCase("Los García"))
-        .thenReturn(Optional.of(new HomeJpaEntity(id, "Los García", LocalDateTime.now())));
+        .thenReturn(Optional.of(new HomeJpaEntity(id, "Los García", LocalDateTime.of(2026, 1, 1, 10, 0, 0))));
 
     // Act
     adapter.deleteHome("Los García");

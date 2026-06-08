@@ -39,7 +39,7 @@ class TaskRepositoryAdapterTest {
             .description("Patio")
             .priority("MEDIA")
             .status("PENDIENTE")
-            .deadline(LocalDateTime.now().plusDays(2))
+            .deadline(LocalDateTime.of(2099, 1, 3, 10, 0, 0))
             .homeId(UUID.randomUUID())
             .guestId(UUID.randomUUID())
             .build();
@@ -52,7 +52,7 @@ class TaskRepositoryAdapterTest {
             .description("Patio")
             .priority(PriorityEntity.builder().name("MEDIA").build())
             .status(StatusEntity.builder().name("PENDIENTE").build())
-            .deadline(LocalDateTime.now().plusDays(2))
+            .deadline(LocalDateTime.of(2099, 1, 3, 10, 0, 0))
             .homeId(UUID.randomUUID())
             .guestId(UUID.randomUUID())
             .build();
@@ -68,10 +68,9 @@ class TaskRepositoryAdapterTest {
         StatusEntity stat = StatusEntity.builder().name("PENDIENTE").build();
         when(priorityRepository.findByName("MEDIA")).thenReturn(Optional.of(prio));
         when(statusRepository.findByName("PENDIENTE")).thenReturn(Optional.of(stat));
-        when(taskRepository.save(any(TaskEntity.class))).thenAnswer(inv -> {
-            TaskEntity arg = inv.getArgument(0);
-            return arg;
-        });
+        when(taskRepository.save(any(TaskEntity.class))).thenAnswer(inv ->
+            inv.getArgument(0)
+        );
 
         // Act
         Task result = adapter.save(tarea);

@@ -22,7 +22,7 @@ class TaskEntityMapperTest {
         UUID taskId = UUID.randomUUID();
         UUID homeId = UUID.randomUUID();
         UUID guestId = UUID.randomUUID();
-        LocalDateTime deadline = LocalDateTime.now().plusDays(2);
+        LocalDateTime deadline = LocalDateTime.of(2099, 1, 3, 10, 0, 0);
         StatusEntity status = StatusEntity.builder().statusId(UUID.randomUUID()).name("PENDIENTE").build();
         PriorityEntity priority = PriorityEntity.builder().priorityId(UUID.randomUUID()).name("ALTA").build();
         TaskEntity entity = TaskEntity.builder()
@@ -56,7 +56,7 @@ class TaskEntityMapperTest {
         UUID taskId = UUID.randomUUID();
         UUID homeId = UUID.randomUUID();
         UUID guestId = UUID.randomUUID();
-        LocalDateTime deadline = LocalDateTime.now().plusDays(3);
+        LocalDateTime deadline = LocalDateTime.of(2099, 1, 4, 10, 0, 0);
         Task task = Task.builder()
             .taskId(taskId)
             .name("Cocinar")

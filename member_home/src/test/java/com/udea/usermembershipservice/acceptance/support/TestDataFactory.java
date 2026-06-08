@@ -31,7 +31,7 @@ public class TestDataFactory {
         "Apellido",
         email.toLowerCase(),
         "hash",
-        LocalDateTime.now(),
+        LocalDateTime.of(2026, 1, 1, 10, 0, 0),
         true
     );
     return personRepo.save(p);
@@ -45,7 +45,7 @@ public class TestDataFactory {
   }
 
   public HomeJpaEntity createHome(String name) {
-    HomeJpaEntity h = new HomeJpaEntity(UUID.randomUUID(), name, LocalDateTime.now());
+    HomeJpaEntity h = new HomeJpaEntity(UUID.randomUUID(), name, LocalDateTime.of(2026, 1, 1, 10, 0, 0));
     return homeRepo.save(h);
   }
 

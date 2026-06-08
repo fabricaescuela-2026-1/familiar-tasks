@@ -18,7 +18,7 @@ class AuthDtoTest {
     void userMessageBuilderConstruyeCorrectamente() {
         // Arrange
         UUID id = UUID.randomUUID();
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
 
         // Act
         UserMessage msg = UserMessage.builder()

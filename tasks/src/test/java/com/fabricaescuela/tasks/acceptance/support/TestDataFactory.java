@@ -43,7 +43,7 @@ public class TestDataFactory {
         .email(email)
         .passwordHash("hash")
         .isActive(true)
-        .createdAt(LocalDateTime.now())
+        .createdAt(LocalDateTime.of(2099, 1, 1, 10, 0, 0))
         .build();
     return userRepo.save(g);
   }
@@ -58,7 +58,7 @@ public class TestDataFactory {
         .priority(priority)
         .homeId(homeId)
         .guestId(guestId)
-        .createdAt(LocalDateTime.now())
+        .createdAt(LocalDateTime.of(2099, 1, 1, 10, 0, 0))
         .deadline(deadline)
         .build();
     return taskRepo.save(t);

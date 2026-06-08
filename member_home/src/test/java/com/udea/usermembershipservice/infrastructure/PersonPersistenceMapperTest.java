@@ -17,7 +17,7 @@ class PersonPersistenceMapperTest {
     @Test
     void toDomainConvierteEntidadADominio() {
         UUID id = UUID.randomUUID();
-        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ahora = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
         PersonJpaEntity entity = new PersonJpaEntity(id, "Ana", "López", "ana@mail.com", "hash-Segura@123", ahora, true);
 
         Person person = mapper.toDomain(entity);
@@ -33,7 +33,7 @@ class PersonPersistenceMapperTest {
     @Test
     void toEntityConvierteDominioAEntidad() {
         UUID id = UUID.randomUUID();
-        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime ahora = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
         Person person = Person.restore(id, "Ana", "López", "ana@mail.com", "hash-Segura@123", ahora, true);
 
         PersonJpaEntity entity = mapper.toEntity(person);
@@ -49,7 +49,7 @@ class PersonPersistenceMapperTest {
     @Test
     void conversionIdaYVueltaEsConsistente() {
         UUID id = UUID.randomUUID();
-        Person original = Person.restore(id, "Ana", "López", "ana@mail.com", "hash-Segura@123", LocalDateTime.now(), true);
+        Person original = Person.restore(id, "Ana", "López", "ana@mail.com", "hash-Segura@123", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true);
 
         Person resultado = mapper.toDomain(mapper.toEntity(original));
 

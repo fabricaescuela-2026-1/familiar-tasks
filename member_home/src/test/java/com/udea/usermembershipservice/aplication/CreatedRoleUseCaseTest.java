@@ -36,7 +36,7 @@ class CreatedRoleUseCaseTest {
     private Person personaActiva() {
         return Person.restore(
             UUID.randomUUID(), "Ana", "López",
-            "ana@mail.com", "hashedPass", LocalDateTime.now(), true
+            "ana@mail.com", "hashedPass", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true
         );
     }
 

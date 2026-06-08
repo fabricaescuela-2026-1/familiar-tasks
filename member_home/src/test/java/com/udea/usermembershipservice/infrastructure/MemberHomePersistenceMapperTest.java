@@ -46,9 +46,9 @@ class MemberHomePersistenceMapperTest {
             new MemberHomeJpaEntityId(homeId, personId), roleId
         );
         PersonJpaEntity personEntity = new PersonJpaEntity(
-            personId, "Ana", "López", "ana@mail.com", "Segura@123", LocalDateTime.now(), true
+            personId, "Ana", "López", "ana@mail.com", "Segura@123", LocalDateTime.of(2026, 1, 1, 10, 0, 0), true
         );
-        HomeJpaEntity homeEntity = new HomeJpaEntity(homeId, "Los García", LocalDateTime.now());
+        HomeJpaEntity homeEntity = new HomeJpaEntity(homeId, "Los García", LocalDateTime.of(2026, 1, 1, 10, 0, 0));
 
         // Act
         MemberHomeDto dto = mapper.toDto(memberHomeEntity, personEntity, homeEntity);

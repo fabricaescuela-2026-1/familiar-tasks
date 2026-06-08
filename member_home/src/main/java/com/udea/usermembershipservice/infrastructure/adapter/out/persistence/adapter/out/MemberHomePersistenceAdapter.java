@@ -10,6 +10,7 @@ import com.udea.usermembershipservice.aplication.port.out.IMemberHomeRepositoryP
 import com.udea.usermembershipservice.aplication.useCase.dto.mermberHome.MemberDto;
 import com.udea.usermembershipservice.aplication.useCase.dto.mermberHome.MemberHomeDto;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.entity.MemberHomeJpaEntity;
+import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.entity.RoleJpaEntity;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.entity.MemberHomeJpaEntityId;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.mapper.MemberHomePersistenceMapper;
 import com.udea.usermembershipservice.infrastructure.adapter.out.persistence.repository.SpringDataHomeJpaRepository;
@@ -102,7 +103,7 @@ public class MemberHomePersistenceAdapter implements IMemberHomeRepositoryPort {
     public List<String> getAllRolesById(UUID idRole) {
         return repository.findAllRoleIdsByIdPersonId(idRole).stream()
         .flatMap(roleId -> roleRepository.findById(roleId).stream())
-        .map(roleJpaEntity -> roleJpaEntity.getName())
+        .map(RoleJpaEntity::getName)
         .toList();
     }
 }

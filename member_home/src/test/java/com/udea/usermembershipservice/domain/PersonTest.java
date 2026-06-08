@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class PersonTest {
 
     private final UUID id = UUID.randomUUID();
-    private final LocalDateTime ahora = LocalDateTime.now();
+    private final LocalDateTime ahora = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
 
     // ── CASOS DE ÉXITO ──────────────────────────────────────────────────────
 

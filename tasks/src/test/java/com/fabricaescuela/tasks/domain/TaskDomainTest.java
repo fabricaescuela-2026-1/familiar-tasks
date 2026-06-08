@@ -28,7 +28,7 @@ class TaskDomainTest {
         UUID taskId = UUID.randomUUID();
         UUID homeId = UUID.randomUUID();
         UUID guestId = UUID.randomUUID();
-        LocalDateTime deadline = LocalDateTime.now().plusDays(2);
+        LocalDateTime deadline = LocalDateTime.of(2099, 1, 3, 10, 0, 0);
 
         // Act
         Task task = Task.builder()
@@ -72,7 +72,7 @@ class TaskDomainTest {
         // Arrange
         UUID homeId = UUID.randomUUID();
         UUID guestId = UUID.randomUUID();
-        LocalDateTime deadline = LocalDateTime.now().plusDays(1);
+        LocalDateTime deadline = LocalDateTime.of(2099, 1, 2, 10, 0, 0);
 
         // Act
         RequestTask request = RequestTask.builder()
@@ -96,7 +96,7 @@ class TaskDomainTest {
     void responseTaskBuilderAsignaTodosLosCampos() {
         // Arrange
         UUID taskId = UUID.randomUUID();
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.of(2099, 1, 1, 10, 0, 0);
 
         // Act
         ResponseTask response = ResponseTask.builder()

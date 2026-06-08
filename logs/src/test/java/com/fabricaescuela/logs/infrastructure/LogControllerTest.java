@@ -42,7 +42,7 @@ class LogControllerTest {
         String id = UUID.randomUUID().toString();
         String userId = UUID.randomUUID().toString();
         LogRequest request = new LogRequest(id, userId, "TASK", "CREATED");
-        Log log = new Log(id, userId, LocalDateTime.now(), "TASK", "CREATED");
+        Log log = new Log(id, userId, LocalDateTime.of(2026, 1, 1, 10, 0, 0), "TASK", "CREATED");
         LogResponse logResponse = new LogResponse(id, userId, log.timestamp(), "TASK", "CREATED");
         when(logService.execute(id, userId, "TASK", "CREATED")).thenReturn(log);
         when(logMapper.toResponse(log)).thenReturn(logResponse);
@@ -59,8 +59,8 @@ class LogControllerTest {
     @Test
     void getAllLogsRetornaListaMapeada() {
         // Arrange
-        Log log1 = new Log("1", "u1", LocalDateTime.now(), "TASK", "CREATED");
-        Log log2 = new Log("2", "u2", LocalDateTime.now(), "ROLE", "CHANGED");
+        Log log1 = new Log("1", "u1", LocalDateTime.of(2026, 1, 1, 10, 0, 0), "TASK", "CREATED");
+        Log log2 = new Log("2", "u2", LocalDateTime.of(2026, 1, 1, 10, 0, 0), "ROLE", "CHANGED");
         LogResponse r1 = new LogResponse("1", "u1", log1.timestamp(), "TASK", "CREATED");
         LogResponse r2 = new LogResponse("2", "u2", log2.timestamp(), "ROLE", "CHANGED");
         when(logService.getAllLogs()).thenReturn(List.of(log1, log2));

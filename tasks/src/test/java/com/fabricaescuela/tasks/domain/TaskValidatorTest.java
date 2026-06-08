@@ -16,7 +16,7 @@ class TaskValidatorTest {
                 .description("Limpiar mesones y lavar platos")
                 .status("PENDIENTE")
                 .priority("ALTA")
-                .deadline(LocalDateTime.now().plusDays(3))
+                .deadline(LocalDateTime.of(2099, 1, 4, 10, 0, 0))
                 .homeId(UUID.randomUUID())
                 .guestId(UUID.randomUUID())
                 .build();
@@ -38,7 +38,7 @@ class TaskValidatorTest {
     void deadlineMananaEsValido() {
         // Arrange
         Task tarea = tareaValida();
-        tarea.setDeadline(LocalDateTime.now().plusDays(1));
+        tarea.setDeadline(LocalDateTime.of(2099, 1, 2, 10, 0, 0));
 
         // Act - Assert
         assertDoesNotThrow(() -> TaskValidator.validate(tarea));
@@ -122,7 +122,7 @@ class TaskValidatorTest {
     void deadlineEnElPasadoLanzaExcepcion() {
         // Arrange
         Task tarea = tareaValida();
-        tarea.setDeadline(LocalDateTime.now().minusSeconds(1));
+        tarea.setDeadline(LocalDateTime.of(2026, 1, 1, 9, 59, 59));
 
         // Act - Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,

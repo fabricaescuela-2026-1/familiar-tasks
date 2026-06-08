@@ -37,7 +37,7 @@ public class CambiarEstadoTareaSteps {
     StatusEntity status = data.ensureStatus(statusName);
     PriorityEntity priority = data.ensurePriority("MEDIA");
     TaskEntity created = data.createTask(taskName, "Descripción de prueba", status, priority,
-        homeId, guestId, LocalDateTime.now().plusDays(3));
+        homeId, guestId, LocalDateTime.of(2099, 1, 4, 10, 0, 0));
     context.put("task:" + taskName, created.getTaskId());
   }
 

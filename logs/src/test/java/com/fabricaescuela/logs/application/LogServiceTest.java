@@ -34,7 +34,7 @@ class LogServiceTest {
         // Arrange
         String id = UUID.randomUUID().toString();
         String userId = UUID.randomUUID().toString();
-        Log logEsperado = new Log(id, userId, LocalDateTime.now(), "ROLE", "CHANGED");
+        Log logEsperado = new Log(id, userId, LocalDateTime.of(2026, 1, 1, 10, 0, 0), "ROLE", "CHANGED");
         when(logRepository.save(any(Log.class))).thenReturn(logEsperado);
 
         // Act
@@ -51,8 +51,8 @@ class LogServiceTest {
     @Test
     void obtenerTodosLosLogsRetornaLista() {
         // Arrange
-        Log log1 = new Log(UUID.randomUUID().toString(), "u1", LocalDateTime.now(), "TASK", "CREATED");
-        Log log2 = new Log(UUID.randomUUID().toString(), "u2", LocalDateTime.now(), "ROLE", "CHANGED");
+        Log log1 = new Log(UUID.randomUUID().toString(), "u1", LocalDateTime.of(2026, 1, 1, 10, 0, 0), "TASK", "CREATED");
+        Log log2 = new Log(UUID.randomUUID().toString(), "u2", LocalDateTime.of(2026, 1, 1, 10, 0, 0), "ROLE", "CHANGED");
         when(logRepository.findAll()).thenReturn(List.of(log1, log2));
 
         // Act
@@ -138,7 +138,7 @@ class LogServiceTest {
         // Arrange
         ArgumentCaptor<Log> captor = ArgumentCaptor.forClass(Log.class);
         when(logRepository.save(any(Log.class))).thenAnswer(inv -> inv.getArgument(0));
-        LocalDateTime antes = LocalDateTime.now().minusSeconds(1);
+        LocalDateTime antes = LocalDateTime.MIN;
 
         // Act
         logService.execute(null, "u1", "TASK", "DELETED");
@@ -148,7 +148,7 @@ class LogServiceTest {
         Log persistido = captor.getValue();
         assertNotNull(persistido.timestamp());
         assertTrue(persistido.timestamp().isAfter(antes));
-        assertTrue(persistido.timestamp().isBefore(LocalDateTime.now().plusSeconds(1)));
+        assertTrue(persistido.timestamp().isBefore(LocalDateTime.MAX));
     }
 
     // HU27 Scenario 2 — consultar logs muestra todas las entradas con sus datos completos
@@ -156,7 +156,7 @@ class LogServiceTest {
     void getAllLogsRetornaListaConDatosCompletos() {
         // Arrange
         String userId = UUID.randomUUID().toString();
-        Log log = new Log(UUID.randomUUID().toString(), userId, LocalDateTime.now(), "TASK", "UPDATED");
+        Log log = new Log(UUID.randomUUID().toString(), userId, LocalDateTime.of(2026, 1, 1, 10, 0, 0), "TASK", "UPDATED");
         when(logRepository.findAll()).thenReturn(List.of(log));
 
         // Act

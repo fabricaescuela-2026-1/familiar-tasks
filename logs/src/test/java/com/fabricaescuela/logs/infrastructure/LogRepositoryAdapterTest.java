@@ -33,7 +33,7 @@ class LogRepositoryAdapterTest {
         // Arrange
         String id = UUID.randomUUID().toString();
         String userId = UUID.randomUUID().toString();
-        LocalDateTime timestamp = LocalDateTime.now();
+        LocalDateTime timestamp = LocalDateTime.of(2026, 1, 1, 10, 0, 0);
         Log log = new Log(id, userId, timestamp, "TASK", "CREATED");
         LogEntity entity = new LogEntity(id, userId, timestamp, "TASK", "CREATED");
         when(mongoRepository.save(any(LogEntity.class))).thenReturn(entity);
@@ -51,8 +51,8 @@ class LogRepositoryAdapterTest {
     @Test
     void findAllRetornaListaDeDominio() {
         // Arrange
-        LogEntity e1 = new LogEntity("1", "u1", LocalDateTime.now(), "TASK", "CREATED");
-        LogEntity e2 = new LogEntity("2", "u2", LocalDateTime.now(), "ROLE", "CHANGED");
+        LogEntity e1 = new LogEntity("1", "u1", LocalDateTime.of(2026, 1, 1, 10, 0, 0), "TASK", "CREATED");
+        LogEntity e2 = new LogEntity("2", "u2", LocalDateTime.of(2026, 1, 1, 10, 0, 0), "ROLE", "CHANGED");
         when(mongoRepository.findAll()).thenReturn(List.of(e1, e2));
 
         // Act

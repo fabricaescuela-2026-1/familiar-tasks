@@ -19,7 +19,7 @@ class RequestTaskMapperTest {
         // Arrange
         UUID homeId  = UUID.randomUUID();
         UUID guestId = UUID.randomUUID();
-        LocalDateTime deadline = LocalDateTime.now().plusDays(3);
+        LocalDateTime deadline = LocalDateTime.of(2099, 1, 4, 10, 0, 0);
 
         RequestTask request = RequestTask.builder()
             .name("Barrer patio")

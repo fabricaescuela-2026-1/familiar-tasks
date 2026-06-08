@@ -45,7 +45,7 @@ class AccountValidationServiceTest {
             .lastname("Perez")
             .passwordHash("hash")
             .isActive(false)
-            .createdAt(LocalDateTime.now())
+            .createdAt(LocalDateTime.of(2026, 1, 1, 10, 0, 0))
             .build();
     }
 
@@ -81,7 +81,7 @@ class AccountValidationServiceTest {
             .id(UUID.randomUUID())
             .email("ana@mail.com")
             .codeHash("hash-code")
-            .expiresAt(LocalDateTime.now().plusMinutes(5))
+            .expiresAt(LocalDateTime.of(2099, 1, 1, 10, 5, 0))
             .attempts(0)
             .invalidated(false)
             .build();
@@ -145,7 +145,7 @@ class AccountValidationServiceTest {
             .id(UUID.randomUUID())
             .email("ana@mail.com")
             .codeHash("hash-code")
-            .expiresAt(LocalDateTime.now().plusMinutes(5))
+            .expiresAt(LocalDateTime.of(2099, 1, 1, 10, 5, 0))
             .attempts(0)
             .invalidated(false)
             .build();
@@ -168,7 +168,7 @@ class AccountValidationServiceTest {
             .id(UUID.randomUUID())
             .email("ana@mail.com")
             .codeHash("hash-code")
-            .expiresAt(LocalDateTime.now().minusMinutes(1))
+            .expiresAt(LocalDateTime.of(2026, 1, 1, 9, 59, 0))
             .attempts(0)
             .invalidated(false)
             .build();

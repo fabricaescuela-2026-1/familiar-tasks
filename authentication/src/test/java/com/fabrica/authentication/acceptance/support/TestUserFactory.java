@@ -28,7 +28,7 @@ public class TestUserFactory {
         .email(email)
         .passwordHash(passwordEncoder.encode(password))
         .isActive(true)
-        .createdAt(LocalDateTime.now())
+        .createdAt(LocalDateTime.of(2026, 1, 1, 10, 0, 0))
         .build();
     return userRepo.save(user);
   }

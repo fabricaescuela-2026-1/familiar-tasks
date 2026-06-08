@@ -405,7 +405,7 @@ class AuthServiceTest {
       .build();
     var tokenExpirado = Token.builder()
       .tokenHash("expirado-hash")
-      .expirationDate(java.time.LocalDateTime.now().minusMinutes(1))
+      .expirationDate(java.time.LocalDateTime.of(2026, 1, 1, 9, 59, 0))
       .tokenType("ACCESS")
       .user(user)
       .build();
@@ -455,6 +455,115 @@ class AuthServiceTest {
     );
   }
 
+  @Test
+  void verifyTwoFactorAuthCodeExitosoRetornaAuthResponse() {
+    // Arrange
+    var user = User.builder()
+      .userId(UUID.randomUUID())
+      .email("ana@mail.com")
+      .build();
+    var authToken = TwoFactorAuthToken.builder()
+      .id(UUID.randomUUID())
+      .codeHash("hash-codigo")
+      .user(user)
+      .invalidated(false)
+      .expiresAt(java.time.LocalDateTime.of(2099, 1, 1, 10, 0))
+      .build();
+    when(userRepo.findByEmail("ana@mail.com")).thenReturn(Optional.of(user));
+    when(twoFactorAuthTokenRepo.findLastByUserEmail("ana@mail.com")).thenReturn(
+      Optional.of(authToken)
+    );
+    when(passwordEncoder.matches("123456", "hash-codigo")).thenReturn(true);
+    when(jwtService.generateAccesToken(user)).thenReturn(
+      tokenFalso("access-nuevo")
+    );
+    when(jwtService.generateRefreshToken(user)).thenReturn(
+      tokenFalso("refresh-nuevo")
+    );
+
+    // Act
+    AuthResponse response = authService.verifyTwoFactorAuthCode(
+      "123456",
+      "ana@mail.com"
+    );
+
+    // Assert
+    assertEquals("access-nuevo", response.accessToken());
+    assertEquals("refresh-nuevo", response.refreshToken());
+    verify(twoFactorAuthTokenRepo).increaseAttemptsByOne(authToken.getId());
+    verify(twoFactorAuthTokenRepo).invalidateAllByUserEmail("ana@mail.com");
+    verify(tokenRepo, times(2)).save(any(Token.class));
+  }
+
+  @Test
+  void verifyTwoFactorAuthCodeConEmailInexistenteLanzaExcepcion() {
+    // Arrange
+    when(userRepo.findByEmail("noexiste@mail.com")).thenReturn(Optional.empty());
+
+    // Act - Assert
+    assertThrows(UserNotFoundException.class, () ->
+      authService.verifyTwoFactorAuthCode("123456", "noexiste@mail.com")
+    );
+  }
+
+  @Test
+  void verifyTwoFactorAuthCodeSinCodigoActivoLanzaExcepcion() {
+    // Arrange
+    var user = User.builder().email("ana@mail.com").build();
+    when(userRepo.findByEmail("ana@mail.com")).thenReturn(Optional.of(user));
+    when(twoFactorAuthTokenRepo.findLastByUserEmail("ana@mail.com")).thenReturn(
+      Optional.empty()
+    );
+
+    // Act - Assert
+    assertThrows(InvalidTwoFactorAuthTokenException.class, () ->
+      authService.verifyTwoFactorAuthCode("123456", "ana@mail.com")
+    );
+  }
+
+  @Test
+  void verifyTwoFactorAuthCodeConCodigoIncorrectoLanzaExcepcion() {
+    // Arrange
+    var user = User.builder().email("ana@mail.com").build();
+    var authToken = TwoFactorAuthToken.builder()
+      .id(UUID.randomUUID())
+      .codeHash("hash-codigo")
+      .user(user)
+      .build();
+    when(userRepo.findByEmail("ana@mail.com")).thenReturn(Optional.of(user));
+    when(twoFactorAuthTokenRepo.findLastByUserEmail("ana@mail.com")).thenReturn(
+      Optional.of(authToken)
+    );
+    when(passwordEncoder.matches("000000", "hash-codigo")).thenReturn(false);
+
+    // Act - Assert
+    assertThrows(InvalidTwoFactorAuthTokenException.class, () ->
+      authService.verifyTwoFactorAuthCode("000000", "ana@mail.com")
+    );
+    verify(twoFactorAuthTokenRepo).increaseAttemptsByOne(authToken.getId());
+  }
+
+  @Test
+  void loginConCuentaInactivaLanzaExcepcion() {
+    // Arrange
+    var user = User.builder()
+      .email("inactivo@mail.com")
+      .passwordHash("hashed")
+      .isActive(false)
+      .build();
+    var request = new LoginRequest("inactivo@mail.com", "pass1234");
+    when(userRepo.findByEmail("inactivo@mail.com")).thenReturn(
+      Optional.of(user)
+    );
+    when(passwordEncoder.matches("pass1234", "hashed")).thenReturn(true);
+
+    // Act - Assert
+    assertThrows(InactiveAccountException.class, () ->
+      authService.login(request)
+    );
+    verify(twoFactorAuthTokenRepo, never()).save(any());
+  }
+
   // HU06 Scenario 2 — un token revocado no debe poder usarse para obtener datos
   @Test
   void obtenerTokenRevocadoLanzaExcepcion() {
@@ -462,8 +571,8 @@ class AuthServiceTest {
     var user = User.builder().email("carlos@mail.com").build();
     var tokenRevocado = Token.builder()
       .tokenHash("revocado-hash")
-      .expirationDate(java.time.LocalDateTime.now().plusDays(1))
-      .expiratedAt(java.time.LocalDateTime.now().minusMinutes(1))
+      .expirationDate(java.time.LocalDateTime.of(2026, 1, 2, 10, 0, 0))
+      .expiratedAt(java.time.LocalDateTime.of(2026, 1, 1, 9, 59, 0))
       .user(user)
       .build();
     when(tokenRepo.findByHash("revocado-hash")).thenReturn(

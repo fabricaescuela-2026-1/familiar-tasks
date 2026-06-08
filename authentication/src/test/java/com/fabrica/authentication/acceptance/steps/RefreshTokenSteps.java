@@ -39,7 +39,7 @@ public class RefreshTokenSteps {
     User user = factory.createUser("expired-" + System.nanoTime() + "@familia.com", "Segura123!");
     Token refresh = factory.issueValidRefreshToken(user);
     TokenEntity entity = tokenRepo.findByTokenHash(refresh.getTokenHash()).orElseThrow();
-    entity.setExpirationDate(LocalDateTime.now().minusDays(1));
+    entity.setExpirationDate(LocalDateTime.of(2025, 12, 31, 10, 0, 0));
     tokenRepo.save(entity);
     context.put("refreshToken", refresh.getTokenHash());
   }
@@ -49,7 +49,7 @@ public class RefreshTokenSteps {
     User user = factory.createUser("access-expired-" + System.nanoTime() + "@familia.com", "Segura123!");
     Token access = factory.issueValidAccessToken(user);
     TokenEntity entity = tokenRepo.findByTokenHash(access.getTokenHash()).orElseThrow();
-    entity.setExpirationDate(LocalDateTime.now().minusDays(1));
+    entity.setExpirationDate(LocalDateTime.of(2025, 12, 31, 10, 0, 0));
     tokenRepo.save(entity);
     context.put("accessToken", access.getTokenHash());
   }
